@@ -151,6 +151,9 @@ export default function Landing() {
           </div>
           <div className="hero-visual" aria-label="SI GAMES controller illustration">
             <div className="orbit orbit-one" /><div className="orbit orbit-two" />
+            <div className="space-planet planet-one"><span /></div>
+            <div className="space-planet planet-two"><span /></div>
+            <div className="fighter-ship" aria-hidden="true"><i /><b /><em /><span /></div>
             <div className="console-card">
               <div className="console-screen"><div className="screen-sun" /><div className="screen-mountain one" /><div className="screen-mountain two" /><div className="screen-runner">◆</div><div className="screen-road" /></div>
               <div className="console-controls"><span className="dpad"><i /><i /><i /><i /></span><div className="console-buttons"><b>+</b><b>•</b></div></div>

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import React, { StrictMode, useEffect, useState, lazy, Suspense } from "react";
+import React, { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
@@ -36,6 +36,26 @@ function LoadingScreen() {
       <p className="boot-watermark">////SPIDEY_IRAJ////</p>
     </div>
   );
+}
+
+function SpaceCursorTrail() {
+  const cursorId = useRef(0);
+  const [trail, setTrail] = useState<{ id: number; x: number; y: number }[]>([]);
+
+  useEffect(() => {
+    const handlePointerMove = (event: PointerEvent) => {
+      const point = { id: cursorId.current++, x: event.clientX, y: event.clientY };
+      setTrail((current) => [...current, point].slice(-12));
+    };
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    const fadeTimer = window.setInterval(() => setTrail((current) => current.slice(1)), 85);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.clearInterval(fadeTimer);
+    };
+  }, []);
+
+  return <div className="cursor-trail" aria-hidden="true">{trail.map((point, index) => <i key={point.id} style={{ left: point.x, top: point.y, opacity: (index + 1) / trail.length * 0.75, transform: `translate(-50%, -50%) scale(${.35 + (index + 1) / trail.length * .65})` }} />)}</div>;
 }
 
 /** Silent error boundary — if VlyToolbar crashes it renders nothing instead of
@@ -130,6 +150,7 @@ function AppBootstrap() {
 
   return (
     <ConvexAuthProvider client={convex}>
+      <SpaceCursorTrail />
       <BrowserRouter>
         <RouteSyncer />
         {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
