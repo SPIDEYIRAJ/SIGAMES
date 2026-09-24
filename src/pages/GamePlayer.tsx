@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type PointerEvent } from "react";
-import { ArrowLeft, Expand, Heart, Loader2, MonitorUp, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { ArrowLeft, Expand, Heart, Loader2, Minimize2, MonitorUp, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { games } from "@/data/games";
 
@@ -19,9 +19,20 @@ export default function GamePlayer() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
+  const [isImmersive, setIsImmersive] = useState(false);
+  const playerRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setFavorites(readFavorites());
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) setIsImmersive(false);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
   }, []);
 
   useEffect(() => {
@@ -50,8 +61,32 @@ export default function GamePlayer() {
   };
 
   const toggleFullscreen = async () => {
-    if (!document.fullscreenElement) await document.documentElement.requestFullscreen?.();
-    else await document.exitFullscreen?.();
+    if (isImmersive) {
+      setIsImmersive(false);
+      if (document.fullscreenElement) await document.exitFullscreen().catch(() => undefined);
+      return;
+    }
+
+    const target = frameRef.current;
+    if (target?.requestFullscreen) {
+      try {
+        await target.requestFullscreen();
+        return;
+      } catch {
+        // Fall through to the app-level immersive mode.
+      }
+    }
+
+    if (document.documentElement.requestFullscreen) {
+      try {
+        await document.documentElement.requestFullscreen();
+        return;
+      } catch {
+        // Fall through to the app-level immersive mode.
+      }
+    }
+
+    setIsImmersive(true);
   };
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
@@ -77,7 +112,7 @@ export default function GamePlayer() {
   };
 
   return (
-    <div className="player-page" onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
+    <div ref={playerRef} className={`player-page ${isImmersive ? "immersive-player" : ""}`} onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
@@ -86,8 +121,9 @@ export default function GamePlayer() {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        <section className="game-frame-wrap">
+        <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`}>
           {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
+          <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
           <iframe src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad" allowFullScreen onLoad={() => setLoading(false)} />
           <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
         </section>

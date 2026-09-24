@@ -264,3 +264,16 @@ body { color-scheme: dark; }
 .boot-status { margin-top: 13px; color: #8c6e7b; font-size: 8px; font-weight: 900; letter-spacing: .16em; }.boot-status span { display: inline-block; width: 13px; overflow: hidden; animation: boot-dots 1s steps(4,end) infinite; }.boot-watermark { position: absolute; right: -30px; bottom: 40px; color: rgba(255, 102, 118, .13); font-size: 10px; font-weight: 1000; letter-spacing: .2em; transform: rotate(-90deg); }
 @keyframes boot-logo { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-7px) rotate(3deg); } }@keyframes boot-pulse { 0%, 100% { transform: scale(.82); opacity: .09; } 50% { transform: scale(1.2); opacity: .2; } }@keyframes boot-progress { from { transform: translateX(-115%); } to { transform: translateX(250%); } }@keyframes boot-dots { 0% { width: 0; } 100% { width: 13px; } }
 @media (prefers-reduced-motion: reduce) { .boot-glow, .boot-logo { animation: none; } .boot-loader span { animation-duration: .01ms; } }
+
+/* Fullscreen gameplay */
+.immersive-player { overflow: hidden; background: #09070e; }
+.immersive-player .player-topbar, .immersive-player .player-main > .player-heading, .immersive-player .player-bottom, .immersive-player .player-disclaimer, .immersive-player .watermark-layer, .immersive-player .player-page::after { display: none; }
+.immersive-player .player-main { width: 100%; max-width: none; padding: 0; }
+.immersive-player .game-frame-wrap { position: fixed; z-index: 100; inset: 0; width: 100vw; height: 100vh; min-height: 100vh; border: 0; border-radius: 0; box-shadow: none; background: #09070e; }
+.immersive-player .game-frame-wrap iframe { width: 100%; height: 100%; min-height: 100vh; }
+.immersive-player .frame-corner { display: none; }
+.immersive-exit { position: absolute; z-index: 12; top: 14px; right: 14px; display: none; align-items: center; gap: 7px; border: 1px solid rgba(255,255,255,.16); border-radius: 11px; padding: 9px 11px; color: #fff; background: rgba(20, 11, 20, .72); backdrop-filter: blur(12px); box-shadow: 3px 4px 0 rgba(0,0,0,.35); font-size: 10px; font-weight: 900; }
+.is-immersive .immersive-exit, .game-frame-wrap:fullscreen .immersive-exit { display: flex; }
+.immersive-exit:hover { color: #ffb0b8; border-color: rgba(255,126,140,.55); }
+.game-frame-wrap:fullscreen .immersive-exit { top: 18px; right: 18px; }
+@media (max-width: 720px) { .immersive-exit { top: 10px; right: 10px; padding: 8px 9px; font-size: 9px; } }
