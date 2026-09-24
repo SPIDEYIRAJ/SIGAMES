@@ -292,6 +292,10 @@ body { color-scheme: dark; }
 @media (max-width: 720px) { .planet-one { left: 1%; top: 0; transform: scale(.78); }.planet-two { right: 0; bottom: 4%; transform: scale(.8); }.fighter-ship { top: 13%; left: 3%; transform: scale(.78) rotate(-20deg); }.cursor-trail i { width: 14px; height: 14px; } }
 @media (prefers-reduced-motion: reduce) { .space-planet, .fighter-ship, .fighter-ship span { animation: none; } }
 
+.space-starfield { position: fixed; z-index: 0; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; mix-blend-mode: screen; contain: strict; }
+.si-app > main, .si-app > .site-header, .si-app > .site-footer, .player-page > .player-topbar, .player-page > .player-main { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { .space-starfield { opacity: .55; } }
+
 /* SI GAMES // space-console reset: no clay, no inflated shadows */
 .site-header { background: rgba(5, 8, 22, .78); border-bottom: 1px solid rgba(116, 142, 255, .16); box-shadow: 0 10px 35px rgba(0,0,0,.22); backdrop-filter: blur(22px); }
 .brand-mark, .player-brand-mark { border: 1px solid rgba(170, 177, 255, .34); border-radius: 9px; background: linear-gradient(135deg, #293675, #10173f); box-shadow: 0 0 18px rgba(92, 112, 255, .22); }

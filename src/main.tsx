@@ -58,6 +58,83 @@ function SpaceCursorTrail() {
   return <div className="cursor-trail" aria-hidden="true">{trail.map((point, index) => <i key={point.id} style={{ left: point.x, top: point.y, opacity: (index + 1) / trail.length * 0.75, transform: `translate(-50%, -50%) scale(${.35 + (index + 1) / trail.length * .65})` }} />)}</div>;
 }
 
+function SpaceStarfield() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+
+    const stars = Array.from({ length: 210 }, (_, index) => ({
+      x: (Math.random() * 2.4 - 1.2),
+      y: (Math.random() * 2.4 - 1.2),
+      z: 0.18 + Math.random() * 1.35,
+      depth: 0.25 + Math.random() * 1.15,
+      size: 0.7 + Math.random() * 2.4,
+      tint: index % 9 === 0 ? "255, 111, 145" : index % 5 === 0 ? "107, 177, 255" : "210, 220, 255",
+    }));
+    const pointer = { x: 0, y: 0 };
+    let frame = 0;
+    let width = 0;
+    let height = 0;
+    let pixelRatio = 1;
+
+    const resize = () => {
+      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * pixelRatio;
+      canvas.height = height * pixelRatio;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    };
+
+    const handlePointer = (event: PointerEvent) => {
+      pointer.x = (event.clientX / width - 0.5) * 2;
+      pointer.y = (event.clientY / height - 0.5) * 2;
+    };
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      const scrollZoom = (window.scrollY / Math.max(height, 1)) * 0.22;
+      const focalLength = Math.min(width, height) * 0.92;
+
+      for (const star of stars) {
+        const z = ((star.z + scrollZoom) % 1.6) + 0.12;
+        const scale = focalLength / z;
+        const parallax = star.depth * (z / star.z);
+        const x = width / 2 + (star.x * scale) + pointer.x * 42 * parallax;
+        const y = height / 2 + (star.y * scale) + pointer.y * 34 * parallax;
+        const size = Math.max(0.55, star.size * (1.3 - z * 0.4));
+        const opacity = Math.min(0.9, Math.max(0.08, 0.7 * (1.2 - z) * (0.65 + star.depth * 0.35)));
+        const glow = Math.min(18, size * 4);
+        context.shadowBlur = glow;
+        context.shadowColor = `rgba(${star.tint}, .8)`;
+        context.fillStyle = `rgba(${star.tint}, ${opacity})`;
+        context.fillRect(x, y, size, size);
+      }
+      context.shadowBlur = 0;
+      frame = window.requestAnimationFrame(draw);
+    };
+
+    resize();
+    window.addEventListener("resize", resize);
+    window.addEventListener("pointermove", handlePointer, { passive: true });
+    draw();
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", resize);
+      window.removeEventListener("pointermove", handlePointer);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="space-starfield" aria-hidden="true" />;
+}
+
 /** Silent error boundary — if VlyToolbar crashes it renders nothing instead of
  *  crashing the whole app (e.g. hook errors in the browser runtime). */
 class ToolbarErrorBoundary extends React.Component<
@@ -150,6 +227,7 @@ function AppBootstrap() {
 
   return (
     <ConvexAuthProvider client={convex}>
+      <SpaceStarfield />
       <SpaceCursorTrail />
       <BrowserRouter>
         <RouteSyncer />
