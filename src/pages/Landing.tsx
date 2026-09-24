@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type PointerEvent } from "react";
 import {
   ArrowRight,
   Clock3,
@@ -89,6 +89,28 @@ export default function Landing() {
   const favoriteGames = games.filter((game) => favorites.includes(game.id));
   const recentGames = recent.map((id) => games.find((game) => game.id === id)).filter((game): game is Game => Boolean(game)).slice(0, 3);
 
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    const interactive = target.closest(".game-card, .favorite-item, .about-card, .console-card") as HTMLElement | null;
+    if (!interactive) return;
+    const bounds = interactive.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    interactive.style.setProperty("--tilt-x", `${(-y * 5).toFixed(2)}deg`);
+    interactive.style.setProperty("--tilt-y", `${(x * 5).toFixed(2)}deg`);
+    interactive.style.setProperty("--glow-x", `${((x + 0.5) * 100).toFixed(1)}%`);
+    interactive.style.setProperty("--glow-y", `${((y + 0.5) * 100).toFixed(1)}%`);
+  };
+
+  const resetTilt = () => {
+    document.querySelectorAll<HTMLElement>(".game-card, .favorite-item, .about-card, .console-card").forEach((element) => {
+      element.style.removeProperty("--tilt-x");
+      element.style.removeProperty("--tilt-y");
+      element.style.removeProperty("--glow-x");
+      element.style.removeProperty("--glow-y");
+    });
+  };
+
   const toggleFavorite = (game: Game) => {
     const next = favorites.includes(game.id) ? favorites.filter((id) => id !== game.id) : [...favorites, game.id];
     setFavorites(next);
@@ -104,7 +126,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="si-app">
+    <div className="si-app" onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="SI GAMES home"><BrandMark /><span>SI GAMES</span></a>
         <nav className="desktop-nav" aria-label="Main navigation">
@@ -168,7 +190,8 @@ export default function Landing() {
         </section>
       </main>
 
-      <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>MADE BY ////SPIDEY_IRAJ////</small></div><div className="footer-mark">SI<span>01</span></div></footer>
+      <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
+      <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>////SPIDEY_IRAJ////</small></div><div className="footer-mark">SI<span>01</span></div></footer>
       {toast && <div className="toast" role="status"><Heart size={15} fill="currentColor" /> {toast}</div>}
     </div>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type PointerEvent } from "react";
 import { ArrowLeft, Expand, Heart, Loader2, MonitorUp, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { games } from "@/data/games";
@@ -54,13 +54,36 @@ export default function GamePlayer() {
     else await document.exitFullscreen?.();
   };
 
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    const interactive = target.closest(".player-info, .player-category, .open-external") as HTMLElement | null;
+    if (!interactive) return;
+    const bounds = interactive.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    interactive.style.setProperty("--tilt-x", `${(-y * 4).toFixed(2)}deg`);
+    interactive.style.setProperty("--tilt-y", `${(x * 4).toFixed(2)}deg`);
+    interactive.style.setProperty("--glow-x", `${((x + 0.5) * 100).toFixed(1)}%`);
+    interactive.style.setProperty("--glow-y", `${((y + 0.5) * 100).toFixed(1)}%`);
+  };
+
+  const resetTilt = () => {
+    document.querySelectorAll<HTMLElement>(".player-info, .player-category, .open-external").forEach((element) => {
+      element.style.removeProperty("--tilt-x");
+      element.style.removeProperty("--tilt-y");
+      element.style.removeProperty("--glow-x");
+      element.style.removeProperty("--glow-y");
+    });
+  };
+
   return (
-    <div className="player-page">
+    <div className="player-page" onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
         <div className="player-actions"><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label="Toggle favorite"><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={toggleFullscreen} aria-label="Toggle fullscreen"><Expand size={18} /></button><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
       </header>
+      <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         <section className="game-frame-wrap">
