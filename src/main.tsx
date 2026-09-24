@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { VlyToolbar } from "../vly-toolbar-readonly.tsx";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
-import React, { StrictMode, useEffect, lazy, Suspense } from "react";
+import React, { StrictMode, useEffect, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import "./index.css";
@@ -18,6 +18,22 @@ function RouteLoading() {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="animate-pulse text-muted-foreground">Loading...</div>
+    </div>
+  );
+}
+
+function LoadingScreen() {
+  return (
+    <div className="boot-screen" role="status" aria-live="polite">
+      <div className="boot-glow" />
+      <div className="boot-content">
+        <div className="boot-logo">SI</div>
+        <p className="boot-brand">SI GAMES</p>
+        <p className="boot-tagline">PLAY. DISCOVER. ENJOY.</p>
+        <div className="boot-loader"><span /></div>
+        <p className="boot-status">WAKING UP THE ARCADE<span>...</span></p>
+      </div>
+      <p className="boot-watermark">////SPIDEY_IRAJ////</p>
     </div>
   );
 }
@@ -80,8 +96,6 @@ class RootErrorBoundary extends React.Component<
 
 const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
 
-
-
 function RouteSyncer() {
   const location = useLocation();
   useEffect(() => {
@@ -106,24 +120,32 @@ function RouteSyncer() {
 }
 
 
+function AppBootstrap() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setIsLoading(false), 1050);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  return (
+    <ConvexAuthProvider client={convex}>
+      <BrowserRouter>
+        <RouteSyncer />
+        {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
+      </BrowserRouter>
+      <Toaster />
+    </ConvexAuthProvider>
+  );
+}
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RootErrorBoundary>
       <ToolbarErrorBoundary>
         <VlyToolbar />
       </ToolbarErrorBoundary>
-      <ConvexAuthProvider client={convex}>
-        <BrowserRouter>
-          <RouteSyncer />
-          <Suspense fallback={<RouteLoading />}>
-            <Routes>
-              <Route path="/" element={<Landing />} />              <Route path="/play/:id" element={<GamePlayer />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-        <Toaster />
-      </ConvexAuthProvider>
+      <AppBootstrap />
     </RootErrorBoundary>
   </StrictMode>,
 );
