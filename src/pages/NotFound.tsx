@@ -1,26 +1,28 @@
-import { motion } from "framer-motion";
+import { ArrowLeft, Home, Radar, Sparkles } from "lucide-react";
+import { Link } from "react-router";
 
 export default function NotFound() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen flex flex-col"
-    >
-
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <div className="max-w-5xl mx-auto relative px-4">
-          <div className="flex items-center justify-center min-h-[200px]">
-            <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-              <p className="text-lg text-gray-600">Page Not Found</p>
-            </div>
-          </div>
+    <div className="not-found-page">
+      <div className="not-found-stars" aria-hidden="true" />
+      <header className="not-found-nav">
+        <Link className="brand" to="/" aria-label="SI GAMES home">
+          <span className="brand-mark" aria-hidden="true"><span>SI</span></span>
+          <span>SI GAMES</span>
+        </Link>
+        <span className="not-found-signal"><span className="status-dot" /> SIGNAL LOST</span>
+      </header>
+      <main className="not-found-content">
+        <div className="not-found-radar" aria-hidden="true"><Radar size={28} /></div>
+        <span className="section-kicker"><Sparkles size={14} /> UNCHARTED SECTOR</span>
+        <h1>404<span>.</span></h1>
+        <p>That game is not on this map. The good news: your library is still right where you left it.</p>
+        <div className="not-found-actions">
+          <Link className="primary-button" to="/"><Home size={16} /> Return to library</Link>
+          <button className="soft-button" type="button" onClick={() => window.history.back()}><ArrowLeft size={16} /> Go back</button>
         </div>
-      </div>
-    </motion.div>
+      </main>
+      <footer className="not-found-footer"><span>////SPIDEY_IRAJ////</span><span>PLAY. DISCOVER. ENJOY.</span></footer>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState, type PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import {
   ArrowRight,
+  ArrowUp,
   Clock3,
   Gamepad2,
   Heart,
@@ -37,7 +38,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         <img src={game.thumbnail} alt="" loading="lazy" />
         <div className="art-shade" />
         <span className="category-pill">{game.category}</span>
-        <button className={`favorite-button ${favorite ? "is-favorite" : ""}`} onClick={onFavorite} aria-label={favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}>
+        <button type="button" className={`favorite-button ${favorite ? "is-favorite" : ""}`} onClick={onFavorite} aria-label={favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}>
           <Heart size={17} fill={favorite ? "currentColor" : "none"} />
         </button>
         <div className="art-bottomline">
@@ -50,7 +51,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
           <h3>{game.title}</h3>
           <p>{game.description}</p>
         </div>
-        <button className="play-button" onClick={onPlay}>
+        <button type="button" className="play-button" onClick={onPlay}>
           Play now <ArrowRight size={16} />
         </button>
       </div>
@@ -65,6 +66,9 @@ export default function Landing() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [toast, setToast] = useState("");
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setFavorites(readStoredGames("si-games-favorites"));
@@ -76,6 +80,43 @@ export default function Landing() {
     const timeout = window.setTimeout(() => setToast(""), 2200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const isTyping = target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.isContentEditable;
+      if (event.key === "/" && !isTyping && !event.metaKey && !event.ctrlKey && !event.altKey) {
+        event.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (event.key === "Escape" && document.activeElement === searchInputRef.current) {
+        setQuery("");
+        searchInputRef.current?.blur();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    let frame = 0;
+    const updateScrollState = () => {
+      frame = 0;
+      const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = scrollableHeight > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollableHeight)) : 0;
+      setScrollProgress(progress);
+      setShowBackToTop(window.scrollY > 480);
+    };
+    const handleScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateScrollState);
+    };
+    updateScrollState();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   const filteredGames = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -127,6 +168,8 @@ export default function Landing() {
 
   return (
     <div className="si-app" onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
+      <a className="skip-link" href="#library">Skip to game library</a>
+      <div className="scroll-progress" aria-hidden="true"><span style={{ transform: `scaleX(${scrollProgress})` }} /></div>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="SI GAMES home"><BrandMark /><span>SI GAMES</span></a>
         <nav className="desktop-nav" aria-label="Main navigation">
@@ -147,7 +190,7 @@ export default function Landing() {
               <button className="primary-button" onClick={() => playGame(games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
               <a className="soft-button" href="#library">Explore games <ArrowRight size={16} /></a>
             </div>
-            <div className="hero-note"><span>✦</span> No ads inside SI GAMES <span>✦</span> Built for quick sessions</div>
+            <div className="hero-note"><span>✦</span> No ads inside SI GAMES <span>✦</span> Press <kbd>/</kbd> to search</div>
           </div>
           <div className="hero-visual" aria-label="SI GAMES controller illustration">
             <div className="orbit orbit-one" /><div className="orbit orbit-two" />
@@ -174,18 +217,18 @@ export default function Landing() {
         <section className="library-section content-section" id="library">
           <div className="section-heading">
             <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>Four ways to pause the world and play.</p></div>
-            <span className="section-count">{filteredGames.length.toString().padStart(2, "0")} titles</span>
+            <span className="section-count" aria-live="polite">{filteredGames.length.toString().padStart(2, "0")} titles</span>
           </div>
           <div className="library-toolbar">
-            <label className="search-box"><Search size={18} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button onClick={() => setQuery("")} aria-label="Clear search"><X size={15} /></button>}</label>
-            <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
+            <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
+            <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button type="button" role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
           </div>
           {filteredGames.length > 0 ? <div className="game-grid">{filteredGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { setQuery(""); setCategory("All Games"); }}>Reset library</button></div>}
         </section>
 
         <section className="favorites-section content-section" id="favorites">
           <div className="section-heading compact"><div><span className="section-kicker"><Heart size={14} /> YOUR SHORTLIST</span><h2>Favorites <sup>{favoriteGames.length}</sup></h2></div></div>
-          {favoriteGames.length > 0 ? <div className="favorite-strip">{favoriteGames.map((game) => <button className="favorite-item" key={game.id} onClick={() => playGame(game)}><img src={game.thumbnail} alt="" /><span><b>{game.title}</b><small>{game.category}</small></span><ArrowRight size={16} /></button>)}</div> : <div className="favorites-empty"><Heart size={17} /> Tap the heart on any game to keep it close.</div>}
+          {favoriteGames.length > 0 ? <div className="favorite-strip">{favoriteGames.map((game) => <button type="button" className="favorite-item" key={game.id} onClick={() => playGame(game)} aria-label={`Play ${game.title}`}><img src={game.thumbnail} alt="" /><span><b>{game.title}</b><small>{game.category}</small></span><ArrowRight size={16} /></button>)}</div> : <div className="favorites-empty"><Heart size={17} /> Tap the heart on any game to keep it close.</div>}
         </section>
 
         <section className="about-section content-section" id="about">
@@ -196,6 +239,7 @@ export default function Landing() {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>////SPIDEY_IRAJ////</small></div><div className="footer-mark">SI<span>01</span></div></footer>
       {toast && <div className="toast" role="status"><Heart size={15} fill="currentColor" /> {toast}</div>}
+      {showBackToTop && <button type="button" className="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}><ArrowUp size={15} /> Return to orbit</button>}
     </div>
   );
 }

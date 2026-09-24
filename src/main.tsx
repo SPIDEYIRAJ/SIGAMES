@@ -16,8 +16,9 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 // Simple loading fallback for route transitions
 function RouteLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-pulse text-muted-foreground">Loading...</div>
+    <div className="route-loading" role="status" aria-live="polite">
+      <div className="route-loading-orbit" aria-hidden="true" />
+      <span>CALIBRATING THE NEXT SECTOR</span>
     </div>
   );
 }
@@ -43,9 +44,11 @@ function SpaceCursorTrail() {
   const [trail, setTrail] = useState<{ id: number; x: number; y: number }[]>([]);
 
   useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const handlePointerMove = (event: PointerEvent) => {
+      if (reducedMotion || event.pointerType === "touch") return;
       const point = { id: cursorId.current++, x: event.clientX, y: event.clientY };
-      setTrail((current) => [...current, point].slice(-12));
+      setTrail((current) => [...current, point].slice(-10));
     };
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     const fadeTimer = window.setInterval(() => setTrail((current) => current.slice(1)), 85);
@@ -67,7 +70,9 @@ function SpaceStarfield() {
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    const stars = Array.from({ length: 210 }, (_, index) => ({
+    const starCount = window.innerWidth < 720 ? 120 : 210;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const stars = Array.from({ length: starCount }, (_, index) => ({
       x: (Math.random() * 2.4 - 1.2),
       y: (Math.random() * 2.4 - 1.2),
       z: 0.18 + Math.random() * 1.35,
@@ -75,7 +80,7 @@ function SpaceStarfield() {
       size: 0.7 + Math.random() * 2.4,
       tint: index % 9 === 0 ? "255, 111, 145" : index % 5 === 0 ? "107, 177, 255" : "210, 220, 255",
     }));
-    const pointer = { x: 0, y: 0 };
+    const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
     let frame = 0;
     let width = 0;
     let height = 0;
@@ -93,14 +98,16 @@ function SpaceStarfield() {
     };
 
     const handlePointer = (event: PointerEvent) => {
-      pointer.x = (event.clientX / width - 0.5) * 2;
-      pointer.y = (event.clientY / height - 0.5) * 2;
+      pointer.targetX = (event.clientX / width - 0.5) * 2;
+      pointer.targetY = (event.clientY / height - 0.5) * 2;
     };
 
     const draw = () => {
       context.clearRect(0, 0, width, height);
       const scrollZoom = (window.scrollY / Math.max(height, 1)) * 0.22;
       const focalLength = Math.min(width, height) * 0.92;
+      pointer.x += (pointer.targetX - pointer.x) * 0.08;
+      pointer.y += (pointer.targetY - pointer.y) * 0.08;
 
       for (const star of stars) {
         const z = ((star.z + scrollZoom) % 1.6) + 0.12;
@@ -117,18 +124,29 @@ function SpaceStarfield() {
         context.fillRect(x, y, size, size);
       }
       context.shadowBlur = 0;
-      frame = window.requestAnimationFrame(draw);
+      if (!reducedMotion) frame = window.requestAnimationFrame(draw);
     };
 
     resize();
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        window.cancelAnimationFrame(frame);
+        frame = 0;
+      } else if (!reducedMotion && !frame) {
+        frame = window.requestAnimationFrame(draw);
+      }
+    };
+
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", handlePointer, { passive: true });
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     draw();
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointer);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);
 
