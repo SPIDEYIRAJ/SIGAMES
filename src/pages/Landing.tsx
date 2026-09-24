@@ -170,6 +170,18 @@ export default function Landing() {
     <div className="si-app" onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
       <a className="skip-link" href="#library">Skip to game library</a>
       <div className="scroll-progress" aria-hidden="true"><span style={{ transform: `scaleX(${scrollProgress})` }} /></div>
+      <div className="space-hud" aria-hidden="true">
+        <div className="hud-corner hud-top-left">
+          <span className="hud-label">SI // FLIGHT SYSTEM</span>
+          <strong className="hud-value">ORBITAL MODE</strong>
+          <span className="hud-rule" />
+        </div>
+        <div className="hud-crosshair"><i /><i /></div>
+        <div className="hud-corner hud-bottom-right">
+          <span className="hud-label">WARP CORE <b>ONLINE</b></span>
+          <span className="hud-value">VECTOR {Math.round(scrollProgress * 100).toString().padStart(3, "0")}%</span>
+        </div>
+      </div>
       <header className="site-header">
         <a className="brand" href="#top" aria-label="SI GAMES home"><BrandMark /><span>SI GAMES</span></a>
         <nav className="desktop-nav" aria-label="Main navigation">

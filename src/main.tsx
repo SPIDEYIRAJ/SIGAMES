@@ -81,10 +81,21 @@ function SpaceStarfield() {
       tint: index % 9 === 0 ? "255, 111, 145" : index % 5 === 0 ? "107, 177, 255" : "210, 220, 255",
     }));
     const pointer = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    const scrollMotion = {
+      y: window.scrollY,
+      lastY: window.scrollY,
+      lastEventTime: performance.now(),
+      velocity: 0,
+      direction: 1,
+      targetWarp: 0,
+      warp: 0,
+      depthOffset: 0,
+    };
     let frame = 0;
     let width = 0;
     let height = 0;
     let pixelRatio = 1;
+    let lastFrameTime = performance.now();
 
     const resize = () => {
       pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -98,33 +109,86 @@ function SpaceStarfield() {
     };
 
     const handlePointer = (event: PointerEvent) => {
-      pointer.targetX = (event.clientX / width - 0.5) * 2;
-      pointer.targetY = (event.clientY / height - 0.5) * 2;
+      if (!width || !height) return;
+      pointer.targetX = Math.max(-1, Math.min(1, (event.clientX / width - 0.5) * 2));
+      pointer.targetY = Math.max(-1, Math.min(1, (event.clientY / height - 0.5) * 2));
     };
 
-    const draw = () => {
-      context.clearRect(0, 0, width, height);
-      const scrollZoom = (window.scrollY / Math.max(height, 1)) * 0.22;
-      const focalLength = Math.min(width, height) * 0.92;
-      pointer.x += (pointer.targetX - pointer.x) * 0.08;
-      pointer.y += (pointer.targetY - pointer.y) * 0.08;
+    const resetPointer = () => {
+      pointer.targetX = 0;
+      pointer.targetY = 0;
+    };
 
+    const handleScroll = () => {
+      const now = performance.now();
+      const currentY = window.scrollY;
+      const elapsed = Math.max(now - scrollMotion.lastEventTime, 16);
+      const distance = currentY - scrollMotion.lastY;
+      const instantaneousVelocity = (distance / elapsed) * 16;
+
+      scrollMotion.velocity += (instantaneousVelocity - scrollMotion.velocity) * 0.42;
+      scrollMotion.targetWarp = Math.min(1, Math.abs(instantaneousVelocity) / 42);
+      scrollMotion.direction = Math.sign(distance) || scrollMotion.direction;
+      scrollMotion.y = currentY;
+      scrollMotion.lastY = currentY;
+      scrollMotion.lastEventTime = now;
+    };
+
+    const render = (time: number) => {
+      const elapsed = Math.min(0.05, Math.max(0.001, (time - lastFrameTime) / 1000));
+      lastFrameTime = time;
+      context.clearRect(0, 0, width, height);
+
+      const pointerEase = 1 - Math.exp(-elapsed * 10);
+      const warpEase = 1 - Math.exp(-elapsed * 12);
+      const idleTime = time - scrollMotion.lastEventTime;
+      if (idleTime > 42) scrollMotion.targetWarp *= Math.pow(0.015, elapsed);
+      pointer.x += (pointer.targetX - pointer.x) * pointerEase;
+      pointer.y += (pointer.targetY - pointer.y) * pointerEase;
+      scrollMotion.warp += (scrollMotion.targetWarp - scrollMotion.warp) * warpEase;
+      scrollMotion.velocity *= Math.pow(0.08, elapsed);
+      scrollMotion.depthOffset = (scrollMotion.depthOffset + scrollMotion.velocity * elapsed * 0.0025) % 1.6;
+
+      const centerX = width / 2;
+      const centerY = height / 2;
+      const focalLength = Math.min(width, height) * 0.92;
+      const scrollZoom = (scrollMotion.y / Math.max(height, 1)) * 0.18;
+      const warp = scrollMotion.warp;
+
+      context.save();
+      context.globalCompositeOperation = "lighter";
       for (const star of stars) {
-        const z = ((star.z + scrollZoom) % 1.6) + 0.12;
+        const depth = ((star.z + scrollMotion.depthOffset + scrollZoom) % 1.6 + 1.6) % 1.6;
+        const z = depth + 0.12;
         const scale = focalLength / z;
         const parallax = star.depth * (z / star.z);
-        const x = width / 2 + (star.x * scale) + pointer.x * 42 * parallax;
-        const y = height / 2 + (star.y * scale) + pointer.y * 34 * parallax;
+        const x = centerX + (star.x * scale) + pointer.x * 42 * parallax;
+        const y = centerY + (star.y * scale) + pointer.y * 34 * parallax;
         const size = Math.max(0.55, star.size * (1.3 - z * 0.4));
         const opacity = Math.min(0.9, Math.max(0.08, 0.7 * (1.2 - z) * (0.65 + star.depth * 0.35)));
-        const glow = Math.min(18, size * 4);
-        context.shadowBlur = glow;
+
+        if (warp > 0.045 && z < 1.08) {
+          const streak = (0.035 + warp * 0.2) * scrollMotion.direction;
+          context.strokeStyle = `rgba(${star.tint}, ${opacity * warp * 0.55})`;
+          context.lineWidth = Math.max(0.5, size * 0.45);
+          context.beginPath();
+          context.moveTo(x, y);
+          context.lineTo(x + (x - centerX) * streak, y + (y - centerY) * streak);
+          context.stroke();
+        }
+
+        context.shadowBlur = Math.min(18, size * 4);
         context.shadowColor = `rgba(${star.tint}, .8)`;
         context.fillStyle = `rgba(${star.tint}, ${opacity})`;
         context.fillRect(x, y, size, size);
       }
+      context.restore();
       context.shadowBlur = 0;
-      if (!reducedMotion) frame = window.requestAnimationFrame(draw);
+    };
+
+    const animate = (time: number) => {
+      render(time);
+      frame = window.requestAnimationFrame(animate);
     };
 
     resize();
@@ -133,19 +197,27 @@ function SpaceStarfield() {
         window.cancelAnimationFrame(frame);
         frame = 0;
       } else if (!reducedMotion && !frame) {
-        frame = window.requestAnimationFrame(draw);
+        lastFrameTime = performance.now();
+        frame = window.requestAnimationFrame(animate);
       }
     };
 
     window.addEventListener("resize", resize);
     window.addEventListener("pointermove", handlePointer, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("blur", resetPointer);
+    document.addEventListener("pointerleave", resetPointer);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    draw();
+    if (reducedMotion) render(performance.now());
+    else frame = window.requestAnimationFrame(animate);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointer);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("blur", resetPointer);
+      document.removeEventListener("pointerleave", resetPointer);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, []);

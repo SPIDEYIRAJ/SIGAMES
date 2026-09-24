@@ -293,6 +293,22 @@ body { color-scheme: dark; }
 @media (prefers-reduced-motion: reduce) { .space-planet, .fighter-ship, .fighter-ship span { animation: none; } }
 
 .space-starfield { position: fixed; z-index: 0; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .9; mix-blend-mode: screen; contain: strict; }
+.space-hud { position: fixed; z-index: 3; inset: 0; overflow: hidden; pointer-events: none; color: rgba(153, 171, 255, .66); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; text-transform: uppercase; mix-blend-mode: screen; }
+.hud-corner { position: absolute; display: grid; gap: 6px; min-width: 132px; }
+.hud-top-left { top: 91px; left: max(20px, calc((100vw - 1180px) / 2)); }
+.hud-bottom-right { right: max(20px, calc((100vw - 1180px) / 2)); bottom: 24px; justify-items: end; text-align: right; }
+.hud-label { color: rgba(137, 159, 239, .58); font-size: 8px; font-weight: 800; letter-spacing: .19em; }
+.hud-label b { color: #ff7896; font-weight: 900; text-shadow: 0 0 10px rgba(255, 86, 126, .6); }
+.hud-value { color: rgba(204, 215, 255, .86); font-size: 10px; font-weight: 800; letter-spacing: .14em; text-shadow: 0 0 14px rgba(102, 127, 255, .45); }
+.hud-rule { width: 92px; height: 1px; background: linear-gradient(90deg, rgba(117, 147, 255, .7), transparent); box-shadow: 0 0 8px rgba(102, 127, 255, .5); }
+.hud-crosshair { position: absolute; top: 50%; left: 50%; width: 30px; height: 30px; border: 1px solid rgba(141, 161, 255, .18); border-radius: 50%; transform: translate(-50%, -50%); opacity: .55; }
+.hud-crosshair::before, .hud-crosshair::after { content: ""; position: absolute; background: rgba(163, 181, 255, .45); }
+.hud-crosshair::before { left: 50%; top: -8px; width: 1px; height: 44px; transform: translateX(-50%); }
+.hud-crosshair::after { top: 50%; left: -8px; width: 44px; height: 1px; transform: translateY(-50%); }
+.hud-crosshair i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #ff6685; box-shadow: 0 0 9px #ff5278; }
+.hud-crosshair i:first-child { top: 3px; left: 3px; }.hud-crosshair i:last-child { right: 3px; bottom: 3px; background: #718dff; box-shadow: 0 0 9px #718dff; }
+@media (max-width: 720px) { .hud-top-left { top: 76px; left: 14px; }.hud-bottom-right { right: 14px; bottom: 17px; }.hud-crosshair { display: none; } }
+@media (prefers-reduced-motion: reduce) { .space-hud { opacity: .48; } }
 .si-app > main, .si-app > .site-header, .si-app > .site-footer, .player-page > .player-topbar, .player-page > .player-main { z-index: 1; }
 @media (prefers-reduced-motion: reduce) { .space-starfield { opacity: .55; } }
 
