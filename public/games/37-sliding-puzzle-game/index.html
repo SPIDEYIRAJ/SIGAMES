@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  <base target="_self">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talha - Sliding Puzzle Game</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha -->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+/* ===== Sliding Puzzle - Mobile responsive ===== */
+:root {
+  --tile-gap: 4px;
+  --tile-radius: 6px;
+  --board-bg: #1a1a2e;
+  --tile-bg: #16213e;
+  --tile-border: #0f3460;
+  --tile-text: #e8e8e8;
+  --accent: #e94560;
+  --empty-bg: rgba(15, 52, 96, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+  background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+  min-height: 100vh;
+  color: #f5f5f5;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+}
+
+/* ===== Level screen ===== */
+.level-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+}
+
+.level-screen h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.level-screen > p {
+  margin: 0 0 24px;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.level-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.level-btn {
+  padding: 16px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.level-btn:hover,
+.level-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.level-btn:active {
+  transform: scale(0.98);
+}
+
+.level-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.level-desc {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+.level-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.level-header h1 {
+  margin: 0;
+}
+
+/* ===== Help button ===== */
+.help-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.help-btn:hover,
+.help-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== Help modal ===== */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 20px;
+}
+
+.help-overlay.hidden {
+  display: none;
+}
+
+.help-modal {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.help-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.help-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.help-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.help-body {
+  padding: 20px;
+}
+
+.help-body p {
+  margin: 0 0 12px;
+}
+
+.help-body ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.help-body li {
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+
+.help-body li:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Game screen ===== */
+.game-screen {
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-screen.hidden,
+.level-screen.hidden {
+  display: none;
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 720px;
+}
+
+.header h1 {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  margin: 0;
+  font-weight: 700;
+}
+
+.level-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.moves {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-large {
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+/* ===== Board ===== */
+.game-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+  padding: 8px 0;
+}
+
+.board {
+  display: grid;
+  gap: var(--tile-gap);
+  padding: 10px;
+  background: var(--board-bg);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  width: min(92vw, 720px);
+  height: min(82vh, 720px);
+  max-width: 100%;
+  max-height: min(82vh, 720px);
+  aspect-ratio: 1;
+}
+
+/* Board size is set inline via grid-template-columns/rows and --size */
+.board.size-3 {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+}
+
+.board.size-4 {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+}
+
+.board.size-5 {
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tile-bg);
+  background-repeat: no-repeat;
+  border: 2px solid var(--tile-border);
+  border-radius: var(--tile-radius);
+  color: var(--tile-text);
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.15s;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tile:hover {
+  background-color: #1f3460;
+  transform: scale(1.02);
+}
+
+.tile.tile-image:hover {
+  background-color: transparent;
+}
+
+.tile:active {
+  transform: scale(0.98);
+}
+
+.tile.empty {
+  background: var(--empty-bg);
+  border-color: transparent;
+  cursor: default;
+  box-shadow: none;
+}
+
+.tile.empty:hover {
+  background: var(--empty-bg);
+  transform: none;
+}
+
+/* Image tiles: no number, image slice only */
+.tile.tile-image .tile-num {
+  display: none;
+}
+
+/* ===== Win overlay ===== */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.win-overlay.hidden {
+  display: none;
+}
+
+.win-box {
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  max-width: 360px;
+}
+
+.win-box h2 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  color: var(--accent);
+}
+
+.win-box p {
+  margin: 0 0 24px;
+  opacity: 0.9;
+}
+
+.win-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ===== Mobile: keep board large, use most of viewport ===== */
+@media (max-width: 600px) {
+  .header {
+    max-width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+
+  .board {
+    width: min(96vw, 420px);
+    height: min(78vh, 96vw, 420px);
+    max-height: min(78vh, 96vw, 420px);
+    padding: 6px;
+  }
+
+  .tile.tile-image .tile-num {
+    display: none;
+  }
+}
+  </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Level selection -->
+      <div id="levelScreen" class="level-screen">
+        <div class="level-header">
+          <h1>Sliding Puzzle</h1>
+          <button type="button" id="helpBtnLevel" class="help-btn" title="How to play" aria-label="How to play">?</button>
+        </div>
+        <p>Choose difficulty</p>
+        <div class="level-buttons">
+          <button type="button" data-level="easy" class="level-btn">
+            <span class="level-name">Easy</span>
+            <span class="level-desc">3×3 grid · 8 tiles</span>
+          </button>
+          <button type="button" data-level="medium" class="level-btn">
+            <span class="level-name">Medium</span>
+            <span class="level-desc">4×4 grid · 15 tiles</span>
+          </button>
+          <button type="button" data-level="hard" class="level-btn">
+            <span class="level-name">Hard</span>
+            <span class="level-desc">5×5 grid · 24 tiles</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game screen -->
+      <div id="gameScreen" class="game-screen hidden">
+        <header class="header">
+          <h1>Sliding Puzzle</h1>
+          <button type="button" id="helpBtnGame" class="help-btn" title="How to play" aria-label="How to play">?</button>
+          <span class="level-badge" id="levelBadge">Easy</span>
+          <div class="header-actions">
+            <span class="moves" id="moves">Moves: 0</span>
+            <button type="button" id="changeLevelBtn" class="btn btn-ghost">Level</button>
+            <button type="button" id="newGameBtn" class="btn">New Game</button>
+          </div>
+        </header>
+
+        <main class="game-container">
+          <div id="board" class="board" role="grid" aria-label="Sliding puzzle board"></div>
+        </main>
+
+        <!-- Win overlay -->
+        <div id="winOverlay" class="win-overlay hidden">
+          <div class="win-box">
+            <h2>You solved it!</h2>
+            <p id="winMoves">Moves: 0</p>
+            <div class="win-actions">
+              <button type="button" id="playAgainBtn" class="btn btn-large">Play Again</button>
+              <button type="button" id="changeLevelFromWinBtn" class="btn btn-ghost">Change Level</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to play modal -->
+    <div id="helpOverlay" class="help-overlay hidden" aria-hidden="true">
+      <div class="help-modal" role="dialog" aria-labelledby="helpTitle" aria-modal="true">
+        <div class="help-header">
+          <h2 id="helpTitle">How to play</h2>
+          <button type="button" id="helpClose" class="help-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="help-body">
+          <p>Slide the tiles to reassemble the image.</p>
+          <ul>
+            <li><strong>Goal:</strong> Arrange the tiles so the full image is restored. The empty space should be in the bottom-right.</li>
+            <li><strong>Move:</strong> Click or tap any tile that is next to the empty space (above, below, left, or right). That tile will slide into the empty spot.</li>
+            <li><strong>Levels:</strong> Easy (3×3), Medium (4×4), Hard (5×5). Each level uses a random image from its set.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    
+  
+  <script>
+(function () {
+  "use strict";
+
+  const LEVELS = {
+    easy: 3,
+    medium: 4,
+    hard: 5,
+  };
+
+  const SHUFFLE_MOVES = {
+    easy: 300,
+    medium: 800,
+    hard: 1500,
+  };
+
+  // 9 images: indices 0–2 Easy, 3–5 Medium, 6–8 Hard. One is chosen randomly per level.
+  const PUZZLE_IMAGES = [
+    "https://picsum.photos/id/1062/800/800",
+    "https://picsum.photos/id/1074/800/800",
+    "https://picsum.photos/id/1084/800/800",
+    "https://picsum.photos/id/169/800/800",
+    "https://picsum.photos/id/237/800/800",
+    "https://picsum.photos/id/433/800/800",
+    "https://picsum.photos/id/564/800/800",
+    "https://picsum.photos/id/718/800/800",
+    "https://picsum.photos/id/783/800/800",
+  ];
+
+  const IMAGE_INDEX_BY_LEVEL = {
+    easy: [0, 1, 2],
+    medium: [3, 4, 5],
+    hard: [6, 7, 8],
+  };
+
+  let state = {
+    level: "easy",
+    size: 4,
+    grid: [],
+    emptyIndex: 0,
+    moves: 0,
+    currentImageUrl: "",
+  };
+
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const $$ = (sel, el = document) => el.querySelectorAll(sel);
+
+  function getNeighbors(index, size) {
+    const n = size;
+    const row = Math.floor(index / n);
+    const col = index % n;
+    const neighbors = [];
+    if (row > 0) neighbors.push(index - n);
+    if (row < n - 1) neighbors.push(index + n);
+    if (col > 0) neighbors.push(index - 1);
+    if (col < n - 1) neighbors.push(index + 1);
+    return neighbors;
+  }
+
+  function createSolvablePuzzle(size) {
+    const n = size * size;
+    const grid = [];
+    for (let i = 1; i < n; i++) grid.push(i);
+    grid.push(0);
+    let emptyIndex = n - 1;
+    const movesCount = SHUFFLE_MOVES[state.level] || 500;
+    for (let i = 0; i < movesCount; i++) {
+      const neighbors = getNeighbors(emptyIndex, size);
+      const next = neighbors[Math.floor(Math.random() * neighbors.length)];
+      [grid[emptyIndex], grid[next]] = [grid[next], grid[emptyIndex]];
+      emptyIndex = next;
+    }
+    return { grid, emptyIndex };
+  }
+
+  function startNewGame() {
+    state.size = LEVELS[state.level];
+    const indices = IMAGE_INDEX_BY_LEVEL[state.level];
+    state.currentImageUrl = PUZZLE_IMAGES[indices[Math.floor(Math.random() * indices.length)]];
+    const { grid, emptyIndex } = createSolvablePuzzle(state.size);
+    state.grid = grid;
+    state.emptyIndex = emptyIndex;
+    state.moves = 0;
+    render();
+    $("#winOverlay").classList.add("hidden");
+  }
+
+  function isAdjacentToEmpty(index) {
+    return getNeighbors(state.emptyIndex, state.size).includes(index);
+  }
+
+  function moveTile(index) {
+    if (!isAdjacentToEmpty(index)) return;
+    const empty = state.emptyIndex;
+    [state.grid[empty], state.grid[index]] = [state.grid[index], state.grid[empty]];
+    state.emptyIndex = index;
+    state.moves += 1;
+    render();
+    if (checkWin()) {
+      $("#winMoves").textContent = "Moves: " + state.moves;
+      $("#winOverlay").classList.remove("hidden");
+    }
+  }
+
+  function checkWin() {
+    const n = state.grid.length;
+    for (let i = 0; i < n - 1; i++) {
+      if (state.grid[i] !== i + 1) return false;
+    }
+    return state.grid[n - 1] === 0;
+  }
+
+  function render() {
+    const board = $("#board");
+    const size = state.size;
+    board.className = "board size-" + size;
+    board.innerHTML = "";
+    const n = size * size;
+    for (let i = 0; i < n; i++) {
+      const value = state.grid[i];
+      const tile = document.createElement("div");
+      tile.className = "tile" + (value === 0 ? " empty" : " tile-image");
+      tile.dataset.index = i;
+      tile.setAttribute("role", "gridcell");
+      if (value !== 0) {
+        const pieceIndex = value - 1;
+        const row = Math.floor(pieceIndex / size);
+        const col = pieceIndex % size;
+        tile.style.backgroundImage = "url(" + state.currentImageUrl + ")";
+        tile.style.backgroundSize = size * 100 + "% " + size * 100 + "%";
+        tile.style.backgroundRepeat = "no-repeat";
+        if (size > 1) {
+          const xPct = (col / (size - 1)) * 100;
+          const yPct = (row / (size - 1)) * 100;
+          tile.style.backgroundPosition = xPct + "% " + yPct + "%";
+        } else {
+          tile.style.backgroundPosition = "0% 0%";
+        }
+        tile.addEventListener("click", () => moveTile(i));
+      }
+      board.appendChild(tile);
+    }
+    $("#moves").textContent = "Moves: " + state.moves;
+  }
+
+  function startGame(level) {
+    state.level = level;
+    state.size = LEVELS[level];
+    $("#levelScreen").classList.add("hidden");
+    $("#gameScreen").classList.remove("hidden");
+    $("#levelBadge").textContent = level.charAt(0).toUpperCase() + level.slice(1);
+    startNewGame();
+  }
+
+  function goToLevelScreen() {
+    $("#gameScreen").classList.add("hidden");
+    $("#winOverlay").classList.add("hidden");
+    $("#levelScreen").classList.remove("hidden");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    $$(".level-btn").forEach((btn) => {
+      btn.addEventListener("click", () => startGame(btn.dataset.level));
+    });
+    $("#newGameBtn").addEventListener("click", startNewGame);
+    $("#changeLevelBtn").addEventListener("click", goToLevelScreen);
+    $("#playAgainBtn").addEventListener("click", () => {
+      $("#winOverlay").classList.add("hidden");
+      startNewGame();
+    });
+    $("#changeLevelFromWinBtn").addEventListener("click", () => {
+      $("#winOverlay").classList.add("hidden");
+      goToLevelScreen();
+    });
+    $("#helpBtnLevel").addEventListener("click", showHelp);
+    $("#helpBtnGame").addEventListener("click", showHelp);
+    $("#helpClose").addEventListener("click", hideHelp);
+    $("#helpOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "helpOverlay") hideHelp();
+    });
+  });
+
+  function showHelp() {
+    $("#helpOverlay").classList.remove("hidden");
+    $("#helpOverlay").setAttribute("aria-hidden", "false");
+  }
+
+  function hideHelp() {
+    $("#helpOverlay").classList.add("hidden");
+    $("#helpOverlay").setAttribute("aria-hidden", "true");
+  }
+})();
+  </script>
+  </body>
+</html>
+

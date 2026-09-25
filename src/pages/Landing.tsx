@@ -42,7 +42,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
           <Heart size={17} fill={favorite ? "currentColor" : "none"} />
         </button>
         <div className="art-bottomline">
-          <span className="game-index">0{games.indexOf(game) + 1}</span>
+          <span className="game-index">{String(games.indexOf(game) + 1).padStart(2, "0")}</span>
           <span className="art-type">{game.type === "iframe" ? "Browser ready" : "External game"}</span>
         </div>
       </div>
@@ -50,7 +50,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         <div>
           <h3>{game.title}</h3>
           <p>{game.description}</p>
-          <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>
+          {game.heavy && <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>}
         </div>
         <button type="button" className="play-button" onClick={onPlay}>
           Play now <ArrowRight size={16} />
@@ -190,7 +190,7 @@ export default function Landing() {
           <a href="#favorites">Favorites</a>
           <a href="#about">About</a>
         </nav>
-        <div className="header-status"><span className="status-dot" /> 4 games ready to play</div>
+        <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
       </header>
 
       <main id="top">
@@ -215,7 +215,7 @@ export default function Landing() {
               <div className="console-controls"><span className="dpad"><i /><i /><i /><i /></span><div className="console-buttons"><b>+</b><b>•</b></div></div>
               <div className="console-label">SI / 01</div>
             </div>
-            <div className="float-chip chip-top"><Trophy size={14} /> 04 TITLES</div>
+            <div className="float-chip chip-top"><Trophy size={14} /> {String(games.length).padStart(2, "0")} TITLES</div>
             <div className="float-chip chip-bottom"><Gamepad2 size={14} /> READY TO GO</div>
           </div>
         </section>
@@ -229,7 +229,7 @@ export default function Landing() {
 
         <section className="library-section content-section" id="library">
           <div className="section-heading">
-            <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>Four ways to pause the world and play.</p></div>
+            <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>{games.length} ways to pause the world and play.</p><p className="library-note">Most titles run instantly inside SI GAMES. The four heavy ones are flagged and can lag on slower devices.</p></div>
             <span className="section-count" aria-live="polite">{filteredGames.length.toString().padStart(2, "0")} titles</span>
           </div>
           <div className="library-toolbar">

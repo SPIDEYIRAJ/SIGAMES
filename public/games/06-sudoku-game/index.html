@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  <base target="_self">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talha - Sudoku Game</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha -->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Outfit", sans-serif;
+  background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 520px;
+}
+
+/* ---------- Level selection ---------- */
+.level-screen {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.level-screen h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #e94560, #ff6b6b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.level-screen p {
+  margin: 0 0 2rem;
+  color: #a0a0b0;
+  font-size: 1rem;
+}
+
+.level-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 220px;
+  margin: 0 auto;
+}
+
+.level-btn {
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  color: #1a1a2e;
+}
+
+.level-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.level-btn[data-level="easy"] {
+  background: linear-gradient(135deg, #6bcb77, #4ade80);
+}
+
+.level-btn[data-level="medium"] {
+  background: linear-gradient(135deg, #ffd93d, #fbbf24);
+}
+
+.level-btn[data-level="hard"] {
+  background: linear-gradient(135deg, #e94560, #ef4444);
+  color: #fff;
+}
+
+/* ---------- Game screen ---------- */
+.game-screen.hidden,
+.win-overlay.hidden,
+.level-screen.hidden {
+  display: none !important;
+}
+
+.game-screen {
+  padding: 0.5rem 0 2rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(135deg, #e94560, #ff6b6b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #a0a0b0;
+  min-width: 3.5rem;
+}
+
+.level-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  padding: 0.25rem 0.6rem;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #c0c0d0;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #e94560;
+  color: #fff;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background: #ff6b6b;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #a0a0b0;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e8e8;
+}
+
+.btn-large {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+}
+
+/* ---------- Board ---------- */
+.game-container {
+  position: relative;
+}
+
+.board-wrapper {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.board {
+  display: grid;
+  aspect-ratio: 1;
+  max-width: 100%;
+  margin: 0 auto;
+  border: 2px solid #e94560;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0d0d1a;
+}
+
+.board-4 { grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); }
+.board-6 { grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); }
+.board-9 { grid-template-columns: repeat(9, 1fr); grid-template-rows: repeat(9, 1fr); }
+
+.cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.85rem, 4vw, 1.25rem);
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+  transition: background 0.15s;
+  min-height: 0;
+}
+
+.cell.given {
+  background: rgba(233, 69, 96, 0.12);
+  color: #ff8a9e;
+  cursor: default;
+}
+
+.cell.user {
+  color: #e8e8e8;
+}
+
+.cell.selected {
+  background: rgba(233, 69, 96, 0.35);
+  outline: 2px solid #e94560;
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+.cell.same-number {
+  background: rgba(233, 69, 96, 0.2);
+}
+
+.cell.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* Box borders (set by JS: .cell-edge-r, .cell-edge-b) */
+.cell.cell-edge-r {
+  border-right-width: 2px;
+  border-right-color: rgba(255, 255, 255, 0.2);
+}
+
+.cell.cell-edge-b {
+  border-bottom-width: 2px;
+  border-bottom-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- Number pad ---------- */
+.number-pad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.num-btn {
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.65rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e8e8e8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background 0.15s, transform 0.1s;
+}
+
+.num-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.num-btn:active {
+  transform: scale(0.96);
+}
+
+.num-btn-clear {
+  grid-column: span 2;
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.num-btn-clear:hover {
+  background: rgba(239, 68, 68, 0.35);
+}
+
+/* ---------- Win overlay ---------- */
+.win-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1rem;
+}
+
+.win-box {
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+}
+
+.win-box h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+  color: #e8e8e8;
+}
+
+.win-time {
+  margin: 0 0 1.5rem;
+  color: #a0a0b0;
+  font-size: 1rem;
+}
+
+@media (min-width: 420px) {
+  .board .cell {
+    font-size: 1.15rem;
+  }
+}
+  </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Level selection screen -->
+      <div id="levelScreen" class="level-screen">
+        <h1>Sudoku</h1>
+        <p>Choose difficulty</p>
+        <div class="level-buttons">
+          <button type="button" data-level="easy" class="level-btn">Easy</button>
+          <button type="button" data-level="medium" class="level-btn">Medium</button>
+          <button type="button" data-level="hard" class="level-btn">Hard</button>
+        </div>
+      </div>
+
+      <!-- Game screen -->
+      <div id="gameScreen" class="game-screen hidden">
+        <header class="header">
+          <h1>Sudoku</h1>
+          <div class="toolbar">
+            <span class="timer" id="timer">0:00</span>
+            <span class="level-badge" id="levelBadge">Easy</span>
+            <button type="button" id="newGameBtn" class="btn">New Game</button>
+            <button type="button" id="changeLevelBtn" class="btn btn-ghost">Change Level</button>
+          </div>
+        </header>
+
+        <main class="game-container">
+          <div class="board-wrapper">
+            <div id="board" class="board"></div>
+          </div>
+          <div class="number-pad" id="numberPad">
+            <button type="button" class="num-btn" data-num="1">1</button>
+            <button type="button" class="num-btn" data-num="2">2</button>
+            <button type="button" class="num-btn" data-num="3">3</button>
+            <button type="button" class="num-btn" data-num="4">4</button>
+            <button type="button" class="num-btn" data-num="5">5</button>
+            <button type="button" class="num-btn" data-num="6">6</button>
+            <button type="button" class="num-btn" data-num="7">7</button>
+            <button type="button" class="num-btn" data-num="8">8</button>
+            <button type="button" class="num-btn" data-num="9">9</button>
+            <button type="button" class="num-btn num-btn-clear" data-num="0">Clear</button>
+          </div>
+        </main>
+
+        <div id="winOverlay" class="win-overlay hidden">
+          <div class="win-box">
+            <h2>You solved it!</h2>
+            <p class="win-time" id="winTime">Time: 0:00</p>
+            <button type="button" id="playAgainBtn" class="btn btn-large">Play Again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+  
+  <script>
+(function () {
+  "use strict";
+
+  // Level: grid size, box dimensions, and clue count range
+  // Easy: no box/region check (row + column only); Medium/Hard: full Sudoku with boxes
+  const LEVEL_CONFIG = {
+    easy:   { size: 4, boxRows: 2, boxCols: 2, cluesMin: 8,  cluesMax: 10, checkBox: false },
+    medium: { size: 6, boxRows: 2, boxCols: 3, cluesMin: 18, cluesMax: 22, checkBox: true },
+    hard:   { size: 9, boxRows: 3, boxCols: 3, cluesMin: 25, cluesMax: 28, checkBox: true },
+  };
+
+  const LEVEL_LABELS = { easy: "Easy (4×4)", medium: "Medium (6×6)", hard: "Hard (9×9)" };
+
+  let state = {
+    level: "easy",
+    size: 4,
+    boxRows: 2,
+    boxCols: 2,
+    checkBox: false,  // easy: row+column only; medium/hard: also box
+    solution: null,
+    puzzle: null,
+    given: null,
+    selectedCell: null,
+    startTime: null,
+    timerId: null,
+    cells: [],
+  };
+
+  const levelScreen = document.getElementById("levelScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const boardEl = document.getElementById("board");
+  const timerEl = document.getElementById("timer");
+  const levelBadge = document.getElementById("levelBadge");
+  const winOverlay = document.getElementById("winOverlay");
+  const winTimeEl = document.getElementById("winTime");
+  const numberPadEl = document.getElementById("numberPad");
+
+  function createEmptyGrid(size) {
+    return Array.from({ length: size }, () => Array(size).fill(0));
+  }
+
+  function isValid(grid, row, col, num, size, boxRows, boxCols, checkBox) {
+    for (let c = 0; c < size; c++) if (grid[row][c] === num) return false;
+    for (let r = 0; r < size; r++) if (grid[r][col] === num) return false;
+    if (checkBox && boxRows > 0 && boxCols > 0) {
+      const br = Math.floor(row / boxRows) * boxRows;
+      const bc = Math.floor(col / boxCols) * boxCols;
+      for (let r = br; r < br + boxRows; r++)
+        for (let c = bc; c < bc + boxCols; c++)
+          if (grid[r][c] === num) return false;
+    }
+    return true;
+  }
+
+  function solve(grid, size, boxRows, boxCols, checkBox) {
+    const maxNum = size;
+    const nums = Array.from({ length: maxNum }, (_, i) => i + 1).sort(() => Math.random() - 0.5);
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        if (grid[r][c] !== 0) continue;
+        for (const num of nums) {
+          if (!isValid(grid, r, c, num, size, boxRows, boxCols, checkBox)) continue;
+          grid[r][c] = num;
+          if (solve(grid, size, boxRows, boxCols, checkBox)) return true;
+          grid[r][c] = 0;
+        }
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function generateFullGrid(size, boxRows, boxCols, checkBox) {
+    const grid = createEmptyGrid(size);
+    solve(grid, size, boxRows, boxCols, checkBox);
+    return grid;
+  }
+
+  function getShuffledIndices(size) {
+    const indices = [];
+    for (let r = 0; r < size; r++)
+      for (let c = 0; c < size; c++) indices.push({ r, c });
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    return indices;
+  }
+
+  function createPuzzle(level) {
+    const { size, boxRows, boxCols, cluesMin, cluesMax, checkBox } = LEVEL_CONFIG[level];
+    const solution = generateFullGrid(size, boxRows, boxCols, checkBox);
+    const cluesCount = cluesMin + Math.floor(Math.random() * (cluesMax - cluesMin + 1));
+    const total = size * size;
+    const toRemove = total - cluesCount;
+    const puzzle = solution.map((row) => row.slice());
+    const given = puzzle.map((row) => row.map(() => false));
+    const indices = getShuffledIndices(size);
+    for (let k = 0; k < toRemove; k++) {
+      const { r, c } = indices[k];
+      puzzle[r][c] = null;
+      given[r][c] = false;
+    }
+    for (let r = 0; r < size; r++)
+      for (let c = 0; c < size; c++)
+        if (puzzle[r][c] !== null) given[r][c] = true;
+    return { solution, puzzle, given };
+  }
+
+  function flatIndex(r, c) {
+    return r * state.size + c;
+  }
+
+  function updateCellUI(index, value, isError, isSameNumber) {
+    const cell = state.cells[index];
+    if (!cell) return;
+    const r = Math.floor(index / state.size), c = index % state.size;
+    const isGiven = state.given[r][c];
+    cell.textContent = value !== null && value !== "" ? value : "";
+    cell.classList.remove("user", "given", "error", "same-number");
+    if (isGiven) cell.classList.add("given");
+    else cell.classList.add("user");
+    if (isError) cell.classList.add("error");
+    if (isSameNumber) cell.classList.add("same-number");
+  }
+
+  function getCurrentGrid() {
+    const grid = state.puzzle.map((row) => row.slice());
+    const total = state.size * state.size;
+    for (let i = 0; i < total; i++) {
+      const r = Math.floor(i / state.size), c = i % state.size;
+      if (state.given[r][c]) continue;
+      const val = state.cells[i] && state.cells[i].textContent.trim();
+      grid[r][c] = val === "" ? null : parseInt(val, 10);
+    }
+    return grid;
+  }
+
+  function getConflicts(grid, row, col) {
+    const num = grid[row][col];
+    const maxNum = state.size;
+    if (num == null || isNaN(num) || num < 1 || num > maxNum) return { error: false, same: [] };
+    const same = [];
+    for (let c = 0; c < state.size; c++) {
+      if (c !== col && grid[row][c] === num) same.push(flatIndex(row, c));
+    }
+    for (let r = 0; r < state.size; r++) {
+      if (r !== row && grid[r][col] === num) same.push(flatIndex(r, col));
+    }
+    if (state.checkBox && state.boxRows > 0 && state.boxCols > 0) {
+      const br = Math.floor(row / state.boxRows) * state.boxRows;
+      const bc = Math.floor(col / state.boxCols) * state.boxCols;
+      for (let r = br; r < br + state.boxRows; r++) {
+        for (let c = bc; c < bc + state.boxCols; c++) {
+          if ((r !== row || c !== col) && grid[r][c] === num)
+            same.push(flatIndex(r, c));
+        }
+      }
+    }
+    return { error: same.length > 0, same };
+  }
+
+  function refreshBoardHighlights() {
+    const grid = getCurrentGrid();
+    const total = state.size * state.size;
+    for (let i = 0; i < total; i++) {
+      const r = Math.floor(i / state.size), c = i % state.size;
+      const { error, same } = getConflicts(grid, r, c);
+      const val = grid[r][c];
+      updateCellUI(i, val !== null ? String(val) : "", error, same.length > 0);
+    }
+  }
+
+  function isComplete() {
+    const grid = getCurrentGrid();
+    for (let r = 0; r < state.size; r++) {
+      for (let c = 0; c < state.size; c++) {
+        if (grid[r][c] == null) return false;
+        const { error } = getConflicts(grid, r, c);
+        if (error) return false;
+      }
+    }
+    return true;
+  }
+
+  function checkWin() {
+    if (!isComplete()) return;
+    stopTimer();
+    winTimeEl.textContent = "Time: " + timerEl.textContent;
+    winOverlay.classList.remove("hidden");
+  }
+
+  function buildBoard() {
+    const { size, boxRows, boxCols } = state;
+    boardEl.innerHTML = "";
+    boardEl.className = "board board-" + size;
+    boardEl.style.gridTemplateColumns = "repeat(" + size + ", 1fr)";
+    boardEl.style.gridTemplateRows = "repeat(" + size + ", 1fr)";
+    state.cells = [];
+    for (let r = 0; r < size; r++) {
+      for (let c = 0; c < size; c++) {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        const edgeRight = (c + 1) % boxCols === 0;
+        const edgeBottom = (r + 1) % boxRows === 0;
+        if (edgeRight) cell.classList.add("cell-edge-r");
+        if (edgeBottom) cell.classList.add("cell-edge-b");
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        const val = state.puzzle[r][c];
+        if (state.given[r][c]) {
+          cell.textContent = val;
+          cell.classList.add("given");
+        } else {
+          cell.classList.add("user");
+        }
+        cell.addEventListener("click", () => selectCell(r, c));
+        boardEl.appendChild(cell);
+        state.cells.push(cell);
+      }
+    }
+  }
+
+  function updateNumberPad() {
+    const size = state.size;
+    const buttons = numberPadEl.querySelectorAll(".num-btn[data-num]");
+    buttons.forEach((btn) => {
+      const num = parseInt(btn.dataset.num, 10);
+      if (num === 0) {
+        btn.style.display = ""; // Clear always visible
+        return;
+      }
+      btn.style.display = num <= size ? "" : "none";
+    });
+    numberPadEl.style.gridTemplateColumns = size <= 4 ? "repeat(3, 1fr)" : "repeat(5, 1fr)";
+  }
+
+  function selectCell(r, c) {
+    if (state.given[r][c]) return;
+    state.cells.forEach((cell) => cell.classList.remove("selected"));
+    state.selectedCell = { r, c };
+    state.cells[flatIndex(r, c)].classList.add("selected");
+  }
+
+  function findNextSelectableCell(r, c, direction) {
+    const size = state.size;
+    if (direction === "up") {
+      for (let nr = r - 1; nr >= 0; nr--) if (!state.given[nr][c]) return { r: nr, c };
+    } else if (direction === "down") {
+      for (let nr = r + 1; nr < size; nr++) if (!state.given[nr][c]) return { r: nr, c };
+    } else if (direction === "left") {
+      for (let nc = c - 1; nc >= 0; nc--) if (!state.given[r][nc]) return { r, c: nc };
+    } else if (direction === "right") {
+      for (let nc = c + 1; nc < size; nc++) if (!state.given[r][nc]) return { r, c: nc };
+    }
+    return null;
+  }
+
+  function setCellValue(r, c, num) {
+    if (state.given[r][c]) return;
+    const maxNum = state.size;
+    if (num !== 0 && (num < 1 || num > maxNum)) return;
+    const i = flatIndex(r, c);
+    state.cells[i].textContent = num === 0 ? "" : num;
+    refreshBoardHighlights();
+    checkWin();
+  }
+
+  function startTimer() {
+    state.startTime = Date.now();
+    state.timerId = setInterval(() => {
+      const sec = Math.floor((Date.now() - state.startTime) / 1000);
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      timerEl.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (state.timerId) clearInterval(state.timerId);
+    state.timerId = null;
+  }
+
+  function startGame(level) {
+    state.level = level;
+    const config = LEVEL_CONFIG[level];
+    state.size = config.size;
+    state.boxRows = config.boxRows;
+    state.boxCols = config.boxCols;
+    state.checkBox = config.checkBox;
+    const { solution, puzzle, given } = createPuzzle(level);
+    state.solution = solution;
+    state.puzzle = puzzle;
+    state.given = given;
+    state.selectedCell = null;
+    stopTimer();
+    timerEl.textContent = "0:00";
+    levelBadge.textContent = LEVEL_LABELS[level];
+    winOverlay.classList.add("hidden");
+    buildBoard();
+    updateNumberPad();
+    refreshBoardHighlights();
+    startTimer();
+  }
+
+  function showGame() {
+    levelScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+  }
+
+  function showLevelSelect() {
+    gameScreen.classList.add("hidden");
+    levelScreen.classList.remove("hidden");
+    winOverlay.classList.add("hidden");
+  }
+
+  document.querySelectorAll(".level-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const level = btn.dataset.level;
+      startGame(level);
+      showGame();
+    });
+  });
+
+  document.getElementById("newGameBtn").addEventListener("click", () => {
+    startGame(state.level);
+  });
+
+  document.getElementById("changeLevelBtn").addEventListener("click", () => {
+    stopTimer();
+    showLevelSelect();
+  });
+
+  document.getElementById("playAgainBtn").addEventListener("click", () => {
+    winOverlay.classList.add("hidden");
+    startGame(state.level);
+  });
+
+  numberPadEl.addEventListener("click", (e) => {
+    const btn = e.target.closest(".num-btn");
+    if (!btn || !state.selectedCell) return;
+    const num = parseInt(btn.dataset.num, 10);
+    setCellValue(state.selectedCell.r, state.selectedCell.c, num);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!state.selectedCell) return;
+    const r = state.selectedCell.r, c = state.selectedCell.c;
+    const maxNum = state.size;
+    if (e.key >= "1" && e.key <= "9") {
+      const n = parseInt(e.key, 10);
+      if (n <= maxNum) setCellValue(r, c, n);
+      e.preventDefault();
+    } else if (e.key === "Backspace" || e.key === "Delete") {
+      setCellValue(r, c, 0);
+      e.preventDefault();
+    } else if (e.key === "ArrowUp") {
+      const next = findNextSelectableCell(r, c, "up");
+      if (next) selectCell(next.r, next.c);
+      e.preventDefault();
+    } else if (e.key === "ArrowDown") {
+      const next = findNextSelectableCell(r, c, "down");
+      if (next) selectCell(next.r, next.c);
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft") {
+      const next = findNextSelectableCell(r, c, "left");
+      if (next) selectCell(next.r, next.c);
+      e.preventDefault();
+    } else if (e.key === "ArrowRight") {
+      const next = findNextSelectableCell(r, c, "right");
+      if (next) selectCell(next.r, next.c);
+      e.preventDefault();
+    }
+  });
+})();
+  </script>
+  </body>
+</html>
+

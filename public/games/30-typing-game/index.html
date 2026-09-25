@@ -1,0 +1,144 @@
+<html lang="en">
+  <head>
+  <base target="_self">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talha - Typing Challenge</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha --> 
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg">
+    
+  
+  <style>
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.container {
+  width: 70%;
+  padding: 10px;
+}
+
+.main {
+  text-align: center;
+  padding: 10px;
+  font-size: 2em;
+  border: 3px solid white;
+}
+
+.typingArea {
+  width: 100%;
+  height: 350px;
+  margin-top: 20px;
+}
+
+.btn {
+  width: 20%;
+  outline: none;
+  border: none;
+  font-size: 2em;
+  padding: 10px;
+  color: white;
+  background-color: blueviolet;
+  margin-top: 20px;
+}
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="main"></div>
+      <textarea name="words" class="typingArea"></textarea>
+      <br />
+      <button class="btn">Start</button>
+    </div>
+    
+  
+  <script>
+const main = document.querySelector(".main");
+const typeArea = document.querySelector(".typingArea");
+const btn = document.querySelector(".btn");
+
+const words = [
+  "A day in the life of programmer",
+  "What is JavaScript?",
+  "What is React?",
+  "What is Programming Language?",
+  "What's your name?",
+  "Where are you from?",
+  "This is just random word",
+  "What is Remix.js?",
+  "New Technologies",
+  "Is programming hard?",
+  "Why do you wanna become a programmer?",
+  "Which programming language you like the most?",
+  "What is Golang? and why do you wanna learn it?",
+  "What is CSS",
+];
+
+const game = {
+  start: 0,
+  end: 0,
+  user: "",
+  arrText: "",
+};
+
+btn.addEventListener("click", () => {
+  if (btn.textContent === "Start") {
+    play();
+    typeArea.value = "";
+    typeArea.disabled = false;
+  } else if (btn.textContent === "Done") {
+    typeArea.disabled = true;
+    main.style.borderColor = "white";
+    end();
+  }
+});
+
+function play() {
+  let randText = Math.floor(Math.random() * words.length);
+  main.textContent = words[randText];
+  game.arrText = words[randText];
+  main.style.borderColor = "#c8c8c8";
+  btn.textContent = "Done";
+  const duration = new Date();
+  game.start = duration.getTime(); // unix timestamp
+}
+
+function end() {
+  const duration = new Date();
+  game.end = duration.getTime();
+  const totalTime = (game.end - game.start) / 1000;
+  game.user = typeArea.value;
+  const correct = results();
+  main.style.borderColor = "white";
+  main.innerHTML = `Time: ${totalTime} Score: ${correct.score} out of ${correct.total}`;
+  btn.textContent = "Start";
+}
+
+function results() {
+  let valueOne = game.arrText.split(" ");
+  let valueTwo = game.user.split(" ");
+  let score = 0;
+  valueOne.forEach((word, idx) => {
+    if (word === valueTwo[idx]) {
+      score++;
+    }
+  });
+
+  return { score, total: valueOne.length };
+}
+  </script>
+  </body>
+</html>
+
