@@ -50,6 +50,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         <div>
           <h3>{game.title}</h3>
           <p>{game.description}</p>
+          <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>
         </div>
         <button type="button" className="play-button" onClick={onPlay}>
           Play now <ArrowRight size={16} />

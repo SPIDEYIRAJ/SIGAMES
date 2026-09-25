@@ -1,7 +1,33 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { createElement, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { ArrowLeft, Expand, Heart, Loader2, Minimize2, MonitorUp, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { games } from "@/data/games";
+
+interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
+  src: string;
+  title: string;
+  allow?: string;
+  allowFullScreen?: boolean;
+  loading: boolean;
+  onLoad: () => void;
+  onError: () => void;
+}
+
+function GameFrame({ src, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
+  return createElement(
+    "iframe",
+    {
+      src,
+      title,
+      allow,
+      allowFullScreen,
+      target: "_self",
+      loading: loading ? "lazy" : undefined,
+      onLoad,
+      onError,
+    } as unknown as GameFrameProps
+  );
+}
 
 function readFavorites(): string[] {
   try {
@@ -137,14 +163,14 @@ export default function GamePlayer() {
         <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`}>
           {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
           <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-          <iframe src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad" allowFullScreen onLoad={() => { setLoading(false); setFrameFailed(false); setShowRecovery(false); }} onError={() => { setLoading(false); setFrameFailed(true); }} />
+          <GameFrame src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad" allowFullScreen loading={loading} onLoad={() => { setLoading(false); setFrameFailed(false); setShowRecovery(false); }} onError={() => { setLoading(false); setFrameFailed(true); }} />
           <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
         </section>
-        {(frameFailed || showRecovery) && <div className="frame-recovery" role="status"><span>{frameFailed ? "This destination did not load inside the player." : "Still loading? Some destinations need a direct window."}</span><a href={game.sourceUrl} target="_blank" rel="noreferrer">Open destination <Expand size={14} /></a></div>}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><a className="open-external" href={game.sourceUrl} target="_blank" rel="noreferrer">Open destination <Expand size={15} /></a></div>
-        <p className="player-disclaimer">SI GAMES launches external destinations and does not control their content or availability.</p>
+        {(frameFailed || showRecovery) && <div className="frame-recovery" role="status"><span>{frameFailed ? "This destination did not load inside the player." : "Still loading? Some destinations need a direct window."}</span><a href={game.sourceUrl} target="_self" rel="noreferrer">Open destination <Expand size={14} /></a></div>}
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open destination <Expand size={15} /></a></div>
+        <p className="player-disclaimer player-disclaimer--heavy">SI GAMES launches external destinations and does not control their content or availability. The four games we ship are heavily optimized, so they may lag on slower devices.</p>
       </main>
-      {showExtension && <div className="extension-backdrop"><div className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description"><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">This browser game may require the SI GAMES browser extension for its full experience. You can also continue and try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_blank" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div></div></div>}
+      {showExtension && <div className="extension-backdrop"><div className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description"><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">This browser game may require the SI GAMES browser extension for its full experience. You can also continue and try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div></div></div>}
     </div>
   );
 }
