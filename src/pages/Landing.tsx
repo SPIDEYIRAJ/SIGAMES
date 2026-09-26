@@ -43,14 +43,14 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         </button>
         <div className="art-bottomline">
           <span className="game-index">{String(games.indexOf(game) + 1).padStart(2, "0")}</span>
-          <span className="art-type">{game.type === "iframe" ? "Browser ready" : "External game"}</span>
+          <span className="art-type">{game.htmlGame ? "HTML browser game" : game.type === "iframe" ? "Browser ready" : "External game"}</span>
         </div>
       </div>
       <div className="game-card-body">
         <div>
           <h3>{game.title}</h3>
           <p>{game.description}</p>
-          {game.heavy && <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>}
+          {game.htmlGame ? <p className="game-card-note game-card-note--html">HTML game · gameplay may be rough, buggy, or unfinished.</p> : game.heavy && <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>}
         </div>
         <button type="button" className="play-button" onClick={onPlay}>
           Play now <ArrowRight size={16} />
@@ -229,7 +229,7 @@ export default function Landing() {
 
         <section className="library-section content-section" id="library">
           <div className="section-heading">
-            <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>{games.length} ways to pause the world and play.</p><p className="library-note">Most titles run instantly inside SI GAMES. The four heavy ones are flagged and can lag on slower devices.</p></div>
+            <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>{games.length} ways to pause the world and play.</p><p className="library-note">The {games.filter((game) => game.htmlGame).length} HTML titles are lightweight browser games, but gameplay may be rough, buggy, or unfinished. Heavy external titles are flagged separately.</p></div>
             <span className="section-count" aria-live="polite">{filteredGames.length.toString().padStart(2, "0")} titles</span>
           </div>
           <div className="library-toolbar">

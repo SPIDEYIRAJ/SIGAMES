@@ -8,6 +8,8 @@ export type Game = {
   thumbnail: string;
   sourceUrl: string;
   type: "iframe" | "external";
+  /** True for the locally hosted HTML browser games added from the source packet. */
+  htmlGame?: boolean;
   heavy?: boolean;
   extensionNotice?: boolean;
   extensionUrl?: string;
@@ -215,6 +217,7 @@ export const games: Game[] = [
       thumbnail: cover(index + 1),
       sourceUrl: `/games/${id}/index.html`,
       type: "iframe",
+      htmlGame: true,
     };
   }),
 ];
