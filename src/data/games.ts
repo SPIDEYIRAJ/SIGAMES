@@ -10,6 +10,8 @@ export type Game = {
   type: "iframe" | "external";
   /** True for the locally hosted HTML browser games added from the source packet. */
   htmlGame?: boolean;
+  /** Marks a freshly added title in the library. */
+  isNew?: boolean;
   heavy?: boolean;
   extensionNotice?: boolean;
   extensionUrl?: string;
@@ -48,6 +50,7 @@ function cover(seed: number): string {
 type LocalGame = [title: string, category: string, tags: string[], description: string, controls: string];
 
 const localGames: LocalGame[] = [
+  ["Starfighter SI-01", "Action", ["Shooter", "Space", "Original"], "Fly the SI-01 through the debris belt and hold your line as long as you can.", "Move with the arrow keys or the mouse, fire with Space or click. Every cleared wave raises the stakes."],
   ["Candy Crush", "Puzzle", ["Match 3", "Casual"], "Swap candies and clear the board in endless or timed mode.", "Click or tap two adjacent candies to swap them. Match three or more in a row to clear them."],
   ["Pac-Man", "Arcade", ["Maze", "Classic"], "Clear every dot on the maze while the ghosts hunt you down.", "Use the arrow keys or W A S D to steer. Eat the power pellet to turn the tables on the ghosts."],
   ["Chess", "Puzzle", ["Strategy", "Classic"], "The full board game against a built-in opponent.", "Click a piece to select it, then click a highlighted square to move. Castling and promotion are supported."],
@@ -102,6 +105,7 @@ const localGames: LocalGame[] = [
 
 // Directory names under public/games, in the same order as localGames above.
 const localSlugs = [
+  "51-starfighter-si-01",
   "01-candy-crush-game",
   "02-pac-man-game",
   "03-chess-game",
@@ -218,6 +222,7 @@ export const games: Game[] = [
       sourceUrl: `/games/${id}/index.html`,
       type: "iframe",
       htmlGame: true,
+      isNew: id === "51-starfighter-si-01",
     };
   }),
 ];

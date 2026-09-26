@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import {
+  AlertTriangle,
   ArrowRight,
   ArrowUp,
   Clock3,
@@ -13,6 +14,15 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { categories, games, type Game } from "@/data/games";
+
+const PAGE_SIZE = 18;
+const SORTS = [
+  { value: "featured", label: "Featured" },
+  { value: "az", label: "A to Z" },
+  { value: "za", label: "Z to A" },
+] as const;
+
+type SortValue = (typeof SORTS)[number]["value"];
 
 function readStoredGames(key: string): string[] {
   try {
@@ -38,6 +48,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         <img src={game.thumbnail} alt="" loading="lazy" />
         <div className="art-shade" />
         <span className="category-pill">{game.category}</span>
+        {game.isNew && <span className="new-pill">New</span>}
         <button type="button" className={`favorite-button ${favorite ? "is-favorite" : ""}`} onClick={onFavorite} aria-label={favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}>
           <Heart size={17} fill={favorite ? "currentColor" : "none"} />
         </button>
@@ -46,8 +57,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
           <span className="art-type">{game.htmlGame ? "HTML browser game" : game.type === "iframe" ? "Browser ready" : "External game"}</span>
         </div>
       </div>
-      <div className="game-card-body">
-        <div>
+      <div className="game-card-body">          <div>
           <h3>{game.title}</h3>
           <p>{game.description}</p>
           {game.htmlGame ? <p className="game-card-note game-card-note--html">HTML game · gameplay may be rough, buggy, or unfinished.</p> : game.heavy && <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>}
@@ -64,12 +74,16 @@ export default function Landing() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All Games");
+  const [sortBy, setSortBy] = useState<SortValue>("featured");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recent, setRecent] = useState<string[]>([]);
   const [toast, setToast] = useState("");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const htmlCount = useMemo(() => games.filter((game) => game.htmlGame).length, []);
+  const heavyCount = useMemo(() => games.filter((game) => game.heavy).length, []);
 
   useEffect(() => {
     setFavorites(readStoredGames("si-games-favorites"));
@@ -81,6 +95,10 @@ export default function Landing() {
     const timeout = window.setTimeout(() => setToast(""), 2200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
+
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [query, category, sortBy]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -121,12 +139,18 @@ export default function Landing() {
 
   const filteredGames = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    return games.filter((game) => {
+    const matches = games.filter((game) => {
       const matchesCategory = category === "All Games" || game.category === category || game.tags.includes(category);
       const searchable = [game.title, game.category, game.description, ...game.tags].join(" ").toLowerCase();
       return matchesCategory && (!normalized || searchable.includes(normalized));
     });
-  }, [category, query]);
+    if (sortBy === "az") return [...matches].sort((a, b) => a.title.localeCompare(b.title));
+    if (sortBy === "za") return [...matches].sort((a, b) => b.title.localeCompare(a.title));
+    return matches;
+  }, [category, query, sortBy]);
+
+  const visibleGames = filteredGames.slice(0, visibleCount);
+  const remainingCount = filteredGames.length - visibleGames.length;
 
   const favoriteGames = games.filter((game) => favorites.includes(game.id));
   const recentGames = recent.map((id) => games.find((game) => game.id === id)).filter((game): game is Game => Boolean(game)).slice(0, 3);
@@ -229,14 +253,22 @@ export default function Landing() {
 
         <section className="library-section content-section" id="library">
           <div className="section-heading">
-            <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>{games.length} ways to pause the world and play.</p><p className="library-note">The {games.filter((game) => game.htmlGame).length} HTML titles are lightweight browser games, but gameplay may be rough, buggy, or unfinished. Heavy external titles are flagged separately.</p></div>
+            <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>{games.length} ways to pause the world and play.</p></div>
             <span className="section-count" aria-live="polite">{filteredGames.length.toString().padStart(2, "0")} titles</span>
           </div>
+          <div className="truth-band">
+            <AlertTriangle size={18} />
+            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. Every game opens inside SI GAMES, in this same frame.</p>
+          </div>
           <div className="library-toolbar">
-            <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
+            <div className="toolbar-row">
+              <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
+              <label className="sort-box" htmlFor="game-sort"><span>Sort</span><select id="game-sort" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortValue)}>{SORTS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+            </div>
             <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button type="button" role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
           </div>
-          {filteredGames.length > 0 ? <div className="game-grid">{filteredGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { setQuery(""); setCategory("All Games"); }}>Reset library</button></div>}
+          {visibleGames.length > 0 ? <div className="game-grid">{visibleGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { setQuery(""); setCategory("All Games"); }}>Reset library</button></div>}
+          {remainingCount > 0 && <div className="load-more"><button type="button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>Load {Math.min(PAGE_SIZE, remainingCount)} more <ArrowRight size={15} /></button><span>{remainingCount} still in the hangar</span></div>}
         </section>
 
         <section className="favorites-section content-section" id="favorites">
@@ -245,7 +277,13 @@ export default function Landing() {
         </section>
 
         <section className="about-section content-section" id="about">
-          <div className="about-card"><div className="about-mark">✦</div><div><span className="section-kicker">THE SI GAMES PROMISE</span><h2>Less noise. More play.</h2><p>SI GAMES is a personal browser-game launcher made for discovering a good time without the usual internet clutter. Games open from their original destinations, and the experience stays focused on the fun.</p></div><div className="about-stamp">PLAY<br /><span>•</span> DISCOVER<br /><span>•</span> ENJOY</div></div>
+          <div className="about-card"><div className="about-mark">✦</div><div><span className="section-kicker">THE SI GAMES PROMISE</span><h2>Less noise. More play.</h2><p>SI GAMES is a personal browser-game launcher made for discovering a good time without the usual internet clutter. Every game opens inside this site, in the same frame, and the experience stays focused on the fun.</p></div><div className="about-stamp">PLAY<br /><span>•</span> DISCOVER<br /><span>•</span> ENJOY</div></div>
+          <div className="notes-grid">
+            <div className="note-card"><AlertTriangle size={16} /><h3>The HTML titles</h3><p>{htmlCount} of the games here are plain HTML, CSS and JavaScript builds. That keeps them fast and self-contained, but the gameplay can be rough, buggy or unfinished in places.</p></div>
+            <div className="note-card"><Zap size={16} /><h3>The heavy titles</h3><p>{heavyCount} older favourites come from outside and are much bigger. They can lag on slower devices, and some refuse to run inside a frame. Those are flagged on the card.</p></div>
+            <div className="note-card"><Heart size={16} /><h3>What we keep out</h3><p>No adverts inside the hub, no new tabs, no visible links. Favourites and your recent games stay in this browser only, and there is nothing to sign up for.</p></div>
+          </div>
+          <p className="signature-line">Built and kept alive by <span>////SPIDEY_IRAJ////</span></p>
         </section>
       </main>
 

@@ -317,7 +317,38 @@ body { color-scheme: dark; }
 @media (prefers-reduced-motion: reduce) { .space-starfield { opacity: .55; } }
 
 /* SI GAMES // finishing controls and recovery states */
-:root { scrollbar-color: #46558f #070a18; }
+:root { scrollbar-color: #46558f #070a18; scrollbar-width: thin; } /* si-games-library-pass */
+
+/* SI GAMES // library honesty band, sorting and load more */
+.truth-band { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 24px; border: 1px solid rgba(255, 148, 122, .22); border-left: 2px solid rgba(255, 148, 122, .55); border-radius: 10px; padding: 13px 15px; color: #9ba6c9; background: rgba(28, 20, 46, .58); }
+.truth-band svg { flex: 0 0 auto; margin-top: 1px; color: #ff9a76; }
+.truth-band p { font-size: 11px; line-height: 1.7; }
+.truth-band b { color: #ffd0b4; font-weight: 900; }
+.new-pill { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 5px 9px; border: 1px solid rgba(255, 133, 164, .5); border-radius: 5px; color: #ffd3de; background: rgba(120, 24, 56, .72); backdrop-filter: blur(8px); font-size: 8px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; box-shadow: 0 0 14px rgba(219, 67, 113, .35); }
+.frame-recovery-actions { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+.frame-recovery-actions button { display: inline-flex; align-items: center; gap: 6px; border: 1px solid rgba(127, 148, 236, .28); border-radius: 6px; padding: 7px 10px; color: #c3cdf0; background: rgba(20, 30, 69, .8); font-size: 10px; font-weight: 900; }
+.frame-recovery-actions button:hover { border-color: rgba(143, 157, 255, .46); color: #fff; }
+.disclaimer-sign { display: inline-block; margin-left: 8px; color: rgba(255, 126, 154, .55); font-weight: 900; }
+.notes-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 20px; }
+.note-card { border: 1px solid rgba(108, 132, 219, .2); border-radius: 12px; padding: 20px; background: rgba(9, 15, 38, .6); }
+.note-card svg { color: #93a6ff; }
+.note-card h3 { margin-top: 11px; color: #e7ecff; font-size: 12px; font-weight: 900; letter-spacing: -.01em; }
+.note-card p { margin-top: 7px; color: #949fc2; font-size: 10px; line-height: 1.75; }
+.signature-line { margin-top: 26px; text-align: center; color: #6d7ba9; font-size: 9px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; }
+.signature-line span { color: rgba(255, 126, 154, .8); }
+@media (max-width: 720px) { .notes-grid { grid-template-columns: 1fr; } }
+.toolbar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.toolbar-row .search-box { flex: 1 1 260px; }
+.sort-box { display: inline-flex; align-items: center; gap: 9px; height: 48px; border: 1px solid rgba(111, 135, 220, .24); border-radius: 8px; padding: 0 12px; color: #8b98c4; background: rgba(8, 15, 38, .8); box-shadow: 0 0 20px rgba(65, 92, 205, .1), inset 0 0 18px rgba(34, 58, 128, .18); }
+.sort-box span { font-size: 9px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; }
+.sort-box select { border: 0; outline: 0; color: #dbe3ff; background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; }
+.sort-box select option { color: #e9eeff; background: #0d1533; }
+.load-more { display: flex; flex-direction: column; align-items: center; gap: 9px; margin-top: 34px; }
+.load-more button { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(145, 154, 255, .34); border-radius: 8px; padding: 13px 24px; color: #fff; background: linear-gradient(110deg, #5149b6, #a63a72); box-shadow: 0 0 20px rgba(117, 75, 215, .22); font-size: 11px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; transition: transform .2s, box-shadow .2s; }
+.load-more button:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(214, 72, 122, .3); }
+.load-more span { color: #6b7aab; font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+.game-grid .game-card { content-visibility: auto; contain-intrinsic-size: 340px; }
+@media (max-width: 720px) { .truth-band { padding: 11px 12px; }.truth-band p { font-size: 10px; }.sort-box { flex: 1 1 auto; justify-content: space-between; } }
 :focus-visible { outline: 2px solid #9eb1ff; outline-offset: 3px; }
 button:focus-visible, a:focus-visible, input:focus-visible { outline-color: #b9c5ff; }
 .skip-link { position: fixed; z-index: 500; top: 10px; left: 14px; transform: translateY(-150%); border: 1px solid rgba(156, 175, 255, .5); border-radius: 7px; padding: 9px 12px; color: #f1f4ff; background: #121d47; font-size: 11px; font-weight: 900; transition: transform .2s; }

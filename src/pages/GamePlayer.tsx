@@ -1,5 +1,5 @@
-import { createElement, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Expand, Heart, Loader2, Minimize2, MonitorUp, X } from "lucide-react";
+import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { ArrowLeft, Expand, Heart, Loader2, Minimize2, MonitorUp, RotateCcw, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { games } from "@/data/games";
 
@@ -23,6 +23,7 @@ function GameFrame({ src, title, allow, allowFullScreen, loading, onLoad, onErro
       allowFullScreen,
       target: "_self",
       loading: loading ? "lazy" : undefined,
+      referrerPolicy: "no-referrer",
       onLoad,
       onError,
     } as unknown as GameFrameProps
@@ -49,8 +50,16 @@ export default function GamePlayer() {
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [frameFailed, setFrameFailed] = useState(false);
   const [showRecovery, setShowRecovery] = useState(false);
+  const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLElement>(null);
+
+  const reload = useCallback(() => {
+    setLoading(true);
+    setFrameFailed(false);
+    setShowRecovery(false);
+    setFrameKey((key) => key + 1);
+  }, []);
 
   useEffect(() => {
     setFavorites(readFavorites());
@@ -94,7 +103,7 @@ export default function GamePlayer() {
     localStorage.setItem("si-games-favorites", JSON.stringify(next));
   };
 
-  const toggleFullscreen = async () => {
+  const toggleFullscreen = useCallback(async () => {
     if (document.fullscreenElement) {
       setIsImmersive(false);
       await document.exitFullscreen().catch(() => undefined);
@@ -126,7 +135,17 @@ export default function GamePlayer() {
     }
 
     setIsImmersive(true);
-  };
+  }, [isImmersive]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (document.fullscreenElement) return;
+      setIsImmersive(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
@@ -155,20 +174,20 @@ export default function GamePlayer() {
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
-        <div className="player-actions"><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={toggleFullscreen} aria-label={isNativeFullscreen || isImmersive ? "Exit fullscreen gameplay" : "Enter fullscreen gameplay"}>{isNativeFullscreen || isImmersive ? <Minimize2 size={18} /> : <Expand size={18} />}</button><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
+        <div className="player-actions"><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button><button className="player-icon-button" onClick={toggleFullscreen} aria-label={isNativeFullscreen || isImmersive ? "Exit fullscreen gameplay" : "Enter fullscreen gameplay"}>{isNativeFullscreen || isImmersive ? <Minimize2 size={18} /> : <Expand size={18} />}</button><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
       </header>
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`}>
+        <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
           {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
           <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-          <GameFrame src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad" allowFullScreen loading={loading} onLoad={() => { setLoading(false); setFrameFailed(false); setShowRecovery(false); }} onError={() => { setLoading(false); setFrameFailed(true); }} />
+          <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => { setLoading(false); setFrameFailed(false); setShowRecovery(false); }} onError={() => { setLoading(false); setFrameFailed(true); }} />
           <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
         </section>
-        {(frameFailed || showRecovery) && <div className="frame-recovery" role="status"><span>{frameFailed ? "This destination did not load inside the player." : "Still loading? Some destinations need a direct window."}</span><a href={game.sourceUrl} target="_self" rel="noreferrer">Open destination <Expand size={14} /></a></div>}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open destination <Expand size={15} /></a></div>
-        {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability.</p> : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release.</p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab.</p>}
+        {(frameFailed || showRecovery) && <div className="frame-recovery" role="status"><span>{frameFailed ? "This destination did not load inside the player." : "Still loading? Some destinations need a fresh window."}</span><div className="frame-recovery-actions"><button type="button" onClick={reload}><RotateCcw size={14} /> Reload</button><a href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={14} /></a></div></div>}
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a></div>
+        {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
       </main>
       {showExtension && <div className="extension-backdrop"><div className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description"><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">This browser game may require the SI GAMES browser extension for its full experience. You can also continue and try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div></div></div>}
     </div>

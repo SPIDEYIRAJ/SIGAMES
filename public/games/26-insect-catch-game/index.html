@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <title>Catch The Insect</title>
+    <title>SI GAMES - Insect Catcher</title>
+    <meta name="description" content="Swat the insects fast before they swarm the screen." />
 
     <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
     <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
@@ -15,7 +16,7 @@
     <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha --> 
     <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
 
-    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg">
+    <link rel="icon" href="/logo.svg">
 
   
   <style>
@@ -111,6 +112,12 @@ h1 {
   object-fit: contain;
 }
 
+.choose-insect-btn .critter {
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
+}
+
 .game-container {
   position: relative;
 }
@@ -160,9 +167,11 @@ h1 {
   cursor: pointer;
 }
 
-.insect img {
+.insect img,
+.insect svg {
   width: 100px;
   height: 100px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35));
 }
 
 .insect.caught {
@@ -179,39 +188,61 @@ h1 {
       <h1>What is your "favorite" insect?</h1>
       <ul class="insects-list">
         <li>
-          <button class="choose-insect-btn">
+          <button class="choose-insect-btn" data-name="Fly">
             <p>Fly</p>
-            <img
-              src="https://pngimg.com/uploads/fly/fly_PNG3946.png"
-              alt="fly"
-            />
+            <svg class="critter" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <ellipse cx="33" cy="40" rx="24" ry="15" fill="#dbeafe" opacity=".8" transform="rotate(-22 33 40)" />
+              <ellipse cx="67" cy="40" rx="24" ry="15" fill="#dbeafe" opacity=".8" transform="rotate(22 67 40)" />
+              <ellipse cx="50" cy="62" rx="16" ry="26" fill="#1f2937" />
+              <path d="M36 84 L30 96 M50 88 L50 98 M64 84 L70 96" stroke="#111827" stroke-width="4" stroke-linecap="round" fill="none" />
+              <circle cx="50" cy="34" r="14" fill="#334155" />
+              <circle cx="44" cy="31" r="5" fill="#f8fafc" />
+              <circle cx="56" cy="31" r="5" fill="#f8fafc" />
+              <circle cx="44" cy="31" r="2.4" fill="#0f172a" />
+              <circle cx="56" cy="31" r="2.4" fill="#0f172a" />
+            </svg>
           </button>
         </li>
         <li>
-          <button class="choose-insect-btn">
+          <button class="choose-insect-btn" data-name="Mosquito">
             <p>Mosquito</p>
-            <img
-              src="https://pngimg.com/uploads/mosquito/mosquito_PNG18175.png"
-              alt="mosquito"
-            />
+            <svg class="critter" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <ellipse cx="38" cy="38" rx="22" ry="10" fill="#e0f2fe" opacity=".75" transform="rotate(-18 38 38)" />
+              <ellipse cx="62" cy="38" rx="22" ry="10" fill="#e0f2fe" opacity=".75" transform="rotate(18 62 38)" />
+              <path d="M50 40 L50 88" stroke="#1f2937" stroke-width="7" stroke-linecap="round" />
+              <path d="M44 48 L22 34 M44 58 L16 56 M44 68 L20 80 M56 48 L78 34 M56 58 L84 56 M56 68 L80 80" stroke="#111827" stroke-width="3.4" stroke-linecap="round" fill="none" />
+              <circle cx="50" cy="32" r="11" fill="#0f172a" />
+              <path d="M45 30 L20 18 M55 30 L80 18" stroke="#0f172a" stroke-width="2.6" stroke-linecap="round" fill="none" />
+              <path d="M50 86 L50 98" stroke="#0f172a" stroke-width="3" stroke-linecap="round" />
+            </svg>
           </button>
         </li>
         <li>
-          <button class="choose-insect-btn">
+          <button class="choose-insect-btn" data-name="Spider">
             <p>Spider</p>
-            <img
-              src="https://pngimg.com/uploads/spider/spider_PNG12.png"
-              alt="spider"
-            />
+            <svg class="critter" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M42 40 L16 22 M40 50 L10 46 M40 60 L16 78 M58 40 L84 22 M60 50 L90 46 M60 60 L84 78" stroke="#1f2937" stroke-width="5" stroke-linecap="round" fill="none" />
+              <ellipse cx="50" cy="60" rx="21" ry="23" fill="#1f2937" />
+              <circle cx="50" cy="32" r="15" fill="#334155" />
+              <circle cx="44" cy="30" r="4.4" fill="#ef4444" />
+              <circle cx="56" cy="30" r="4.4" fill="#ef4444" />
+              <circle cx="44" cy="30" r="1.8" fill="#fee2e2" />
+              <circle cx="56" cy="30" r="1.8" fill="#fee2e2" />
+              <path d="M40 50 L50 46 L60 50 L50 56 Z" fill="#ef4444" opacity=".85" />
+            </svg>
           </button>
         </li>
         <li>
-          <button class="choose-insect-btn">
+          <button class="choose-insect-btn" data-name="Roach">
             <p>Roach</p>
-            <img
-              src="https://pngimg.com/uploads/roach/roach_PNG12163.png"
-              alt="roach"
-            />
+            <svg class="critter" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M40 42 L14 26 M36 54 L8 52 M38 66 L16 84 M60 42 L86 26 M64 54 L92 52 M62 66 L84 84" stroke="#3f2d1c" stroke-width="4.6" stroke-linecap="round" fill="none" />
+              <ellipse cx="50" cy="58" rx="24" ry="30" fill="#5b3a24" />
+              <path d="M50 30 L50 88" stroke="#3b2415" stroke-width="3" />
+              <path d="M42 40 Q50 34 58 40 M42 52 Q50 46 58 52 M42 64 Q50 58 58 64" stroke="#8a5a36" stroke-width="2.4" fill="none" />
+              <ellipse cx="50" cy="24" rx="14" ry="12" fill="#3b2415" />
+              <path d="M42 20 L22 6 M58 20 L78 6" stroke="#3b2415" stroke-width="2.8" stroke-linecap="round" fill="none" />
+            </svg>
           </button>
         </li>
       </ul>
@@ -236,7 +267,7 @@ const scoreElement = document.getElementById("score");
 const message = document.getElementById("message");
 let seconds = 0;
 let score = 0;
-let selectedInsect = {};
+let selectedInsect = { name: "Insect", markup: "" };
 
 startButton.addEventListener("click", () => screens[0].classList.add("up"));
 
@@ -272,9 +303,9 @@ const createInsect = () => {
   const { x, y } = getRandomLocation();
   insect.style.top = `${y}px`;
   insect.style.left = `${x}px`;
-  insect.innerHTML = `<img src="${selectedInsect.src}" 
-  alt="${selectedInsect.alt}" 
-  style="transform: rotate(${Math.random() * 360}deg)" />`;
+  insect.setAttribute("role", "img");
+  insect.setAttribute("aria-label", selectedInsect.name);
+  insect.innerHTML = `<span style="display:block;transform:rotate(${Math.round(Math.random() * 360)}deg)">${selectedInsect.markup}</span>`;
   insect.addEventListener("click", catchInsect);
   gameContainer.appendChild(insect);
 };
@@ -292,10 +323,8 @@ const startGame = () => setInterval(increaseTime, 1000);
 
 chooseInsectButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const image = button.querySelector("img");
-    const src = image.getAttribute("src");
-    const alt = image.getAttribute("alt");
-    selectedInsect = { src, alt };
+    const art = button.querySelector("svg");
+    selectedInsect = { name: button.dataset.name || "Insect", markup: art ? art.outerHTML : "" };
     screens[1].classList.add("up");
     setTimeout(createInsect, 1000);
     startGame();
