@@ -188,7 +188,7 @@ export default function Landing() {
     const next = [game.id, ...recent.filter((id) => id !== game.id)].slice(0, 6);
     setRecent(next);
     localStorage.setItem("si-games-recent", JSON.stringify(next));
-    navigate(`/play/${game.id}`);
+    navigate(game.standalone ? `/${game.id}` : `/play/${game.id}`);
   };
 
   return (

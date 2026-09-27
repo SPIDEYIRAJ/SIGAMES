@@ -321,7 +321,7 @@ function AppBootstrap() {
       <SpaceCursorTrail />
       <BrowserRouter>
         <RouteSyncer />
-        {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
+        {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/gta-vicecity" element={<GamePlayer />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
       </BrowserRouter>
       <Toaster />
     </ConvexAuthProvider>
