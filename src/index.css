@@ -714,3 +714,19 @@ body {
   border-radius: 50%;
   background: #182645; color: #3EFEFF;
 }
+
+/* Disclaimer variants */
+.player-disclaimer--html,
+.player-disclaimer--light { color: #8a97bb; }
+.player-disclaimer--html { color: #b39a6b; }
+.player-disclaimer--light { color: #7f8cab; }
+
+/* Recovery bar action button (matches the "Open in full screen" action) */
+.frame-recovery-actions button {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(86, 8, 248, .28);
+  border-radius: 6px; padding: 6px 10px;
+  background: #182645; color: #cfe3ff;
+  font-family: inherit; font-size: 10px; font-weight: 900; cursor: pointer;
+}
+.frame-recovery-actions button:hover { border-color: rgba(62, 254, 255, .4); color: #fff; background: #1e2d55; }
