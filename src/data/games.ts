@@ -181,7 +181,7 @@ export const games: Game[] = [
     description: "The SI GAMES exclusive. Built for this hub — outrun the field and own the leaderboard.",
     controls: "Arrow keys or WASD to steer, Space to brake. Hold the racing line and don't lift.",
     thumbnail: "/thumbs/the-race.svg",
-    sourceUrl: "https://cinevo-therace.netlify.app",
+    sourceUrl: "https://sitherace1925.edgeone.dev",
     type: "iframe",
     heavy: true,
     isNew: true,
