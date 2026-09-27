@@ -217,6 +217,18 @@ const localSlugs = [
 
 export const games: Game[] = [
   {
+    id: "climbing-over-it",
+    title: "Climb Over It",
+    category: "Physics",
+    tags: ["Precision", "Rage Game", "Browser Ready"],
+    description: "One hammer, one mountain, no checkpoints. Climb, slip, and start over.",
+    controls: "Move the mouse to swing the hammer and hook onto rocks. Push down to launch yourself upward. Falling loses progress — stay calm.",
+    thumbnail: "https://cinevo.es/playables/images/getting-over-it.jpg",
+    sourceUrl: "https://ubg76.gitlab.io/climbing-over-it/",
+    type: "iframe",
+    heavy: true,
+  },
+  {
     id: "gta-vicecity",
     title: "GTA Vice City",
     category: "Action",
