@@ -1,112 +1,14 @@
-/* SI GAMES — fullscreen option card shown the moment PLAY launches a game. */
+/* SI GAMES — standalone title pages (/gta-vicecity): description first, PLAY loads the frame. */
 
-.fs-prompt {
-  position: absolute;
-  z-index: 11;
-  left: 50%;
-  bottom: 22px;
-  width: min(420px, calc(100% - 32px));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 9px;
-  padding: 16px 18px;
-  border: 1px solid rgba(127, 148, 236, .34);
-  border-radius: 14px;
-  color: #d6ddfb;
-  background: rgba(9, 14, 36, .9);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, .5), 0 0 26px rgba(95, 110, 255, .2);
-  text-align: center;
-  transform: translateX(-50%);
-  animation: fs-prompt-in .34s cubic-bezier(.2, .9, .3, 1.3);
-}
-
-@keyframes fs-prompt-in {
-  from { opacity: 0; transform: translate(-50%, 18px) scale(.96); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
-}
-
-.fs-prompt-tag { color: #93a6ff; font-size: 9px; font-weight: 900; letter-spacing: .18em; }
-.fs-prompt p { color: #a9b3d8; font-size: 11px; line-height: 1.55; }
-.fs-prompt-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 9px; }
-
-.fs-prompt-go {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid rgba(255, 133, 164, .3);
-  border-radius: 8px;
-  padding: 9px 15px;
-  color: #fff;
-  background: linear-gradient(110deg, #a33b76, #db4e75);
-  box-shadow: 0 0 18px rgba(219, 67, 113, .28);
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.fs-prompt-go:hover { background: linear-gradient(110deg, #c34b7f, #f06282); box-shadow: 0 0 26px rgba(240, 86, 123, .42); }
-
-.fs-prompt-skip {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px solid rgba(127, 148, 236, .24);
-  border-radius: 8px;
-  padding: 9px 13px;
-  color: #b3bde3;
-  background: rgba(24, 33, 73, .8);
-  font-size: 10px;
-  font-weight: 850;
-}
-
-.fs-prompt-skip:hover { color: #fff; background: rgba(36, 48, 100, .9); }
-
-.fs-prompt-skip kbd {
-  border: 1px solid rgba(143, 157, 255, .4);
-  border-radius: 4px;
-  padding: 1px 5px;
-  color: #dfe6ff;
-  background: rgba(46, 60, 122, .8);
-  font-size: 9px;
-  font-weight: 900;
-}
-
-.fs-prompt-close {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 24px;
-  height: 24px;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: 7px;
-  color: #8791b8;
-  background: transparent;
-}
-
-.fs-prompt-close:hover { color: #fff; background: rgba(60, 74, 140, .5); }
-
-@media (max-width: 720px) {
-  .fs-prompt { bottom: 14px; padding: 14px; }
-  .fs-prompt p { font-size: 10px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fs-prompt { animation: none; }
-}
-
-/* Standalone title pages (/gta-vicecity): description first, PLAY loads the frame. */
 .launch-page { display: flex; flex-direction: column; }
 .launch-main { position: relative; z-index: 1; width: min(880px, calc(100% - 40px)); margin: 0 auto; padding: clamp(56px, 11vh, 120px) 0 70px; text-align: center; }
-.launch-main h1 { margin-top: 18px; color: #edf1ff; font-size: clamp(38px, 8vw, 84px); letter-spacing: -.06em; line-height: .92; font-weight: 950; text-shadow: 0 0 40px rgba(108, 127, 255, .28); }
+.launch-main h1 { margin-top: 18px; color: #f2f6ff; font-size: clamp(38px, 8vw, 84px); letter-spacing: -.06em; line-height: .92; font-weight: 950; }
 .launch-description { max-width: 620px; margin: 20px auto 0; color: #a7b2d6; font-size: clamp(14px, 1.6vw, 17px); line-height: 1.7; }
 .launch-tags { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; }
-.launch-tags span { border: 1px solid rgba(125, 145, 231, .24); border-radius: 6px; padding: 6px 11px; color: #b9c4ee; background: rgba(20, 30, 69, .7); font-size: 9px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.launch-tags span { border: 1px solid rgba(255,255,255,.12); border-radius: 6px; padding: 6px 11px; color: #b9c7eb; background: #182645; font-size: 9px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
 .launch-actions { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 34px; }
-.launch-play { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(255, 133, 164, .3); border-radius: 10px; padding: 16px 34px; color: #fff; background: linear-gradient(110deg, #a33b76, #db4e75); box-shadow: 0 0 28px rgba(219, 67, 113, .28); font-size: 13px; font-weight: 950; letter-spacing: .12em; }
-.launch-play:hover { background: linear-gradient(110deg, #c34b7f, #f06282); box-shadow: 0 0 38px rgba(240, 86, 123, .42); }
+.launch-play { display: inline-flex; align-items: center; gap: 10px; border: 0; border-radius: 8px; padding: 16px 34px; color: #fff; background: #5608F8; font-size: 13px; font-weight: 950; letter-spacing: .12em; cursor: pointer; }
+.launch-play:hover { background: #4320e0; }
 .launch-note { color: #6f7ca7; font-size: 9px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .launch-info { max-width: 620px; margin: 40px auto 0; }
 .player-bottom-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; flex: 0 0 auto; }
