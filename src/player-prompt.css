@@ -96,3 +96,18 @@
 @media (prefers-reduced-motion: reduce) {
   .fs-prompt { animation: none; }
 }
+
+/* Standalone title pages (/gta-vicecity): description first, PLAY loads the frame. */
+.launch-page { display: flex; flex-direction: column; }
+.launch-main { position: relative; z-index: 1; width: min(880px, calc(100% - 40px)); margin: 0 auto; padding: clamp(56px, 11vh, 120px) 0 70px; text-align: center; }
+.launch-main h1 { margin-top: 18px; color: #edf1ff; font-size: clamp(38px, 8vw, 84px); letter-spacing: -.06em; line-height: .92; font-weight: 950; text-shadow: 0 0 40px rgba(108, 127, 255, .28); }
+.launch-description { max-width: 620px; margin: 20px auto 0; color: #a7b2d6; font-size: clamp(14px, 1.6vw, 17px); line-height: 1.7; }
+.launch-tags { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; }
+.launch-tags span { border: 1px solid rgba(125, 145, 231, .24); border-radius: 6px; padding: 6px 11px; color: #b9c4ee; background: rgba(20, 30, 69, .7); font-size: 9px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.launch-actions { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 34px; }
+.launch-play { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(255, 133, 164, .3); border-radius: 10px; padding: 16px 34px; color: #fff; background: linear-gradient(110deg, #a33b76, #db4e75); box-shadow: 0 0 28px rgba(219, 67, 113, .28); font-size: 13px; font-weight: 950; letter-spacing: .12em; }
+.launch-play:hover { background: linear-gradient(110deg, #c34b7f, #f06282); box-shadow: 0 0 38px rgba(240, 86, 123, .42); }
+.launch-note { color: #6f7ca7; font-size: 9px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.launch-info { max-width: 620px; margin: 40px auto 0; }
+.player-bottom-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; flex: 0 0 auto; }
+@media (max-width: 720px) { .launch-main { width: min(100% - 28px, 620px); padding-top: 44px; }.launch-play { width: 100%; justify-content: center; padding: 15px 20px; } }

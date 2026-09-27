@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Expand, Heart, Loader2, Maximize2, Minimize2, MonitorUp, RotateCcw, X } from "lucide-react";
+import { ArrowLeft, Expand, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
 import { games } from "@/data/games";
 import "@/player-prompt.css";
@@ -56,6 +56,7 @@ export default function GamePlayer() {
   const [frameFailed, setFrameFailed] = useState(false);
   const [showRecovery, setShowRecovery] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
+  const [launched, setLaunched] = useState(() => !games.find((item) => item.id === (id ?? STANDALONE_DEFAULT))?.standalone);
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLElement>(null);
@@ -95,11 +96,22 @@ export default function GamePlayer() {
     setFrameFailed(false);
     setShowRecovery(false);
     // Pressing PLAY always offers fullscreen first — it is the option, never a forced jump.
-    setShowFsPrompt(true);
+    setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
+    setLaunched(!game.standalone);
+    if (game.standalone) return;
     const recoveryTimer = window.setTimeout(() => setShowRecovery(true), 12000);
     return () => window.clearTimeout(recoveryTimer);
   }, [game]);
+
+  /** The standalone pages describe the title first, then load the frame on demand. */
+  const launch = useCallback(() => {
+    setLaunched(true);
+    setLoading(true);
+    setFrameFailed(false);
+    setShowRecovery(false);
+    setShowFsPrompt(true);
+  }, []);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -216,6 +228,31 @@ export default function GamePlayer() {
     return <div className="player-page"><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> Back to library</button><div className="player-not-found">That game wandered off.</div></div>;
   }
 
+  if (!launched) {
+    return (
+      <div className="player-page launch-page">
+        <header className="player-topbar">
+          <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
+          <div className="player-title"><span className="player-dot" />{game.title}</div>
+          <div className="player-actions"><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
+        </header>
+        <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
+        <main className="launch-main">
+          <span className="section-kicker"><MonitorUp size={14} /> READY TO LAUNCH</span>
+          <h1>{game.title}</h1>
+          <p className="launch-description">{game.description}</p>
+          <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
+          <div className="launch-actions">
+            <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> PLAY NOW</button>
+            <span className="launch-note">Loads inside this page. Fullscreen offered on launch. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+          </div>
+          <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
+          <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+        </main>
+      </div>
+    );
+  }
+
   const toggleFavorite = () => {
     const next = favorites.includes(game.id) ? favorites.filter((item) => item !== game.id) : [...favorites, game.id];
     setFavorites(next);
@@ -262,7 +299,7 @@ export default function GamePlayer() {
           <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
         </section>
         {(frameFailed || showRecovery) && <div className="frame-recovery" role="status"><span>{frameFailed ? "This destination did not load inside the player." : game.lockLinks ? "Still booting? This title is heavy — give it a moment, or try a fresh launch." : "Still loading? Some destinations need a fresh window."}</span><div className="frame-recovery-actions"><button type="button" onClick={reload}><RotateCcw size={14} /> Reload</button>{!game.lockLinks && <a href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={14} /></a>}</div></div>}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>{game.lockLinks ? <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Go fullscreen</button> : <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a>}</div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone && <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button>}{game.lockLinks ? <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Go fullscreen</button> : <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a>}</div></div>
         {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
       </main>
       {showExtension && <div className="extension-backdrop"><div className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description"><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">This browser game may require the SI GAMES browser extension for its full experience. You can also continue and try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div></div></div>}
