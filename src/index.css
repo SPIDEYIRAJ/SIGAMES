@@ -579,11 +579,48 @@ body {
 .player-disclaimer { margin-top: 16px; color: #808db2; font-size: 9px; line-height: 1.6; text-transform: uppercase; letter-spacing: .06em; }
 .disclaimer-sign { color: #3EFEFF; }
 .player-disclaimer--heavy { padding: 9px 12px; border: 1px solid rgba(86, 8, 248, .2); border-radius: 8px; background: #131e36; }
-.immersive-player { overflow: hidden; }
-.immersive-player .player-main { display: grid; align-content: start; width: 100%; height: 100vh; padding: 14px 20px 18px; }
-.immersive-player .game-frame-wrap,
-.immersive-player .game-frame-wrap iframe { height: 100%; min-height: 0; }
-.game-frame-wrap:fullscreen { border-radius: 0; border: 0; }
+/* Fullscreen gameplay: the frame owns the whole viewport, no chrome, no gaps. */
+.immersive-player {
+  position: fixed; inset: 0; z-index: 70;
+  display: flex; flex-direction: column;
+  background: #060e22;
+}
+.immersive-player .player-topbar,
+.immersive-player .player-heading,
+.immersive-player .player-bottom,
+.immersive-player .player-disclaimer,
+.immersive-player .watermark-layer { display: none; }
+.immersive-player .player-main {
+  flex: 1 1 auto; min-height: 0;
+  width: 100%; max-width: none; margin: 0; padding: 0;
+  display: flex;
+}
+.immersive-player .game-frame-wrap {
+  flex: 1 1 auto; width: 100%; height: auto; min-height: 0;
+  border: 0; border-radius: 0;
+}
+.immersive-player .game-frame-wrap iframe {
+  flex: 1 1 auto; width: 100%; height: 100%; min-height: 0;
+}
+.immersive-player .frame-loading { position: absolute; inset: 0; }
+
+/* Native fullscreen straight on the frame element. */
+.game-frame-wrap:fullscreen {
+  width: 100vw; height: 100vh;
+  border: 0; border-radius: 0;
+  background: #060e22;
+}
+.game-frame-wrap:fullscreen iframe {
+  width: 100%; height: 100%; min-height: 0; border: 0;
+}
+.game-frame-wrap:-webkit-full-screen {
+  width: 100vw; height: 100vh;
+  border: 0; border-radius: 0;
+  background: #060e22;
+}
+.game-frame-wrap:-webkit-full-screen iframe {
+  width: 100%; height: 100%; min-height: 0; border: 0;
+}
 .player-not-found { padding: 80px 20px; text-align: center; color: #9eb1d8; font-size: 14px; }
 
 /* Extension modal */

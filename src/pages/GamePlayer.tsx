@@ -200,6 +200,18 @@ export default function GamePlayer() {
       }
     }
 
+    // Some engines only honour a request aimed straight at the frame.
+    const frame = target?.querySelector("iframe");
+    if (frame?.requestFullscreen) {
+      try {
+        await frame.requestFullscreen();
+        setIsImmersive(false);
+        return;
+      } catch {
+        // Fall through to the app-level immersive mode.
+      }
+    }
+
     if (document.documentElement.requestFullscreen) {
       try {
         await document.documentElement.requestFullscreen();
