@@ -56,7 +56,10 @@ export default function GamePlayer() {
   const [frameFailed, setFrameFailed] = useState(false);
   const [showRecovery, setShowRecovery] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
-  const [launched, setLaunched] = useState(() => !games.find((item) => item.id === (id ?? STANDALONE_DEFAULT))?.standalone);
+  const [launched, setLaunched] = useState(() => {
+    const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
+    return !target?.standalone && target?.type !== "external";
+  });
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLElement>(null);
@@ -98,20 +101,25 @@ export default function GamePlayer() {
     // Pressing PLAY always offers fullscreen first — it is the option, never a forced jump.
     setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
-    setLaunched(!game.standalone);
-    if (game.standalone) return;
+    setLaunched(!game.standalone && game.type !== "external");
+    if (game.standalone || game.type === "external") return;
     const recoveryTimer = window.setTimeout(() => setShowRecovery(true), 12000);
     return () => window.clearTimeout(recoveryTimer);
   }, [game]);
 
-  /** The standalone pages describe the title first, then load the frame on demand. */
+  /** Standalone pages describe the title first, then either load the frame or hand over. */
   const launch = useCallback(() => {
+    if (game?.type === "external") {
+      // Not embeddable: hand the player over to the game itself, in this same tab.
+      window.location.href = game.sourceUrl;
+      return;
+    }
     setLaunched(true);
     setLoading(true);
     setFrameFailed(false);
     setShowRecovery(false);
     setShowFsPrompt(true);
-  }, []);
+  }, [game]);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -244,7 +252,7 @@ export default function GamePlayer() {
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           <div className="launch-actions">
             <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> PLAY NOW</button>
-            <span className="launch-note">Loads inside this page. Fullscreen offered on launch. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            <span className="launch-note">{game.type === "external" ? "This build cannot run inside a frame, so PLAY takes you to it in this tab." : "Loads inside this page. Fullscreen offered on launch."} <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
           <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
