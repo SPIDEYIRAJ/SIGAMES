@@ -217,6 +217,18 @@ const localSlugs = [
 
 export const games: Game[] = [
   {
+    id: "cod-black-ops-zombies",
+    title: "Call of Duty: Black Ops — Zombies",
+    category: "Shooter",
+    tags: ["FPS", "Zombies", "Browser Ready"],
+    description: "The 2010 Black Ops Zombies experience, rebuilt for the browser. Survive the horde.",
+    controls: "WASD to move, mouse to aim, click to shoot, R to reload, F to buy doors and weapons. Round up points and hold the line.",
+    thumbnail: "https://cinevo.es/playables/images/cod-zombie.jpeg",
+    sourceUrl: "https://nzp.gay/",
+    type: "iframe",
+    heavy: true,
+  },
+  {
     id: "climbing-over-it",
     title: "Climb Over It",
     category: "Physics",
