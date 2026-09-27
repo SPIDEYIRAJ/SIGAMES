@@ -182,7 +182,7 @@ export const games: Game[] = [
     controls: "Arrow keys or WASD to steer, Space to brake. Hold the racing line and don't lift.",
     thumbnail: "/thumbs/the-race.svg",
     sourceUrl: "https://sitherace1925.edgeone.dev",
-    type: "external",
+    type: "iframe",
     heavy: true,
     isNew: true,
   },

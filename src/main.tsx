@@ -11,6 +11,7 @@ import "./index.css";
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
+const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -355,7 +356,7 @@ function AppBootstrap() {
       <BrowserRouter>
         <RouteSyncer />
         <Backdrop />
-        {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/gta-vicecity" element={<GamePlayer />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
+        {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/developers" element={<Developers />} /><Route path="/gta-vicecity" element={<GamePlayer />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
       </BrowserRouter>
       <Toaster />
     </ConvexAuthProvider>

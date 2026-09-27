@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { categories, games, type Game } from "@/data/games";
+import InstallerAd from "@/components/InstallerAd";
 
 const PAGE_SIZE = 18;
 const SORTS = [
@@ -213,11 +214,14 @@ export default function Landing() {
           <a href="#library">Library</a>
           <a href="#favorites">Favorites</a>
           <a href="#about">About</a>
+          <a href="/developers">Developers</a>
         </nav>
         <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
       </header>
 
       <main id="top">
+        <InstallerAd />
+
         <section className="hero-section">
           <div className="hero-copy">
             <div className="eyebrow"><span className="eyebrow-icon"><Sparkles size={14} /></span> THE PERSONAL GAME SHELF</div>
@@ -288,7 +292,7 @@ export default function Landing() {
       </main>
 
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
-      <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>////SPIDEY_IRAJ////</small></div><div className="footer-mark">SI<span>01</span></div></footer>
+      <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>////SPIDEY_IRAJ////</small><a className="footer-dev-link" href="/developers">Embed SI GAMES on your site</a></div><div className="footer-mark">SI<span>01</span></div></footer>
       {toast && <div className="toast" role="status"><Heart size={15} fill="currentColor" /> {toast}</div>}
       {showBackToTop && <button type="button" className="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}><ArrowUp size={15} /> Return to orbit</button>}
     </div>
