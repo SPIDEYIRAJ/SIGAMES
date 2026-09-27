@@ -639,6 +639,9 @@ a,
   position: fixed; inset: 0; z-index: 50;
   display: grid; place-items: center; padding: 20px;
   background: rgba(8, 7, 16, .88);
+  /* Respect the notch and home indicator on phones. */
+  padding-top: calc(20px + env(safe-area-inset-top));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
 }
 .extension-modal {
   width: min(440px, 100%);
@@ -664,6 +667,9 @@ a,
 .extension-modal h2 { color: #f2f6ff; font-size: 16px; font-weight: 950; }
 .extension-modal p { margin-top: 10px; color: #9fb0d6; font-size: 11px; line-height: 1.6; }
 .extension-actions { margin-top: 18px; display: flex; flex-direction: column; gap: 9px; }
+.extension-skip-hint { margin-top: 14px; color: #7485ad; font-size: 9px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+.extension-skip-hint kbd { border: 1px solid rgba(255,255,255,.16); border-radius: 4px; padding: 1px 6px; background: #101a35; color: #dfe6ff; font-family: inherit; font-size: 10px; font-weight: 900; }
+@media (hover: none) and (pointer: coarse) { .extension-skip-hint { display: none; } }
 
 /* Boot + route loading */
 .boot-screen { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: #0d1527; }
@@ -755,6 +761,9 @@ a,
   .fs-prompt-skip { min-height: 46px; }
   .fs-prompt-close { width: 40px; height: 40px; }
   .modal-close { width: 44px; height: 44px; }
+  .extension-modal { padding: 26px 20px; border-radius: 12px; }
+  .extension-actions .primary-button,
+  .extension-actions .soft-button { min-height: 48px; justify-content: center; }
 
   /* Comfortable reading sizes on small screens. */
   .player-heading p,
