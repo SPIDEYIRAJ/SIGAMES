@@ -12,7 +12,15 @@
 .launch-note { color: #6f7ca7; font-size: 9px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .launch-info { max-width: 620px; margin: 40px auto 0; }
 .player-bottom-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; flex: 0 0 auto; }
-@media (max-width: 720px) { .launch-main { width: min(100% - 28px, 620px); padding-top: 44px; }.launch-play { width: 100%; justify-content: center; padding: 15px 20px; } }
+@media (max-width: 720px) {
+  .launch-main {
+    width: min(100% - 28px, 620px);
+    padding-top: calc(44px + env(safe-area-inset-top));
+    padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  }
+  .launch-play { width: 100%; justify-content: center; padding: 17px 20px; min-height: 52px; }
+  .launch-note { line-height: 1.7; }
+}
 
 /* Fullscreen option card — shown the moment PLAY launches a game. */
 .fs-prompt {
@@ -125,8 +133,25 @@
 .fs-prompt-close:hover { color: #fff; background: rgba(255, 255, 255, .06); }
 
 @media (max-width: 720px) {
-  .fs-prompt { bottom: 14px; padding: 14px; }
-  .fs-prompt p { font-size: 11px; }
+  .fs-prompt {
+    bottom: calc(14px + env(safe-area-inset-bottom));
+    left: 12px;
+    width: calc(100% - 24px);
+    transform: none;
+    padding: 16px 14px 18px;
+  }
+  .fs-prompt p { font-size: 12px; }
+  /* No keyboard hint on a phone, and the buttons need real finger room. */
+  .fs-prompt-skip kbd { display: none; }
+  .fs-prompt-actions { width: 100%; }
+  .fs-prompt-go,
+  .fs-prompt-skip { flex: 1 1 auto; justify-content: center; min-height: 48px; }
+  /* Re-anchor the entrance animation now that the card is no longer centred. */
+  @keyframes fs-prompt-in-mobile {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fs-prompt { animation: fs-prompt-in-mobile .3s ease-out; }
 }
 
 @media (prefers-reduced-motion: reduce) {

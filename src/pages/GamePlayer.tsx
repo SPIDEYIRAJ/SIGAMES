@@ -53,8 +53,6 @@ export default function GamePlayer() {
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
   const [isImmersive, setIsImmersive] = useState(false);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
-  const [frameFailed, setFrameFailed] = useState(false);
-  const [showRecovery, setShowRecovery] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
@@ -66,8 +64,6 @@ export default function GamePlayer() {
 
   const reload = useCallback(() => {
     setLoading(true);
-    setFrameFailed(false);
-    setShowRecovery(false);
     setFrameKey((key) => key + 1);
   }, []);
 
@@ -96,15 +92,10 @@ export default function GamePlayer() {
     const next = [game.id, ...previous.filter((item) => item !== game.id)].slice(0, 6);
     localStorage.setItem("si-games-recent", JSON.stringify(next));
     setLoading(true);
-    setFrameFailed(false);
-    setShowRecovery(false);
     // Pressing PLAY always offers fullscreen first — it is the option, never a forced jump.
     setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
     setLaunched(!game.standalone && game.type !== "external");
-    if (game.standalone || game.type === "external") return;
-    const recoveryTimer = window.setTimeout(() => setShowRecovery(true), 12000);
-    return () => window.clearTimeout(recoveryTimer);
   }, [game]);
 
   /** Standalone pages describe the title first, then either load the frame or hand over. */
@@ -116,8 +107,6 @@ export default function GamePlayer() {
     }
     setLaunched(true);
     setLoading(true);
-    setFrameFailed(false);
-    setShowRecovery(false);
     setShowFsPrompt(true);
   }, [game]);
 
@@ -315,10 +304,9 @@ export default function GamePlayer() {
           {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
           {showFsPrompt && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
           <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-          <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => { setLoading(false); setFrameFailed(false); setShowRecovery(false); }} onError={() => { setLoading(false); setFrameFailed(true); }} />
+          <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
           <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
         </section>
-        {(frameFailed || showRecovery) && <div className="frame-recovery" role="status"><span>{frameFailed ? "This destination did not load inside the player." : game.lockLinks ? "Still booting? This title is heavy — give it a moment, or try a fresh launch." : "Still loading? Some destinations need a fresh window."}</span><div className="frame-recovery-actions"><button type="button" onClick={reload}><RotateCcw size={14} /> Reload</button>{game.htmlGame && <a href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={14} /></a>}{!game.htmlGame && <button type="button" onClick={toggleFullscreen}><Maximize2 size={14} /> Open in full screen</button>}</div></div>}
         <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone && <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button>}{game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
         {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
       </main>

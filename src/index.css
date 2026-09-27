@@ -2,11 +2,28 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+html {
+  /* Keep the layout honest on notched phones without breaking desktop. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: "Montserrat", system-ui, -apple-system, sans-serif;
   background: #0d1527;
   color: #eef2ff;
   -webkit-font-smoothing: antialiased;
+  /* Stop iOS rubber-banding the whole page sideways. */
+  overflow-x: hidden;
+  overscroll-behavior-y: none;
+}
+
+/* Touch: kill the 300ms tap delay and the grey flash, keep taps instant. */
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .skip-link {
@@ -16,7 +33,7 @@ body {
 }
 .skip-link:focus { left: 10px; }
 
-.si-app { min-height: 100vh; background: #0d1527; }
+.si-app { min-height: 100vh; min-height: 100dvh; background: #0d1527; }
 .si-app > main {
   width: min(1120px, calc(100% - 40px));
   margin: 0 auto;
@@ -28,6 +45,8 @@ body {
   position: sticky; top: 0; z-index: 30;
   border-bottom: 1px solid rgba(86, 8, 248, .18);
   background: #0d1527;
+  /* Clear the notch / status bar on phones. */
+  padding-top: env(safe-area-inset-top);
 }
 .brand {
   display: flex; align-items: center; gap: 10px;
@@ -447,6 +466,7 @@ body {
   border-top: 1px solid rgba(86, 8, 248, .18);
   width: min(1120px, calc(100% - 40px));
   margin: 30px auto 0; padding: 16px 0 22px;
+  padding-bottom: calc(22px + env(safe-area-inset-bottom));
   display: flex; justify-content: space-between; align-items: center; gap: 16px;
   color: #8790a8; font-size: 9px; font-weight: 900; letter-spacing: .1em;
 }
@@ -455,11 +475,12 @@ body {
 .footer-copy small { display: block; color: #667299; font-size: 8px; margin-top: 2px; }
 
 /* Player */
-.player-page { min-height: 100vh; background: #0d1527; }
+.player-page { min-height: 100vh; min-height: 100dvh; background: #0d1527; overscroll-behavior: contain; }
 .player-topbar {
   min-height: 54px;
   display: flex; align-items: center; gap: 16px;
   padding: 0 clamp(16px, 3vw, 24px);
+  padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid rgba(86, 8, 248, .18);
   background: #0d1527;
 }
@@ -502,6 +523,7 @@ body {
 .player-main {
   width: min(1080px, calc(100% - 40px));
   margin: 0 auto; padding: 28px 0 48px;
+  padding-bottom: calc(48px + env(safe-area-inset-bottom));
 }
 .player-heading {
   display: flex; align-items: end; justify-content: space-between;
@@ -524,7 +546,7 @@ body {
   background: #060e22;
 }
 .game-frame-wrap iframe {
-  width: 100%; height: min(68vh, 640px); min-height: 520px;
+  width: 100%; height: min(68vh, 640px); height: min(68dvh, 640px); min-height: 520px;
   display: block; border: 0; background: #060e22;
 }
 .frame-loading {
@@ -541,25 +563,11 @@ body {
   border-radius: 7px; padding: 7px 10px;
   background: rgba(10, 15, 30, .9); color: #fff;
   font-size: 10px; font-weight: 800; cursor: pointer;
+  /* Keep the escape hatch reachable on a notched phone. */
+  top: calc(10px + env(safe-area-inset-top));
+  right: calc(10px + env(safe-area-inset-right));
 }
 .is-immersive .immersive-exit, .game-frame-wrap:fullscreen .immersive-exit { display: flex; }
-.frame-recovery {
-  margin-top: 12px;
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  border: 1px solid rgba(255, 99, 130, .3);
-  border-radius: 8px; padding: 9px 11px;
-  background: #23142a; color: #d7c0d0;
-  font-size: 11px;
-}
-.frame-recovery a { color: #3EFEFF; font-size: 10px; font-weight: 900; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-.frame-recovery-actions { display: flex; align-items: center; gap: 10px; }
-.frame-recovery-actions button {
-  display: inline-flex; align-items: center; gap: 6px;
-  border: 1px solid rgba(86, 8, 248, .28);
-  border-radius: 6px; padding: 6px 10px;
-  background: #182645; color: #cfe3ff;
-  font-size: 10px; font-weight: 900; cursor: pointer;
-}
 .player-bottom {
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   margin-top: 14px;
@@ -584,6 +592,9 @@ body {
   position: fixed; inset: 0; z-index: 70;
   display: flex; flex-direction: column;
   background: #060e22;
+  /* Swiping inside a game must not scroll or rubber-band the page. */
+  overscroll-behavior: none;
+  touch-action: auto;
 }
 .immersive-player .player-topbar,
 .immersive-player .player-heading,
@@ -606,7 +617,7 @@ body {
 
 /* Native fullscreen straight on the frame element. */
 .game-frame-wrap:fullscreen {
-  width: 100vw; height: 100vh;
+  width: 100vw; height: 100vh; height: 100dvh;
   border: 0; border-radius: 0;
   background: #060e22;
 }
@@ -614,7 +625,7 @@ body {
   width: 100%; height: 100%; min-height: 0; border: 0;
 }
 .game-frame-wrap:-webkit-full-screen {
-  width: 100vw; height: 100vh;
+  width: 100vw; height: 100vh; height: 100dvh;
   border: 0; border-radius: 0;
   background: #060e22;
 }
@@ -688,8 +699,8 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Not found */
-.not-found-page { min-height: 100vh; display: flex; flex-direction: column; background: #0d1527; }
-.not-found-page .not-found-topbar { min-height: 54px; display: flex; align-items: center; gap: 14px; padding: 0 clamp(16px, 3vw, 24px); border-bottom: 1px solid rgba(86, 8, 248, .18); }
+.not-found-page { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: #0d1527; }
+.not-found-page .not-found-topbar { min-height: 54px; display: flex; align-items: center; gap: 14px; padding: 0 clamp(16px, 3vw, 24px); padding-top: env(safe-area-inset-top); border-bottom: 1px solid rgba(86, 8, 248, .18); }
 .not-found-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; text-align: center; }
 .not-found-content h1 { color: #fff; font-size: clamp(80px, 16vw, 150px); font-weight: 950; line-height: .8; letter-spacing: -.06em; }
 .not-found-content h1 span { color: #ff4e85; }
@@ -720,12 +731,58 @@ body {
   .search-box { max-width: none; }
   .player-title { display: none; }
   .player-back span { display: none; }
-  .player-back { width: 32px; padding: 0; justify-content: center; }
+  .player-back { width: 44px; padding: 0; justify-content: center; }
   .player-bottom { flex-direction: column; align-items: start; }
-  .game-frame-wrap, .game-frame-wrap iframe { min-height: 420px; height: 54vh; }
+  .game-frame-wrap, .game-frame-wrap iframe { min-height: 340px; height: 56vh; height: 56dvh; }
   .site-footer { flex-wrap: wrap; }
   .footer-copy { order: 3; width: 100%; }
   .float-chip { display: none; }
+
+  /* Finger-sized tap targets: 44px is the comfortable minimum. */
+  .player-icon-button,
+  .player-back,
+  .icon-button,
+  .favorite-button { width: 44px; height: 44px; }
+  .favorite-button { right: 10px; top: 10px; }
+  .play-button { height: 42px; font-size: 11px; }
+  .primary-button,
+  .soft-button,
+  .open-external,
+  .back-to-top { min-height: 46px; padding: 0 16px; }
+  .desktop-nav a { min-height: 44px; display: inline-flex; align-items: center; }
+  .load-more button,
+  .fs-prompt-go,
+  .fs-prompt-skip { min-height: 46px; }
+  .fs-prompt-close { width: 40px; height: 40px; }
+  .modal-close { width: 44px; height: 44px; }
+
+  /* Comfortable reading sizes on small screens. */
+  .player-heading p,
+  .player-info p { font-size: 12px; }
+  .player-disclaimer { font-size: 10px; }
+  .game-card-body p { font-size: 11px; }
+  .game-card-body h3 { font-size: 12px; }
+
+  /* No hover on touch, so make the play button read as always-active. */
+  .play-button:active,
+  .primary-button:active { background: #4320e0; }
+}
+
+/* Small phones: one column reads better than two cramped cards. */
+@media (max-width: 420px) {
+  .game-grid,
+  .continue-grid { grid-template-columns: 1fr; }
+  .game-art { height: 168px; }
+  .player-actions { gap: 6px; }
+  .player-main { width: min(100% - 20px, 640px); }
+}
+
+/* Landscape phones have almost no vertical room — the frame should own it. */
+@media (max-width: 940px) and (max-height: 560px) and (orientation: landscape) {
+  .game-frame-wrap,
+  .game-frame-wrap iframe { height: 74vh; height: 74dvh; min-height: 260px; }
+  .player-heading { display: none; }
+  .player-main { padding-top: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -758,19 +815,11 @@ body {
 .player-disclaimer--html { color: #b39a6b; }
 .player-disclaimer--light { color: #7f8cab; }
 
-/* Recovery bar action button (matches the "Open in full screen" action) */
-.frame-recovery-actions button {
-  display: inline-flex; align-items: center; gap: 6px;
-  border: 1px solid rgba(86, 8, 248, .28);
-  border-radius: 6px; padding: 6px 10px;
-  background: #182645; color: #cfe3ff;
-  font-family: inherit; font-size: 10px; font-weight: 900; cursor: pointer;
-}
-.frame-recovery-actions button:hover { border-color: rgba(62, 254, 255, .4); color: #fff; background: #1e2d55; }
 
 /* ——————————————————— SI INSTALLER: hard-block ad ——————————————————— */
 
 .si-ad {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -818,12 +867,13 @@ body {
 
 /* ——————————————————— Developer hub ——————————————————— */
 
-.dev-page { min-height: 100vh; background: #0d1527; }
+.dev-page { min-height: 100vh; min-height: 100dvh; background: #0d1527; }
 
 .dev-topbar {
   min-height: 56px;
   display: flex; align-items: center; justify-content: space-between; gap: 16px;
   padding: 0 clamp(16px, 3vw, 24px);
+  padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid rgba(86, 8, 248, .18);
 }
 
@@ -839,6 +889,7 @@ body {
 .dev-main {
   width: min(900px, calc(100% - 40px));
   margin: 0 auto; padding: 40px 0 60px;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 .dev-main h1 { margin-top: 14px; color: #f2f6ff; font-size: clamp(28px, 5vw, 48px); font-weight: 950; letter-spacing: -.04em; }
 .dev-lead { max-width: 640px; margin-top: 12px; color: #9fb0d6; font-size: 13px; line-height: 1.7; }
@@ -900,10 +951,17 @@ body {
 .dev-signature span { color: #3EFEFF; }
 
 @media (max-width: 720px) {
-  .dev-main { width: min(100% - 28px, 640px); }
+  .dev-main { width: min(100% - 28px, 640px); padding-top: 28px; }
+  .dev-topbar { flex-wrap: wrap; }
+  .dev-preview { height: 260px; }
   .si-ad { flex-wrap: wrap; }
-  .si-ad-cta { width: 100%; justify-content: center; }
-  .si-ad-close { position: absolute; right: 8px; top: 8px; }
+  .si-ad-cta { width: 100%; justify-content: center; min-height: 46px; }
+  /* Stack the block so the absolute close button has room to sit. */
+  .si-ad { padding-right: 44px; }
+  .si-ad-close {
+    position: absolute; right: 6px; top: 6px;
+    width: 36px; height: 36px;
+  }
 }
 
 .footer-dev-link {
