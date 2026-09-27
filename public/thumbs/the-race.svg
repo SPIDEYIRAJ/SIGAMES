@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 500" width="700" height="500" role="img" aria-label="The Race">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3d0a10"/>
+      <stop offset=".45" stop-color="#b3121f"/>
+      <stop offset="1" stop-color="#e0212f"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="58%" r="58%">
+      <stop offset="0" stop-color="#ff5a5a" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#ff2d3f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="car" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff5460"/>
+      <stop offset=".55" stop-color="#d4101f"/>
+      <stop offset="1" stop-color="#7c0812"/>
+    </linearGradient>
+    <linearGradient id="lamp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ffe9ec"/>
+    </linearGradient>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+    <filter id="softer" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+  </defs>
+
+  <rect width="700" height="500" fill="url(#bg)"/>
+  <rect width="700" height="500" fill="url(#glow)"/>
+
+  <g stroke="#ff8b8b" stroke-opacity=".35" fill="none">
+    <path d="M-40 90 C 160 40, 380 150, 740 60" stroke-width="2"/>
+    <path d="M-40 400 C 200 340, 420 470, 740 380" stroke-width="2"/>
+    <path d="M-40 150 C 180 110, 400 210, 740 130" stroke-width="1.5"/>
+    <path d="M-40 455 C 220 400, 440 500, 740 440" stroke-width="1.5"/>
+  </g>
+
+  <g fill="#ffffff" fill-opacity=".5">
+    <circle cx="90" cy="60" r="2"/><circle cx="210" cy="35" r="1.6"/>
+    <circle cx="620" cy="70" r="2"/><circle cx="520" cy="45" r="1.4"/>
+    <circle cx="640" cy="440" r="1.8"/><circle cx="60" cy="430" r="1.6"/>
+  </g>
+
+  <ellipse cx="350" cy="418" rx="250" ry="34" fill="#5d020c" fill-opacity=".55" filter="url(#softer)"/>
+
+  <g transform="translate(350 348)">
+    <ellipse cx="0" cy="52" rx="168" ry="30" fill="#ff3d3d" fill-opacity=".45" filter="url(#soft)"/>
+    <path d="M-176 30 C -170 -46, -108 -96, -52 -108 L 52 -108 C 108 -96, 170 -46, 176 30 C 180 66, 150 84, 104 86 L -104 86 C -150 84, -180 66, -176 30 Z" fill="url(#car)"/>
+    <path d="M-120 -66 C -84 -96, -44 -108, 0 -108 C 44 -108, 84 -96, 120 -66 C 60 -46, -60 -46, -120 -66 Z" fill="#5c0710" fill-opacity=".92"/>
+    <path d="M-108 -60 C -74 -86, -40 -96, 0 -96 C 40 -96, 74 -86, 108 -60 Z" fill="#2a0409" fill-opacity=".75"/>
+    <rect x="-150" y="16" width="300" height="26" rx="13" fill="#3d0209" fill-opacity=".7"/>
+    <path d="M-152 18 C -122 4, -84 0, -56 2 L -60 30 C -98 32, -128 32, -152 30 Z" fill="url(#lamp)"/>
+    <path d="M152 18 C 122 4, 84 0, 56 2 L 60 30 C 98 32, 128 32, 152 30 Z" fill="url(#lamp)"/>
+    <path d="M-150 16 C -120 0, -80 -4, -50 -2 L -54 -12 C -90 -14, -124 -10, -152 4 Z" fill="#ffffff" fill-opacity=".8" filter="url(#soft)"/>
+    <path d="M150 16 C 120 0, 80 -4, 50 -2 L 54 -12 C 90 -14, 124 -10, 152 4 Z" fill="#ffffff" fill-opacity=".8" filter="url(#soft)"/>
+    <rect x="-16" y="46" width="32" height="12" rx="6" fill="#2b0206" fill-opacity=".8"/>
+    <path d="M-176 30 C -150 20, -110 14, -80 12 L -84 24 C -116 26, -150 30, -174 40 Z" fill="#ff7d7d" fill-opacity=".5"/>
+    <path d="M176 30 C 150 20, 110 14, 80 12 L 84 24 C 116 26, 150 30, 174 40 Z" fill="#ff7d7d" fill-opacity=".5"/>
+  </g>
+
+  <text x="350" y="132" text-anchor="middle" font-family="Impact, 'Arial Black', sans-serif" font-size="104" font-style="italic" font-weight="900" fill="#ffffff" letter-spacing="-2">THE RACE</text>
+
+  <g transform="translate(350 196)">
+    <rect x="-118" y="-26" width="236" height="52" rx="10" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".5" stroke-width="1.5"/>
+    <rect x="-106" y="-18" width="212" height="36" rx="7" fill="#1b0206" fill-opacity=".55"/>
+    <text x="0" y="7" text-anchor="middle" font-family="Impact, 'Arial Black', sans-serif" font-size="24" font-style="italic" fill="#ffffff">START</text>
+    <path d="M112 -20 l16 14 -16 14 8 -14 z" fill="#ffffff"/>
+  </g>
+</svg>
