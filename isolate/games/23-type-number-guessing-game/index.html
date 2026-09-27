@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base target="_self">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talha - Number Guessing Game</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+	<!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+	<!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+	<!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+	<!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha --> 
+	<!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+	<link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg">
+
+    
+
+  <style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #db3069;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  padding: 10px 50px;
+  color: #1446a0;
+  background-color: white;
+  border-radius: 50px;
+}
+
+.container {
+  text-align: center;
+  padding: 25px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+.container h2 {
+  font-size: 20px;
+  color: #1446a0;
+  font-weight: 500;
+}
+
+.container .guess {
+  color: #1446a0;
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+.container .chances {
+  color: black;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+.container input {
+  font-size: 20px;
+  padding: 0 20px;
+  text-align: center;
+  width: 100%;
+  height: 50px;
+  margin: 10px 0;
+  border: 3px solid #1446a0;
+  border-radius: 5px;
+}
+
+input:disabled {
+  cursor: not-allowed;
+}
+
+/* To remove the controls in the input field */
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.checkBtn {
+  font-size: 18px;
+  margin: 10px 0;
+  padding: 10px 40px;
+  color: white;
+  background: #1446a0;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.checkBtn:active {
+  transform: scale(0.95);
+}
+  </style>
+  </head>
+
+<body>
+
+    <h1>Number Guessing Game</h1>
+    <div class="container">
+        <h2 class="heading">Guess a number between 1 to 100</h2>
+        <input type="number" placeholder="Guess a number" />
+        <p class="guess"></p>
+        <button class="checkBtn">Check</button>
+        <p class="chances">You have only <span class="chance">10</span> chances</p>
+    </div>
+
+    
+
+  <script>
+const inputEl = document.querySelector("input");
+const guessEl = document.querySelector(".guess");
+const checkBtnEl = document.querySelector("button");
+const remainingChancesTextEl = document.querySelector(".chances");
+const remainingChancesEl = document.querySelector(".chance");
+
+let randomNumber = Math.floor(Math.random() * 100);
+
+totalChances = 10;
+
+checkBtnEl.addEventListener("click", () => {
+    
+    totalChances--;
+    let inputValue = inputEl.value;
+   
+    if (totalChances === 0) {
+        inputValue = "";
+        inputEl.disabled = true;
+        guessEl.textContent = "Oops...! Bad luck😥, You lost the game."
+        guessEl.style.color = "red";
+        checkBtnEl.textContent = "Play Again...😉";
+        remainingChancesTextEl.textContent = "No chances left"
+    }
+    else if (totalChances < 0) {
+        window.location.reload();
+    }
+    else if (inputValue == randomNumber) {
+        inputEl.disabled = true;
+        guessEl.textContent = "Hurrah...! Congratulations😍, You won the game."
+        guessEl.style.color = "green";
+        checkBtnEl.textContent = "Play Again...😉";
+        totalChances = 0;
+    } else if (inputValue > randomNumber && inputValue < 100) {
+        guessEl.textContent = "Your Guess is High👍.";
+        remainingChancesEl.textContent = totalChances;
+        guessEl.style.color = "#1446a0";
+    } else if (inputValue < randomNumber && inputValue > 0) {
+        guessEl.textContent = "Your Guess is low👎.";
+        remainingChancesEl.textContent = totalChances;
+        guessEl.style.color = "#1446a0";
+    } else {
+        guessEl.textContent = "Your number is invalid.";
+        remainingChancesEl.textContent = totalChances;
+        guessEl.style.color = "red";
+    }
+});
+  </script>
+  </body>
+
+</html>
+

@@ -1,0 +1,284 @@
+<!-- Reference: https://developer.mozilla.org/en-US/docs/Web/API/SpeechRecognition -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <base target="_self">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>Talha - Speak Number Guess</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha --> 
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <link rel="icon" href="/logo.svg">
+  
+  <style>
+@import url("https://fonts.googleapis.com/css2?family=Recursive:wght@400;700&display=swap");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: #27273d
+    url("https://images.unsplash.com/photo-1552749412-091909ed9f82?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80")
+    no-repeat center center/cover;
+  color: rgba(255, 255, 255, 0.87);
+  font-family: "Recursive", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100vh;
+  overflow: hidden;
+  margin: 0;
+}
+
+body::after {
+  content: "";
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body * {
+  z-index: 1;
+}
+
+img {
+  width: 8rem;
+  height: 8rem;
+}
+
+h1,
+h2 {
+  margin-bottom: 0;
+}
+
+h2 {
+  font-size: 1.17rem;
+}
+
+p {
+  line-height: 1.5;
+  margin: 0;
+}
+
+.play-again {
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border: 0;
+  background-color: #f4f4f4;
+  border-radius: 5px;
+  margin-top: 2rem;
+}
+
+.play-again:hover {
+  background-color: #27273d;
+  color: #f4f4f4;
+}
+
+.play-again:focus {
+  outline: none;
+}
+
+.msg {
+  font-size: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+.box {
+  border: 1px solid #dedede;
+  display: inline-block;
+  font-size: 1.875rem;
+  margin: 1.25rem;
+  padding: 0.625rem;
+}
+
+.mic-icon {
+  width: 84px;
+  height: 84px;
+}
+
+.voice-status {
+  color: #4f46e5;
+  font-weight: bold;
+  min-height: 1.2em;
+}
+
+.typed-fallback {
+  margin: 0 auto 2rem;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.typed-fallback input {
+  padding: 0.6rem;
+  font: inherit;
+  border: 2px solid #c7c7c7;
+  border-radius: 0.5rem;
+}
+
+.typed-fallback button {
+  padding: 0.6rem;
+  font: inherit;
+  font-weight: bold;
+  color: #fff;
+  background: #4f46e5;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+  </style>
+  </head>
+  <body>
+    <svg class="mic-icon" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Microphone">
+      <rect x="38" y="10" width="20" height="42" rx="10" fill="#4f46e5" />
+      <path d="M20 46a28 28 0 0 0 56 0" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round" />
+      <path d="M48 74v12M32 86h32" fill="none" stroke="#4f46e5" stroke-width="7" stroke-linecap="round" />
+    </svg>
+    <h1>Guess a Number Between 1 - 100</h1>
+    <h2>Speak the number into your microphone</h2>
+    <div id="msg" class="msg"></div>
+    <p id="voice-status" class="voice-status">Checking microphone support...</p>
+    <form id="typed-fallback" class="typed-fallback" hidden>
+      <label for="typed-input">No voice support here? Type the number instead.</label>
+      <input id="typed-input" type="number" min="1" max="100" inputmode="numeric" placeholder="1 - 100" />
+      <button type="submit">Guess</button>
+    </form>
+    
+  
+  <script>
+const messageElement = document.getElementById("msg");
+const statusElement = document.getElementById("voice-status");
+const fallbackForm = document.getElementById("typed-fallback");
+const typedInput = document.getElementById("typed-input");
+
+let randomNumber = getRandomNumber();
+let solved = false;
+
+window.SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+if (window.SpeechRecognition) {
+  recognition = new window.SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  recognition.lang = "en-US";
+  try {
+    recognition.start();
+    statusElement.textContent = "Listening... say a number out loud.";
+  } catch (err) {
+    statusElement.textContent = "Microphone blocked. Use the box below instead.";
+    enableFallback();
+  }
+} else {
+  statusElement.textContent = "This browser has no voice input. Use the box below instead.";
+  enableFallback();
+}
+
+function enableFallback() {
+  if (fallbackForm) fallbackForm.hidden = false;
+}
+
+function getRandomNumber() {
+  return Math.floor(Math.random() * 100) + 1;
+}
+
+function onSpeak(event) {
+  const message = event.results[0][0].transcript;
+  writeMessage(message);
+  checkNumber(message);
+}
+
+function writeMessage(message) {
+  messageElement.innerHTML = `
+    <div>You said: </div>
+    <span class="box">${message}</span>
+  `;
+}
+
+function checkNumber(message) {
+  const spoken = String(message).match(/-?\d+/);
+  const number = spoken ? +spoken[0] : NaN;
+  if (Number.isNaN(number)) {
+    messageElement.innerHTML += "<div>That is not a valid number</div>";
+    return;
+  }
+  if (number > 100 || number < 1) {
+    messageElement.innerHTML += "<div>Number must be between 1 and 100</div>";
+    return;
+  }
+  if (number === randomNumber) {
+    solved = true;
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch (err) {
+        // already stopped
+      }
+    }
+    document.body.innerHTML = `
+          <h2>Congrats! You have guessed the number! <br><br>
+          It was ${number}</h2>
+          <button class="play-again" id="play-again">Play Again</button>
+        `;
+  } else if (number > randomNumber) {
+    messageElement.innerHTML += "<div>GO LOWER</div>";
+  } else {
+    messageElement.innerHTML += "<div>GO HIGHER</div>";
+  }
+}
+
+// Event Listeners
+if (recognition) {
+  recognition.addEventListener("result", onSpeak);
+  recognition.addEventListener("end", () => {
+    if (!solved) {
+      try {
+        recognition.start();
+      } catch (err) {
+        enableFallback();
+      }
+    }
+  });
+  recognition.addEventListener("error", (event) => {
+    if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+      statusElement.textContent = "Microphone blocked. Use the box below instead.";
+      enableFallback();
+    }
+  });
+}
+
+if (fallbackForm) {
+  fallbackForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = typedInput.value;
+    writeMessage(value);
+    checkNumber(value);
+    typedInput.value = "";
+    typedInput.focus();
+  });
+}
+
+document.body.addEventListener("click", (e) => {
+  if (e.target.id == "play-again") history.go(0);
+});
+  </script>
+  </body>
+</html>
+

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  <base target="_self">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talha - Mastermind Game</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha -->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+:root {
+  --bg1: #1a1423;
+  --bg2: #2d1f3d;
+  --card: #3a2a4f;
+  --text: #f5f0fa;
+  --accent: #e8a838;
+  --black-peg: #1a1a1a;
+  --white-peg: #f0f0f0;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+  background: linear-gradient(160deg, var(--bg1), var(--bg2));
+  min-height: 100vh;
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+}
+
+.hidden { display: none !important; }
+
+.level-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+}
+
+.level-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.level-header h1, .header h1 {
+  margin: 0;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+}
+
+.level-screen > p { margin: 0 0 24px; opacity: 0.9; }
+
+.level-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.level-btn {
+  padding: 16px 20px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.level-btn:hover { background: rgba(255,255,255,0.15); }
+.level-name { font-weight: 700; font-size: 1.1rem; }
+.level-desc { font-size: 0.85rem; opacity: 0.85; }
+
+.help-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.1);
+  color: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.game-screen {
+  width: 100%;
+  max-width: 480px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.level-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.2);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px 14px;
+  min-height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.25);
+  color: inherit;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+.btn-large { padding: 12px 24px; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.secret-row, .guess-row, .current-guess {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.secret-row {
+  padding: 12px;
+  background: var(--card);
+  border-radius: 12px;
+  min-height: 56px;
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 40vh;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.guess-row {
+  background: rgba(0,0,0,0.2);
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.peg {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.25);
+  flex-shrink: 0;
+}
+
+.peg.empty {
+  background: rgba(255,255,255,0.08);
+}
+
+.peg.hidden-secret {
+  background: repeating-linear-gradient(45deg, #222, #222 4px, #444 4px, #444 8px);
+}
+
+.feedback {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-left: 8px;
+  width: 32px;
+}
+
+.fb-peg {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+
+.fb-peg.black { background: var(--black-peg); }
+.fb-peg.white { background: var(--white-peg); }
+.fb-peg.empty { background: transparent; }
+
+.current-area {
+  margin-top: auto;
+  padding: 12px;
+  background: var(--card);
+  border-radius: 12px;
+}
+
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.palette .peg {
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.palette .peg:active { transform: scale(0.92); }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.result-overlay, .help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.help-overlay { z-index: 300; }
+
+.result-box, .help-modal {
+  background: linear-gradient(145deg, var(--bg2), var(--card));
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 28px;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.help-modal { text-align: left; }
+
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.help-header h2 { margin: 0; }
+.help-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: inherit;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.help-body ul { padding-left: 20px; }
+.help-body li { margin-bottom: 8px; line-height: 1.4; }
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.result-box h2 { color: var(--accent); margin: 0 0 8px; }
+
+@media (max-width: 480px) {
+  .peg { width: 30px; height: 30px; }
+  .palette .peg { width: 40px; height: 40px; }
+  .header-actions { width: 100%; margin-left: 0; justify-content: flex-end; }
+}
+  </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div id="levelScreen" class="level-screen">
+        <div class="level-header">
+          <h1>Mastermind</h1>
+          <button type="button" id="helpBtnLevel" class="help-btn" title="How to play" aria-label="How to play">?</button>
+        </div>
+        <p>Choose difficulty</p>
+        <div class="level-buttons">
+          <button type="button" data-level="easy" class="level-btn">
+            <span class="level-name">Easy</span>
+            <span class="level-desc">4 pegs · 4 colors · 12 guesses</span>
+          </button>
+          <button type="button" data-level="medium" class="level-btn">
+            <span class="level-name">Medium</span>
+            <span class="level-desc">4 pegs · 6 colors · 10 guesses</span>
+          </button>
+          <button type="button" data-level="hard" class="level-btn">
+            <span class="level-name">Hard</span>
+            <span class="level-desc">5 pegs · 8 colors · 8 guesses</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="gameScreen" class="game-screen hidden">
+        <header class="header">
+          <h1>Mastermind</h1>
+          <button type="button" id="helpBtnGame" class="help-btn" title="How to play" aria-label="How to play">?</button>
+          <span class="level-badge" id="levelBadge">Easy</span>
+          <div class="header-actions">
+            <span class="guesses-left" id="guessesLeft">Guesses: 12</span>
+            <button type="button" id="changeLevelBtn" class="btn btn-ghost">Level</button>
+            <button type="button" id="newGameBtn" class="btn">New Game</button>
+          </div>
+        </header>
+
+        <main class="game-container">
+          <div id="secretRow" class="secret-row" aria-label="Secret code"></div>
+          <div id="history" class="history" aria-label="Guess history"></div>
+          <div class="current-area">
+            <div id="currentGuess" class="current-guess" aria-label="Current guess"></div>
+            <div id="palette" class="palette" aria-label="Color palette"></div>
+            <div class="actions">
+              <button type="button" id="clearBtn" class="btn btn-ghost">Clear</button>
+              <button type="button" id="submitBtn" class="btn btn-large">Submit</button>
+            </div>
+          </div>
+        </main>
+
+        <div id="resultOverlay" class="result-overlay hidden">
+          <div class="result-box">
+            <h2 id="resultTitle"></h2>
+            <p id="resultMsg"></p>
+            <div class="result-actions">
+              <button type="button" id="playAgainBtn" class="btn btn-large">Play Again</button>
+              <button type="button" id="changeLevelFromResultBtn" class="btn btn-ghost">Change Level</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="helpOverlay" class="help-overlay hidden" aria-hidden="true">
+      <div class="help-modal" role="dialog" aria-labelledby="helpTitle" aria-modal="true">
+        <div class="help-header">
+          <h2 id="helpTitle">How to play</h2>
+          <button type="button" id="helpClose" class="help-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="help-body">
+          <p>Guess the secret color code in a limited number of tries.</p>
+          <ul>
+            <li>Tap colors to fill your guess, then press <strong>Submit</strong>.</li>
+            <li><strong>Black peg</strong> — correct color in the correct position.</li>
+            <li><strong>White peg</strong> — correct color in the wrong position.</li>
+            <li>Easy: 4 pegs / 4 colors / 12 guesses. Medium: 4 / 6 / 10. Hard: 5 / 8 / 8.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    
+  
+  <script>
+(function () {
+  "use strict";
+
+  const COLORS = [
+    "#e74c3c", "#3498db", "#2ecc71", "#f1c40f",
+    "#9b59b6", "#e67e22", "#1abc9c", "#ecf0f1",
+  ];
+
+  const LEVELS = {
+    easy: { pegs: 4, colors: 4, maxGuesses: 12 },
+    medium: { pegs: 4, colors: 6, maxGuesses: 10 },
+    hard: { pegs: 5, colors: 8, maxGuesses: 8 },
+  };
+
+  let state = {
+    level: "easy",
+    secret: [],
+    current: [],
+    history: [],
+    gameOver: false,
+  };
+
+  const $ = (s, el = document) => el.querySelector(s);
+  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+  function cfg() {
+    return LEVELS[state.level];
+  }
+
+  function makeSecret() {
+    const { pegs, colors } = cfg();
+    const secret = [];
+    for (let i = 0; i < pegs; i++) {
+      secret.push(Math.floor(Math.random() * colors));
+    }
+    return secret;
+  }
+
+  function scoreGuess(guess, secret) {
+    const n = secret.length;
+    let blacks = 0;
+    const secretLeft = [];
+    const guessLeft = [];
+    for (let i = 0; i < n; i++) {
+      if (guess[i] === secret[i]) blacks++;
+      else {
+        secretLeft.push(secret[i]);
+        guessLeft.push(guess[i]);
+      }
+    }
+    let whites = 0;
+    const used = new Array(secretLeft.length).fill(false);
+    for (let i = 0; i < guessLeft.length; i++) {
+      for (let j = 0; j < secretLeft.length; j++) {
+        if (!used[j] && guessLeft[i] === secretLeft[j]) {
+          used[j] = true;
+          whites++;
+          break;
+        }
+      }
+    }
+    return { blacks, whites };
+  }
+
+  function pegEl(colorIndex, extraClass) {
+    const d = document.createElement("div");
+    d.className = "peg" + (extraClass ? " " + extraClass : "");
+    if (colorIndex === null || colorIndex === undefined) {
+      d.classList.add("empty");
+    } else if (colorIndex === -1) {
+      d.classList.add("hidden-secret");
+    } else {
+      d.style.background = COLORS[colorIndex];
+    }
+    return d;
+  }
+
+  function renderSecret(reveal) {
+    const row = $("#secretRow");
+    row.innerHTML = "";
+    const label = document.createElement("span");
+    label.textContent = reveal ? "Code:" : "Secret:";
+    label.style.marginRight = "8px";
+    label.style.opacity = "0.8";
+    row.appendChild(label);
+    const { pegs } = cfg();
+    for (let i = 0; i < pegs; i++) {
+      row.appendChild(pegEl(reveal ? state.secret[i] : -1));
+    }
+  }
+
+  function renderHistory() {
+    const hist = $("#history");
+    hist.innerHTML = "";
+    state.history.forEach((entry) => {
+      const row = document.createElement("div");
+      row.className = "guess-row";
+      entry.guess.forEach((c) => row.appendChild(pegEl(c)));
+      const fb = document.createElement("div");
+      fb.className = "feedback";
+      const total = cfg().pegs;
+      let placed = 0;
+      for (let i = 0; i < entry.blacks; i++) {
+        const p = document.createElement("div");
+        p.className = "fb-peg black";
+        fb.appendChild(p);
+        placed++;
+      }
+      for (let i = 0; i < entry.whites; i++) {
+        const p = document.createElement("div");
+        p.className = "fb-peg white";
+        fb.appendChild(p);
+        placed++;
+      }
+      while (placed < total) {
+        const p = document.createElement("div");
+        p.className = "fb-peg empty";
+        fb.appendChild(p);
+        placed++;
+      }
+      row.appendChild(fb);
+      hist.appendChild(row);
+    });
+    hist.scrollTop = hist.scrollHeight;
+  }
+
+  function renderCurrent() {
+    const row = $("#currentGuess");
+    row.innerHTML = "";
+    const { pegs } = cfg();
+    for (let i = 0; i < pegs; i++) {
+      const peg = pegEl(state.current[i] ?? null);
+      peg.dataset.slot = i;
+      peg.addEventListener("click", () => {
+        if (state.gameOver) return;
+        state.current[i] = undefined;
+        renderCurrent();
+      });
+      row.appendChild(peg);
+    }
+    $("#submitBtn").disabled = state.gameOver || state.current.filter((c) => c !== undefined).length !== pegs;
+  }
+
+  function renderPalette() {
+    const pal = $("#palette");
+    pal.innerHTML = "";
+    const { colors } = cfg();
+    for (let i = 0; i < colors; i++) {
+      const peg = pegEl(i);
+      peg.addEventListener("click", () => pickColor(i));
+      pal.appendChild(peg);
+    }
+  }
+
+  function pickColor(colorIndex) {
+    if (state.gameOver) return;
+    const { pegs } = cfg();
+    const slot = state.current.findIndex((c) => c === undefined);
+    const idx = slot === -1 ? state.current.length : slot;
+    if (idx >= pegs) return;
+    state.current[idx] = colorIndex;
+    while (state.current.length < pegs) state.current.push(undefined);
+    state.current = state.current.slice(0, pegs);
+    renderCurrent();
+  }
+
+  function updateGuessesLeft() {
+    const left = cfg().maxGuesses - state.history.length;
+    $("#guessesLeft").textContent = "Guesses: " + left;
+  }
+
+  function submitGuess() {
+    if (state.gameOver) return;
+    const { pegs, maxGuesses } = cfg();
+    if (state.current.filter((c) => c !== undefined).length !== pegs) return;
+    const guess = state.current.slice();
+    const { blacks, whites } = scoreGuess(guess, state.secret);
+    state.history.push({ guess, blacks, whites });
+    state.current = Array(pegs).fill(undefined);
+    renderHistory();
+    renderCurrent();
+    updateGuessesLeft();
+
+    if (blacks === pegs) {
+      endGame(true);
+    } else if (state.history.length >= maxGuesses) {
+      endGame(false);
+    }
+  }
+
+  function endGame(won) {
+    state.gameOver = true;
+    renderSecret(true);
+    $("#resultTitle").textContent = won ? "You cracked it!" : "Out of guesses";
+    $("#resultMsg").textContent = won
+      ? "You found the code in " + state.history.length + " guess(es)."
+      : "Better luck next time. The code is revealed above.";
+    $("#resultOverlay").classList.remove("hidden");
+    renderCurrent();
+  }
+
+  function startNewGame() {
+    const { pegs } = cfg();
+    state.secret = makeSecret();
+    state.current = Array(pegs).fill(undefined);
+    state.history = [];
+    state.gameOver = false;
+    $("#resultOverlay").classList.add("hidden");
+    renderSecret(false);
+    renderHistory();
+    renderPalette();
+    renderCurrent();
+    updateGuessesLeft();
+  }
+
+  function startGame(level) {
+    state.level = level;
+    $("#levelScreen").classList.add("hidden");
+    $("#gameScreen").classList.remove("hidden");
+    $("#levelBadge").textContent = level.charAt(0).toUpperCase() + level.slice(1);
+    startNewGame();
+  }
+
+  function goToLevelScreen() {
+    $("#gameScreen").classList.add("hidden");
+    $("#resultOverlay").classList.add("hidden");
+    $("#levelScreen").classList.remove("hidden");
+  }
+
+  function showHelp() {
+    $("#helpOverlay").classList.remove("hidden");
+    $("#helpOverlay").setAttribute("aria-hidden", "false");
+  }
+
+  function hideHelp() {
+    $("#helpOverlay").classList.add("hidden");
+    $("#helpOverlay").setAttribute("aria-hidden", "true");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    $$(".level-btn").forEach((btn) => {
+      btn.addEventListener("click", () => startGame(btn.dataset.level));
+    });
+    $("#newGameBtn").addEventListener("click", startNewGame);
+    $("#changeLevelBtn").addEventListener("click", goToLevelScreen);
+    $("#clearBtn").addEventListener("click", () => {
+      if (state.gameOver) return;
+      state.current = Array(cfg().pegs).fill(undefined);
+      renderCurrent();
+    });
+    $("#submitBtn").addEventListener("click", submitGuess);
+    $("#playAgainBtn").addEventListener("click", startNewGame);
+    $("#changeLevelFromResultBtn").addEventListener("click", goToLevelScreen);
+    $("#helpBtnLevel").addEventListener("click", showHelp);
+    $("#helpBtnGame").addEventListener("click", showHelp);
+    $("#helpClose").addEventListener("click", hideHelp);
+    $("#helpOverlay").addEventListener("click", (e) => {
+      if (e.target.id === "helpOverlay") hideHelp();
+    });
+  });
+})();
+  </script>
+  </body>
+</html>
+

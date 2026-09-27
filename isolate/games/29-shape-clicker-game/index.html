@@ -1,0 +1,99 @@
+<html lang="en">
+  <head>
+  <base target="_self">
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=`" />
+    <title>Talha - Shape Clicker Game</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha --> 
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+	  <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg">
+    
+  
+  <style>
+body {
+  background: black;
+  color: white;
+}
+
+/* JavaScript */
+.message {
+  text-align: center;
+  padding: 10px;
+  font-size: 2rem;
+}
+
+.box {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  top: 50px;
+  left: 20%;
+  background-color: cornsilk;
+  border: 1px solid black;
+  font-size: 1.5em;
+  line-height: 100px;
+}
+  </style>
+  </head>
+  <body>
+    <div class="output"></div>
+
+    
+  
+  <script>
+const game = { timer: 0, start: null };
+
+// Create Message Element
+const message = document.createElement("div");
+message.classList.add("message");
+message.textContent = "Press To Start";
+document.body.prepend(message);
+
+// Create a Box
+const box = document.createElement("div");
+box.classList.add("box");
+
+const output = document.querySelector(".output");
+output.append(box);
+
+box.addEventListener("click", () => {
+  box.textContent = "";
+  box.style.display = "none";
+  game.timer = setTimeout(addBox, randomNumbers(3000));
+  if (!game.start) {
+    message.textContent = "Watch for element and click it";
+  } else {
+    const current = new Date().getTime();
+    const duration = (current - game.start) / 1000;
+    message.textContent = `It took ${duration} seconds to click`;
+  }
+});
+
+function randomNumbers(max) {
+  return Math.floor(Math.random() * max);
+}
+
+function addBox() {
+  game.start = new Date().getTime();
+  const container = output.getBoundingClientRect();
+  const dim = [randomNumbers(50) + 20, randomNumbers(50) + 20];
+  box.style.display = "block";
+  box.style.width = `${dim[0]}px`;
+  box.style.height = `${dim[1]}px`;
+  box.style.backgroundColor = "#" + Math.random().toString(16).substr(-6);
+  box.style.left = randomNumbers(container.width - dim[0]) + "px";
+  box.style.top = randomNumbers(container.height - dim[1]) + "px";
+  box.style.borderRadius = randomNumbers(50) + "%";
+}
+  </script>
+  </body>
+</html>
+
