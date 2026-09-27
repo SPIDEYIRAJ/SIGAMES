@@ -62,49 +62,6 @@ function cover(seed: number): string {
 
 type LocalGame = [title: string, category: string, tags: string[], description: string, controls: string];
 
-/** Neon sunset skyline art for the Vice City slot. */
-function viceCityCover(): string {
-  const towers = [
-    [8, 96, 26, 128], [40, 62, 30, 162], [76, 108, 22, 116], [104, 40, 34, 184],
-    [144, 84, 26, 140], [176, 24, 40, 200], [222, 96, 24, 128], [252, 58, 32, 166],
-    [290, 112, 22, 112], [318, 70, 34, 154], [358, 100, 34, 124],
-  ]
-    .map(([x, y, w, h]) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1a0f33"/>`)
-    .join("");
-  const windows = [20, 58, 96, 150, 196, 232, 268, 310, 344]
-    .map(
-      (x) =>
-        `<rect x="${x}" y="${126 + (x % 3) * 14}" width="4" height="6" fill="#ffd36e" opacity=".8"/>` +
-        `<rect x="${x + 14}" y="${150 - (x % 4) * 10}" width="4" height="6" fill="#6ee7ff" opacity=".7"/>`,
-    )
-    .join("");
-  const palms = [46, 132, 268, 344]
-    .map(
-      (x) =>
-        `<path d="M${x} 300 L${x} 196" stroke="#12081f" stroke-width="5"/>` +
-        `<path d="M${x} 196 q-22 -16 -38 -2 q22 2 38 8 q18 -18 40 -8 q-20 -12 -40 -6 q10 -14 4 -30 q-8 18 -4 38" fill="#1d1030"/>`,
-    )
-    .join("");
-  const grid = [0, 1, 2, 3, 4, 5]
-    .map((i) => {
-      const x = -200 + i * 160;
-      return `<path d="M${x} 300 L200 212" stroke="#ff5fa2" stroke-width="1" opacity=".45"/>`;
-    })
-    .join("") + [0, 1, 2, 3].map((i) => `<path d="M0 ${226 + i * 22} H400" stroke="#ff5fa2" stroke-width="1" opacity=".3"/>`).join("");
-
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">` +
-    `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b1055"/><stop offset=".42" stop-color="#8a2f8f"/><stop offset=".74" stop-color="#ff6b6b"/><stop offset="1" stop-color="#ffd36e"/></linearGradient>` +
-    `<linearGradient id="road" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2d1a52"/><stop offset="1" stop-color="#100820"/></linearGradient></defs>` +
-    `<rect width="400" height="300" fill="url(#sky)"/>` +
-    `<circle cx="300" cy="138" r="44" fill="#ffd9a8" opacity=".9"/>` +
-    `<circle cx="300" cy="138" r="72" fill="#ff9ec4" opacity=".22"/>` +
-    towers + windows + `<rect y="206" width="400" height="94" fill="url(#road)"/>` + grid + palms +
-    `<text x="200" y="44" text-anchor="middle" font-family="Impact, Haettenschweiler, sans-serif" font-size="34" letter-spacing="6" fill="#fff1f7" opacity=".92">VICE CITY</text>` +
-    `</svg>`;
-
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-}
 
 const localGames: LocalGame[] = [
   ["Starfighter SI-01", "Action", ["Shooter", "Space", "Original"], "Fly the SI-01 through the debris belt and hold your line as long as you can.", "Move with the arrow keys or the mouse, fire with Space or click. Every cleared wave raises the stakes."],
@@ -320,7 +277,7 @@ export const games: Game[] = [
     tags: ["Open World", "Driving", "Browser Ready"],
     description: "Sunset Strip, neon palms and a city that never closes.",
     controls: "W A S D to move, the mouse to look around, Space to jump or enter a car. It plays in this frame — go fullscreen for the real thing.",
-    thumbnail: viceCityCover(),
+    thumbnail: "/thumbs/gta-vice-city.png",
     sourceUrl: decodeTarget("aHR0cHM6Ly92Yy5jaW5ldm8udXM="),
     type: "iframe",
     heavy: true,
