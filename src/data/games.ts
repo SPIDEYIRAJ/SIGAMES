@@ -337,6 +337,17 @@ export const games: Game[] = [
   // ——— Fan browser ports. Each URL was checked for reachability and for
   // X-Frame-Options / frame-ancestors before being listed, so every one loads in-frame.
   {
+    id: "gta-v",
+    title: "Grand Theft Auto V",
+    category: "Action",
+    tags: ["Open World", "Third-Person", "Browser Ready"],
+    description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
+    controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
+    thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
+    sourceUrl: "https://gta2.deloskiyt.pl/",
+    type: "iframe",
+    heavy: true,
+  },  {
     id: "bo1-zombies",
     title: "Black Ops 1 — Zombies",
     category: "Shooter",
