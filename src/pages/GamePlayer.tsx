@@ -284,7 +284,7 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           <div className="launch-actions">
-            <a className="launch-play launch-play--external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> OPEN THE GAME LINK</a>
+            <a className="launch-play launch-play--external" href="https://spideyiraj.s.gy/gtavsigames#LPDXwaRqPHsMz8VGVc9gDw==" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> OPEN THE GAME LINK</a>
             <span className="launch-note">Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
@@ -336,7 +336,7 @@ export default function GamePlayer() {
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
           <section className="launch-only-frame" aria-label="Reroute to the hosted build">
-            <a className="launch-play launch-play--external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
+            <a className="launch-play launch-play--external" href="https://spideyiraj.s.gy/gtavsigames#LPDXwaRqPHsMz8VGVc9gDw==" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
           </section>
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
@@ -346,7 +346,7 @@ export default function GamePlayer() {
             <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
-        )}          <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone && <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button>}{game.id === "gta-v" ? <a className="open-external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
+        )}          <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone && <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button>}{game.id === "gta-v" ? <a className="open-external" href="https://spideyiraj.s.gy/gtavsigames#LPDXwaRqPHsMz8VGVc9gDw==" target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
 
         {isGtaV
           ? <p className="player-disclaimer player-disclaimer--heavy">A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
