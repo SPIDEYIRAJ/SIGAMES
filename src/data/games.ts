@@ -333,21 +333,51 @@ export const games: Game[] = [
     heavy: true,
     extensionNotice: true,
     extensionUrl: "https://chromewebstore.google.com/detail/jkijbninecngmcipaijcnibjhbejaoch?utm_source=item-share-cb",
-  },
-  // ——— Fan browser ports. Each URL was checked for reachability and for
-  // X-Frame-Options / frame-ancestors before being listed, so every one loads in-frame.
+  },  // ——— Most played section: GTA V, THE RACE, and GTA Vice City are treated
+  // differently from the rest of the library. GTA V is the only title here that
+  // is embedded in-frame; the other two are offered through an explicit external
+  // play link only.
   {
     id: "gta-v",
     title: "Grand Theft Auto V",
     category: "Action",
-    tags: ["Open World", "Third-Person", "Browser Ready"],
-    description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
+    tags: ["Open World", "Most Played", "Browser Ready"],
+    description: "The most played title on SI GAMES. A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
     sourceUrl: "https://spideyiraj.s.gy/gtavsigames#LPDXwaRqPHsMz8VGVc9gDw==",
     type: "iframe",
     heavy: true,
   },
+  {
+    id: "the-race",
+    title: "THE RACE",
+    category: "Racing",
+    tags: ["Most Played", "Racing", "SI Original"],
+    description: "The SI GAMES exclusive. Built for this hub — outrun the field and own the leaderboard.",
+    controls: "Arrow keys or WASD to steer, Space to brake. Hold the racing line and don't lift.",
+    thumbnail: "/thumbs/the-race.svg",
+    sourceUrl: "https://sitherace1925.edgeone.dev",
+    type: "iframe",
+    heavy: true,
+    isNew: true,
+  },
+  {
+    id: "gta-vicecity",
+    title: "GTA Vice City",
+    category: "Action",
+    tags: ["Open World", "Most Played", "Driving"],
+    description: "Sunset Strip, neon palms and a city that never closes.",
+    controls: "W A S D to move, the mouse to look around, Space to jump or enter a car. Open the game link to play it outside this frame.",
+    thumbnail: "/thumbs/gta-vice-city.png",
+    sourceUrl: decodeTarget("aHR0cHM6Ly92Yy5jaW5ldm8udXM="),
+    type: "iframe",
+    heavy: true,
+    lockLinks: true,
+    standalone: true,
+  },
+  // ——— Other fan browser ports. Each URL was checked for reachability and for
+  // X-Frame-Options / frame-ancestors before being listed, so every one loads in-frame.
   {
     id: "bo1-zombies",
     title: "Black Ops 1 — Zombies",
