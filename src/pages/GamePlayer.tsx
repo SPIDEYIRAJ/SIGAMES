@@ -57,8 +57,14 @@ export default function GamePlayer() {
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
-    return !target?.standalone && target?.type !== "external";
+    if (!target) return false;
+    if (target.id === "gta-v") return true;
+    return !target.standalone && target.type !== "external";
   });
+
+  // GTA V: the embed/frame path is disabled entirely. Only the external-link button is offered.
+  const isGtaV = game?.id === "gta-v";
+
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLElement>(null);
@@ -278,17 +284,8 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           <div className="launch-actions">
-            {game.id === "gta-v" ? (
-              <a className="launch-play launch-play--external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> OPEN THE GAME LINK</a>
-            ) : (
-              <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> PLAY NOW</button>
-            )}
-            <span className="launch-note">{game.id === "gta-v"
-              ? "Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads."
-              : game.type === "external"
-                ? "This build cannot run inside a frame, so PLAY takes you to it in this tab."
-                : "Loads inside this page. Fullscreen offered on launch."}
-              <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            <a className="launch-play launch-play--external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> OPEN THE GAME LINK</a>
+            <span className="launch-note">Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
           <p className="player-disclaimer player-disclaimer--heavy">{game.id === "gta-v"
@@ -337,15 +334,25 @@ export default function GamePlayer() {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
-          {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
-          {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
-          <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-          <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
-          <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
-        </section>          <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone && <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button>}{game.id === "gta-v" ? <a className="open-external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
+        {isGtaV ? (
+          <section className="launch-only-frame" aria-label="Reroute to the hosted build">
+            <a className="launch-play launch-play--external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
+          </section>
+        ) : (
+          <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
+            {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
+            {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
+            <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
+            <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
+          </section>
+        )}          <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone && <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button>}{game.id === "gta-v" ? <a className="open-external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
 
-        {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+        {isGtaV
+          ? <p className="player-disclaimer player-disclaimer--heavy">A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
       </main>
       {showExtension && <div className="extension-backdrop" onClick={() => setShowExtension(false)}><div ref={extensionModalRef} className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">The Eaglercraft browser extension unlocks the full experience for this title. You can skip it and still try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div><p className="extension-skip-hint">Press <kbd>Esc</kbd> to skip</p></div></div>}
     </div>
