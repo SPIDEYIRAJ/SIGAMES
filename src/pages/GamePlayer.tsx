@@ -58,21 +58,22 @@ export default function GamePlayer() {
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
     if (!target) return false;
-    if (target.id === "the-race" || target.id === "gta-vicecity") return true;
+    if (target.id === "gta-v") return !target.standalone && target.type !== "external";
     return !target.standalone && target.type !== "external";
   });
 
-  /** Most Played section’s non-embeddable titles open as one explicit external link. */
-  const isMostPlayedExternal = useCallback(
-    (game: import("@/data/games").Game | undefined) => Boolean(game && (game.id === "the-race" || game.id === "gta-vicecity")),
+  /** GTA V is the only Most Played title that keeps an explicit host link shown to the user. */
+  const isMostPlayedHostLink = useCallback(
+    (game: import("@/data/games").Game | undefined) => Boolean(game && game.id === "gta-v"),
     [],
   );
 
-  // Only GTA V keeps the in-frame embed path among the Most Played titles.
-  // THE RACE and GTA Vice City are featured, but their play affordance is one
-  // explicit external link, not a frame load.
+  // Every Most Played title can load in-frame here. The only visible host link
+  // is shown for GTA V; THE RACE and GTA Vice City keep their raw source hidden.
   const isGtaV = game?.id === "gta-v";
-  const isMostPlayedFrame = isGtaV;
+  const isMostPlayedHostOnly = isGtaV;
+
+  const showGtaVHostLink = isGtaV;
 
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
@@ -341,15 +342,10 @@ export default function GamePlayer() {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        {isGtaV ? (
-          <section className="launch-only-frame launch-only-frame--gtav" aria-label="Open the hosted build link">
+        {showGtaVHostLink ? (
+          <section className="launch-only-frame launch-only-frame--host-link" aria-label="Open the hosted build link">
             <a className="launch-play launch-play--external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
-            <span className="launch-note">Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
-          </section>
-        ) : isMostPlayedExternal(game) ? (
-          <section className="launch-only-frame launch-only-frame--most-played" aria-label="Open the hosted build link">
-            <a className="launch-play launch-play--external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
-            <span className="launch-note">This most played title opens on its own site. No worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            <span className="launch-note">Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </section>
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
@@ -360,12 +356,10 @@ export default function GamePlayer() {
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         )}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.id === "gta-v" || game.id === "gta-vicecity" || game.id === "the-race" ? <a className="open-external" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{showGtaVHostLink ? <a className="open-external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
 
-        {isGtaV
+        {showGtaVHostLink
           ? <p className="player-disclaimer player-disclaimer--heavy">A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
-          : isMostPlayedExternal(game)
-            ? <p className="player-disclaimer player-disclaimer--heavy">One of SI GAMES’ most played titles. This build runs on its own site; we do not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
