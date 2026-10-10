@@ -58,7 +58,7 @@ export default function GamePlayer() {
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
     if (!target) return false;
-    if (target.id === "gta-v" || target.id === "the-race" || target.id === "gta-vicecity") return true;
+    if (target.id === "the-race" || target.id === "gta-vicecity") return true;
     return !target.standalone && target.type !== "external";
   });
 
@@ -68,9 +68,9 @@ export default function GamePlayer() {
     [],
   );
 
-  // Only GTA V gets the embedded in-frame play path. THE RACE and GTA Vice City
-  // are featured titles, but their play affordance is one explicit external link,
-  // not a frame load.
+  // Only GTA V keeps the in-frame embed path among the Most Played titles.
+  // THE RACE and GTA Vice City are featured, but their play affordance is one
+  // explicit external link, not a frame load.
   const isGtaV = game?.id === "gta-v";
   const isMostPlayedFrame = isGtaV;
 
@@ -293,13 +293,11 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           <div className="launch-actions">
-            <a className="launch-play launch-play--external" href="https://spideyiraj.s.gy/gtavsigames#LPDXwaRqPHsMz8VGVc9gDw==" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> OPEN THE GAME LINK</a>
+            <a className="launch-play launch-play--external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
             <span className="launch-note">Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
-          <p className="player-disclaimer player-disclaimer--heavy">{game.id === "gta-v"
-            ? "A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads."
-            : "This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability."} <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          <p className="player-disclaimer player-disclaimer--heavy">A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
         </main>
       </div>
     );
@@ -344,8 +342,9 @@ export default function GamePlayer() {
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
-          <section className="launch-only-frame" aria-label="Reroute to the hosted build">
-            <a className="launch-play launch-play--external" href="https://spideyiraj.s.gy/gtavsigames#LPDXwaRqPHsMz8VGVc9gDw==" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
+          <section className="launch-only-frame launch-only-frame--gtav" aria-label="Open the hosted build link">
+            <a className="launch-play launch-play--external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
+            <span className="launch-note">Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </section>
         ) : isMostPlayedExternal(game) ? (
           <section className="launch-only-frame launch-only-frame--most-played" aria-label="Open the hosted build link">
