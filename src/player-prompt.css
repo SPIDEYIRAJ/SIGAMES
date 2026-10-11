@@ -273,6 +273,163 @@
   text-transform: uppercase;
 }
 
+/* ——— GTA V gallery: key art, game facts, the trailer and the video picks.
+   Everything here plays inside the page; none of it needs a new tab. ——— */
+.gtav-media {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: min(880px, 100%);
+  margin: 26px auto 0;
+  text-align: left;
+}
+
+.gtav-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 14px;
+  background: #0a142e;
+}
+
+.gtav-hero-img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+
+.gtav-hero-logo {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: clamp(96px, 18%, 190px);
+  height: auto;
+  filter: drop-shadow(0 6px 16px #000000cc);
+}
+
+.gtav-hero figcaption {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  border-radius: 6px;
+  padding: 4px 9px;
+  background: #080710cc;
+  color: #b9c7eb;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.gtav-block { display: flex; flex-direction: column; gap: 12px; }
+
+.gtav-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 9px;
+}
+
+.gtav-fact {
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 10px;
+  padding: 11px 13px;
+  background: #131e36;
+}
+
+.gtav-fact dt {
+  color: #7485ad;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.gtav-fact dd { margin-top: 5px; color: #eef2ff; font-size: 12px; font-weight: 800; line-height: 1.5; }
+
+.gtav-trailer { display: flex; flex-direction: column; gap: 8px; }
+
+.gtav-trailer video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(86, 8, 248, .34);
+  border-radius: 14px;
+  background: #080710;
+}
+
+.gtav-trailer figcaption,
+.gtav-shot figcaption { color: #7485ad; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+
+.gtav-shots { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+
+.gtav-shot {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  padding: 10px;
+  background: #131e36;
+}
+
+.gtav-shot img { width: 100%; aspect-ratio: 16 / 9; border-radius: 8px; object-fit: cover; transition: transform .35s ease; }
+.gtav-shot:hover img { transform: scale(1.03); }
+
+.gtav-videos { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+
+.gtav-video {
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 12px;
+  background: #080710;
+}
+
+.gtav-video.is-playing { border-color: rgba(62, 254, 255, .3); }
+.gtav-video iframe { display: block; width: 100%; height: 100%; border: 0; }
+
+.gtav-video-pick {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: #080710;
+  cursor: pointer;
+}
+
+.gtav-video-pick img { width: 100%; height: 100%; object-fit: cover; opacity: .72; transition: opacity .3s ease; }
+.gtav-video-pick:hover img { opacity: .92; }
+
+.gtav-video-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #5608F8e0;
+  color: #fff;
+  transform: translate(-50%, -50%);
+}
+
+.gtav-video-pick:hover .gtav-video-play { background: #5608F8; }
+
+.gtav-video-meta {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 24px 11px 9px;
+  background: linear-gradient(to top, #080710e6, #08071000);
+  text-align: left;
+}
+
+.gtav-video-meta strong { color: #f2f6ff; font-size: 11px; font-weight: 900; line-height: 1.4; }
+.gtav-video-meta em { color: #3EFEFF; font-size: 9px; font-style: normal; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+
 .launch-report { display: flex; justify-content: center; margin-top: 18px; }
 
 /* ——— Report button and dialog, available on every game page. ——— */
@@ -431,6 +588,9 @@
 
 @media (max-width: 720px) {
   .gtav-notice { padding: 22px 16px; }
+  .gtav-media { gap: 18px; margin-top: 20px; }
+  .gtav-hero-logo { top: 12px; left: 12px; }
+  .gtav-hero figcaption { display: none; }
   .gtav-copy { width: 100%; }
   .report-dialog { padding: 24px 16px 20px; }
   .report-actions .primary-button,

@@ -3,7 +3,7 @@ import { AlertTriangle, ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Ma
 import { useNavigate, useParams } from "react-router";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { games } from "@/data/games";
+import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-vicecity) have no :id segment. */
@@ -60,7 +60,7 @@ const REPORT_REASONS = [
  * either — the browser blocks that cross-site pop-up. So the page hands the
  * player a download button and the link to paste into a fresh tab themselves.
  */
-function GtaVNotice({ hostUrl }: { hostUrl: string }) {
+function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) {
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -79,46 +79,138 @@ function GtaVNotice({ hostUrl }: { hostUrl: string }) {
   };
 
   return (
-    <section className="gtav-notice" aria-labelledby="gtav-notice-title">
-      <span className="gtav-tag">GTA V · HOW TO PLAY</span>
-      <h2 id="gtav-notice-title">Copy the link, then open it in your own tab</h2>
-      <p className="gtav-text">
-        GTA V cannot run inside this page, and this site cannot open a new tab for you either — browsers block a
-        tab opened that way. So copy the link, then paste it into a new tab yourself.
-      </p>
-
-      <button type="button" className="launch-play launch-play--external gtav-copy" onClick={copyLink}>
-        {copied ? <Check size={18} /> : <Copy size={18} />}
-        {copied ? "Link copied" : "Copy the game link"}
-      </button>
-
-      <input
-        type="text"
-        readOnly
-        className="gtav-link"
-        value={hostUrl}
-        aria-label="GTA V game link"
-        onFocus={(event) => event.currentTarget.select()}
-        onClick={(event) => event.currentTarget.select()}
-      />
-
-      <div className="gtav-browser">
-        <strong>Open it in Brave (best) or Opera GX.</strong>
-        <p>
-          Brave runs this build ad-free and without interruptions, so it is the smoothest way to play. Opera GX
-          works too. On Windows, install Brave with one command:
+    <>
+      <section className="gtav-notice" aria-labelledby="gtav-notice-title">
+        <span className="gtav-tag">GTA V · HOW TO PLAY</span>
+        <h2 id="gtav-notice-title">Copy the link, then open it in your own tab</h2>
+        <p className="gtav-text">
+          GTA V cannot run inside this page, and this site cannot open a new tab for you either — browsers block a
+          tab opened that way. So copy the link, then paste it into a new tab yourself.
         </p>
-        <code className="gtav-command">winget install --id Brave.Brave -e</code>
-      </div>
 
-      <p className="gtav-warning">
-        <AlertTriangle size={14} /> GTA V will not run on many devices. It needs a reasonably strong machine and a
-        modern browser.
-      </p>
-      <p className="gtav-fineprint">
-        A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
-        <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
-      </p>
+        <button type="button" className="launch-play launch-play--external gtav-copy" onClick={copyLink}>
+          {copied ? <Check size={18} /> : <Copy size={18} />}
+          {copied ? "Link copied" : "Copy the game link"}
+        </button>
+
+        <input
+          type="text"
+          readOnly
+          className="gtav-link"
+          value={hostUrl}
+          aria-label="GTA V game link"
+          onFocus={(event) => event.currentTarget.select()}
+          onClick={(event) => event.currentTarget.select()}
+        />
+
+        <div className="gtav-browser">
+          <strong>Open it in Brave (best) or Opera GX.</strong>
+          <p>
+            Brave runs this build ad-free and without interruptions, so it is the smoothest way to play. Opera GX
+            works too. On Windows, install Brave with one command:
+          </p>
+          <code className="gtav-command">winget install --id Brave.Brave -e</code>
+        </div>
+
+        <p className="gtav-warning">
+          <AlertTriangle size={14} /> GTA V will not run on many devices. It needs a reasonably strong machine and a
+          modern browser.
+        </p>
+        <p className="gtav-fineprint">
+          A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
+          <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
+        </p>
+      </section>
+
+      {media && <GtaVMedia media={media} />}
+    </>
+  );
+}
+
+/**
+ * The GTA V gallery: the key art, the game's own facts, the official trailer and
+ * the trailer picks. Videos load in this page — nothing here needs a new tab.
+ */
+function GtaVMedia({ media }: { media: GameMedia }) {
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const screenshots = media.screenshots ?? [];
+  const videos = media.videos ?? [];
+  const facts = media.facts ?? [];
+
+  return (
+    <section className="gtav-media" aria-label="Grand Theft Auto V images and game information">
+      {media.banner && (
+        <figure className="gtav-hero">
+          <img className="gtav-hero-img" src={media.banner} alt="Grand Theft Auto V key art" loading="lazy" />
+          {media.logo && <img className="gtav-hero-logo" src={media.logo} alt="Grand Theft Auto V logo" loading="lazy" />}
+          <figcaption>Grand Theft Auto V — official key art</figcaption>
+        </figure>
+      )}
+
+      {facts.length > 0 && (
+        <div className="gtav-block">
+          <span className="section-kicker"><MonitorUp size={14} /> GAME INFO</span>
+          <dl className="gtav-facts">
+            {facts.map((fact) => (
+              <div className="gtav-fact" key={fact.label}>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+
+      {media.trailer && (
+        <figure className="gtav-trailer">
+          <video controls preload="metadata" playsInline poster={media.trailer.poster}>
+            <source src={media.trailer.src} type="video/mp4" />
+            Your browser cannot play this trailer. <a href={media.trailer.src} target="_self" rel="noreferrer">Open the trailer file</a>.
+          </video>
+          <figcaption>{media.trailer.caption}</figcaption>
+        </figure>
+      )}
+
+      {screenshots.length > 0 && (
+        <div className="gtav-block">
+          <span className="section-kicker"><Expand size={14} /> SCREENSHOTS</span>
+          <div className="gtav-shots">
+            {screenshots.map((shot) => (
+              <figure className="gtav-shot" key={shot.src}>
+                <img src={shot.src} alt={shot.caption} loading="lazy" />
+                <figcaption>{shot.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {videos.length > 0 && (
+        <div className="gtav-block">
+          <span className="section-kicker"><Play size={14} /> VIDEOS</span>
+          <div className="gtav-videos">
+            {videos.map((video) => (
+              <div className={`gtav-video ${activeVideo === video.id ? "is-playing" : ""}`} key={video.id}>
+                {activeVideo === video.id ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${video.id}?rel=0&autoplay=1`}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                ) : (
+                  <button type="button" className="gtav-video-pick" onClick={() => setActiveVideo(video.id)}>
+                    <img src={video.poster} alt={video.title} loading="lazy" />
+                    <span className="gtav-video-play" aria-hidden="true"><Play size={18} fill="currentColor" /></span>
+                    <span className="gtav-video-meta"><strong>{video.title}</strong><em>{video.author}</em></span>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -495,7 +587,7 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {isGtaV ? (
-            <GtaVNotice hostUrl={gtaVHostUrl} />
+            <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
           ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
@@ -554,7 +646,7 @@ export default function GamePlayer() {
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
-          <GtaVNotice hostUrl={gtaVHostUrl} />
+          <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}

@@ -1,3 +1,16 @@
+/** Cover art, screenshots and video attached to a title's page. */
+export type GameMedia = {
+  /** Transparent logo mark shown over the banner. */
+  logo?: string;
+  /** Wide key art used as the hero image and video poster. */
+  banner?: string;
+  screenshots?: { src: string; caption: string }[];
+  trailer?: { src: string; poster?: string; caption: string };
+  videos?: { id: string; title: string; author: string; poster: string }[];
+  /** Structured extras such as developer, publisher and release date. */
+  facts?: { label: string; value: string }[];
+};
+
 export type Game = {
   id: string;
   title: string;
@@ -19,6 +32,8 @@ export type Game = {
   standalone?: boolean;
   extensionNotice?: boolean;
   extensionUrl?: string;
+  /** Gallery and game information shown on the title's own page. */
+  media?: GameMedia;
 };
 
 /** Decodes a target that is kept out of plain view in the shipped source. */
@@ -185,6 +200,55 @@ export const games: Game[] = [
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
     type: "external",
     heavy: true,
+    media: {
+      logo: "https://gtwfilesie.grandtheftwiki.com/GTAV-logo-bare.png",
+      banner: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-Torrent-SteamRip.jpg",
+      screenshots: [
+        {
+          src: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-Pre-Installed-SteamRip.jpg",
+          caption: "Los Santos in full — the Story Mode world.",
+        },
+        {
+          src: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-SteamRip-300x169.jpg",
+          caption: "Street level: cars, cops and open-world chaos.",
+        },
+      ],
+      trailer: {
+        src: "https://videos-rockstargames-com.akamaized.net/v4/1s626s55/flv/en-us-1080p.mp4",
+        poster: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-Torrent-SteamRip.jpg",
+        caption: "Official trailer — plays right here on this page.",
+      },
+      videos: [
+        {
+          id: "QkkoHAzjnUs",
+          title: "Grand Theft Auto V Trailer",
+          author: "Rockstar Games",
+          poster: "https://i.ytimg.com/vi/QkkoHAzjnUs/hqdefault.jpg",
+        },
+        {
+          id: "hvoD7ehZPcM",
+          title: "Grand Theft Auto V: The Official Trailer",
+          author: "Rockstar Games",
+          poster: "https://i.ytimg.com/vi/hvoD7ehZPcM/hqdefault.jpg",
+        },
+        {
+          id: "nzV5_Uhu08A",
+          title: "GTA V Trailer #2",
+          author: "IGN",
+          poster: "https://i.ytimg.com/vi/nzV5_Uhu08A/hqdefault.jpg",
+        },
+      ],
+      facts: [
+        { label: "Developer", value: "Rockstar North" },
+        { label: "Publisher", value: "Rockstar Games" },
+        { label: "Released", value: "17 September 2013" },
+        { label: "PC release", value: "14 April 2015" },
+        { label: "Genre", value: "Action-adventure · Open world" },
+        { label: "Engine", value: "RAGE" },
+        { label: "Mode", value: "Single-player Story Mode" },
+        { label: "Platforms", value: "PC, PS5, PS4, PS3, Xbox Series X|S, Xbox One, Xbox 360" },
+      ],
+    },
   },
   {
     id: "the-race",
