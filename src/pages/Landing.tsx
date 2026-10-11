@@ -18,8 +18,8 @@ import InstallerAd from "@/components/InstallerAd";
 
 const MOST_PLAYED = [
   { rank: 1, id: "gta-v", label: "Most played", badge: "Gold", href: "https://sigamespremiumrp.spideyiraj1925.workers.dev" },
-  { rank: 2, id: "the-race", label: "Most played", badge: "Featured", href: "#play/the-race" },
-  { rank: 3, id: "gta-vicecity", label: "Most played", badge: "Featured", href: "#play/gta-vicecity" },
+  { rank: 2, id: "the-race", label: "Most played", badge: "Featured", href: "https://sigamespremiumrp.spideyiraj1925.workers.dev/therace" },
+  { rank: 3, id: "gta-vicecity", label: "Most played", badge: "Featured", href: "https://sigamespremiumrp.spideyiraj1925.workers.dev/gtavicecity" },
 ];
 
 function MostPlayedRow({ rank, game, href, badge }: { rank: number; game: Game; href: string; badge: string }) {
