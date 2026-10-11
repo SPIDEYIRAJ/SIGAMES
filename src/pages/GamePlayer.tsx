@@ -294,11 +294,11 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           <div className="launch-actions">
-            <a className="launch-play launch-play--external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
-            <span className="launch-note">Embedding is not possible for this build. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            <a className="launch-play launch-play--external" href="/play/gta-v" target="_self" rel="noreferrer"><Play size={18} fill="currentColor" /> Play on this site</a>
+            <span className="launch-note">Play directly on SI GAMES. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
-          <p className="player-disclaimer player-disclaimer--heavy">A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          <p className="player-disclaimer player-disclaimer--light">Plays on this site. No extra links, no external tabs. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
         </main>
       </div>
     );
@@ -342,10 +342,10 @@ export default function GamePlayer() {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        {showGtaVHostLink ? (
-          <section className="launch-only-frame launch-only-frame--host-link" aria-label="Open the hosted build link">
-            <a className="launch-play launch-play--external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open the game link</a>
-            <span className="launch-note">Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+        {isGtaV ? (
+          <section className="launch-only-frame launch-only-frame--host-link" aria-label="Open this title on this site">
+            <a className="launch-play launch-play--external" href="/play/gta-v" target="_self" rel="noreferrer"><Play size={18} fill="currentColor" /> Play on this site</a>
+            <span className="launch-note">Plays on this site. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
           </section>
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
@@ -356,10 +356,10 @@ export default function GamePlayer() {
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         )}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{showGtaVHostLink ? <a className="open-external" href="https://sigamespremiumrp.spideyiraj1925.workers.dev" target="_blank" rel="noopener noreferrer"><Expand size={15} /> Open the game link</a> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{showGtaVHostLink ? <a className="open-external" href="/play/gta-v" target="_self" rel="noreferrer"><Expand size={15} /> Play on this site</a> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
 
         {showGtaVHostLink
-          ? <p className="player-disclaimer player-disclaimer--heavy">A browser build of Grand Theft Auto V is hosted on the game link above. SI GAMES does not control its content, availability, or updates. Open it in a new tab — no worries, we will not steal your info or show you ads. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          ? <p className="player-disclaimer player-disclaimer--light">Plays on this site. No external links are shown for this title. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
