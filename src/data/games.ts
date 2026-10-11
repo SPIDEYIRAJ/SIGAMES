@@ -346,7 +346,7 @@ export const games: Game[] = [
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
-    type: "iframe",
+    type: "external",
     heavy: true,
   },
   {
