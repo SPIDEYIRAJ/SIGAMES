@@ -103,6 +103,8 @@ function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) 
           onClick={(event) => event.currentTarget.select()}
         />
 
+        <GtaVEdgeBlock hostUrl={hostUrl} edgeLink={`microsoft-edge:${encodeURI(hostUrl)}`} />
+
         <div className="gtav-browser">
           <strong>Open it in Brave (best) or Opera GX.</strong>
           <p>
@@ -120,9 +122,9 @@ function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) 
           A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
           <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
         </p>
-      </section>
+      </section>          {media && <GtaVMedia media={media} />}
 
-      {media && <GtaVMedia media={media} />}
+        <GtaVEdgeBlock hostUrl={gtaVHostUrl} edgeLink={gtaVEdgeLink} />
     </>
   );
 }
@@ -348,6 +350,11 @@ export default function GamePlayer() {
   /** GTA V lives on its own host. The fallback keeps the copy button working even
    *  if the library entry ever loses its URL. */
   const gtaVHostUrl = game?.sourceUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev";
+
+  /** Edge opens the game host as its own URL. If Edge is not installed, the link
+   *  is ignored by the browser, so other browsers get the same link for copying
+   *  and pasting into a new tab manually. */
+  const gtaVEdgeLink = `microsoft-edge:${encodeURI(gtaVHostUrl)}`;
 
   /** GTA V is the only Most Played title that keeps an explicit host link shown to the user. */
   const isMostPlayedHostLink = useCallback(
@@ -587,8 +594,8 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {isGtaV ? (
-            <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
-          ) : (
+          <GtaVNotice hostUrl={gtaVHostUrl} gtaVHostUrl={gtaVHostUrl} media={game.media} />
+        ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
               <span className="launch-note">Runs inside SI GAMES. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
@@ -646,7 +653,7 @@ export default function GamePlayer() {
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
-          <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
+          <GtaVNotice hostUrl={gtaVHostUrl} gtaVHostUrl={gtaVHostUrl} media={game.media} />
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
