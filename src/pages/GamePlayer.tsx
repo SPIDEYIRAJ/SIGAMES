@@ -1,6 +1,8 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Expand, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, X } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
 import { games } from "@/data/games";
 import "@/player-prompt.css";
 
@@ -44,6 +46,194 @@ function readFavorites(): string[] {
   }
 }
 
+/** The reasons a player can pick from when reporting any game. */
+const REPORT_REASONS = [
+  "Game does not load",
+  "Game is broken or buggy",
+  "Wrong game or wrong link",
+  "Controls do not work",
+  "Something else",
+] as const;
+
+/**
+ * GTA V cannot be embedded, and a button cannot open its host in a new tab
+ * either — the browser blocks that cross-site pop-up. So the page hands the
+ * player a download button and the link to paste into a fresh tab themselves.
+ */
+function GtaVNotice({ hostUrl }: { hostUrl: string }) {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timer = window.setTimeout(() => setCopied(false), 2400);
+    return () => window.clearTimeout(timer);
+  }, [copied]);
+
+  const copyLink = () => {
+    const clipboard = navigator.clipboard;
+    if (!clipboard) return;
+    clipboard.writeText(hostUrl).then(
+      () => setCopied(true),
+      () => setCopied(false),
+    );
+  };
+
+  return (
+    <section className="gtav-notice" aria-labelledby="gtav-notice-title">
+      <span className="gtav-tag">GTA V · HOW TO PLAY</span>
+      <h2 id="gtav-notice-title">Copy the link, then open it in your own tab</h2>
+      <p className="gtav-text">
+        GTA V cannot run inside this page, and this site cannot open a new tab for you either — browsers block a
+        tab opened that way. So copy the link, then paste it into a new tab yourself.
+      </p>
+
+      <button type="button" className="launch-play launch-play--external gtav-copy" onClick={copyLink}>
+        {copied ? <Check size={18} /> : <Copy size={18} />}
+        {copied ? "Link copied" : "Copy the game link"}
+      </button>
+
+      <input
+        type="text"
+        readOnly
+        className="gtav-link"
+        value={hostUrl}
+        aria-label="GTA V game link"
+        onFocus={(event) => event.currentTarget.select()}
+        onClick={(event) => event.currentTarget.select()}
+      />
+
+      <div className="gtav-browser">
+        <strong>Open it in Brave (best) or Opera GX.</strong>
+        <p>
+          Brave runs this build ad-free and without interruptions, so it is the smoothest way to play. Opera GX
+          works too. On Windows, install Brave with one command:
+        </p>
+        <code className="gtav-command">winget install --id Brave.Brave -e</code>
+      </div>
+
+      <p className="gtav-warning">
+        <AlertTriangle size={14} /> GTA V will not run on many devices. It needs a reasonably strong machine and a
+        modern browser.
+      </p>
+      <p className="gtav-fineprint">
+        A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
+        <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
+      </p>
+    </section>
+  );
+}
+
+/** One dialog, reused on every game page, that files a problem report. */
+function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitle: string; onClose: () => void }) {
+  const submitReport = useMutation(api.reports.submit);
+  const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
+  const [details, setDetails] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+  const [error, setError] = useState("");
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    closeRef.current?.focus({ preventScroll: true });
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  const send = async () => {
+    setSending(true);
+    setError("");
+    try {
+      await submitReport({
+        gameId,
+        gameTitle,
+        reason,
+        details: details.trim() ? details.trim() : undefined,
+      });
+      setSent(true);
+    } catch {
+      setError("That report did not go through. Please try again.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="report-backdrop" onClick={onClose}>
+      <div
+        className="report-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="report-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button ref={closeRef} type="button" className="report-close" onClick={onClose} aria-label="Close the report form">
+          <X size={18} />
+        </button>
+
+        {sent ? (
+          <div className="report-sent">
+            <span className="report-sent-icon"><Check size={20} /></span>
+            <h2 id="report-title">Report sent</h2>
+            <p>Thanks — that helps keep {gameTitle} working for everyone.</p>
+            <button type="button" className="primary-button" onClick={onClose}>Close</button>
+          </div>
+        ) : (
+          <>
+            <span className="section-kicker"><Flag size={14} /> REPORT A PROBLEM</span>
+            <h2 id="report-title">{gameTitle}</h2>
+            <p className="report-lead">Tell us what went wrong and it gets looked at.</p>
+
+            <span className="report-label">What happened?</span>
+            <div className="report-reasons">
+              {REPORT_REASONS.map((option) => (
+                <button
+                  type="button"
+                  key={option}
+                  className={`report-reason ${reason === option ? "is-picked" : ""}`}
+                  onClick={() => setReason(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+
+            <label className="report-label" htmlFor="report-details">Anything else? (optional)</label>
+            <textarea
+              id="report-details"
+              className="report-details"
+              value={details}
+              rows={4}
+              maxLength={2000}
+              placeholder="What you played on, what you saw, when it happened..."
+              onChange={(event) => setDetails(event.target.value)}
+            />
+
+            {error && <p className="report-error">{error}</p>}
+
+            <div className="report-actions">
+              <button type="button" className="primary-button" disabled={sending} onClick={() => void send()}>
+                <Send size={15} /> {sending ? "Sending..." : "Send report"}
+              </button>
+              <button type="button" className="soft-button" onClick={onClose}>Cancel</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -54,6 +244,7 @@ export default function GamePlayer() {
   const [isImmersive, setIsImmersive] = useState(false);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
@@ -62,7 +253,9 @@ export default function GamePlayer() {
     return !target.standalone && target.type !== "external";
   });
 
-  const gtaVHostUrl = game?.sourceUrl;
+  /** GTA V lives on its own host. The fallback keeps the copy button working even
+   *  if the library entry ever loses its URL. */
+  const gtaVHostUrl = game?.sourceUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev";
 
   /** GTA V is the only Most Played title that keeps an explicit host link shown to the user. */
   const isMostPlayedHostLink = useCallback(
@@ -301,15 +494,23 @@ export default function GamePlayer() {
           <h1>{game.title}</h1>
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
-          <div className="launch-actions">
-            <button type="button" className="launch-play launch-play--external" onClick={() => {
-              navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-            }}><Play size={18} fill="currentColor" /> Copy the game link</button>
-            <span className="launch-note">The game is hosted on <b>{gtaVHostUrl}</b>. Copy that link and open it in a new tab — this site cannot load it inside the frame here. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+          {isGtaV ? (
+            <GtaVNotice hostUrl={gtaVHostUrl} />
+          ) : (
+            <div className="launch-actions">
+              <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
+              <span className="launch-note">Runs inside SI GAMES. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            </div>
+          )}
+          <div className="launch-report">
+            <button type="button" className="open-external report-button" onClick={() => setShowReport(true)}>
+              <Flag size={15} /> Report a problem
+            </button>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
-          <p className="player-disclaimer player-disclaimer--light">No embed is available for this title on this site. Use the copy link button, then open the hosted GTA V page in a new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          {!isGtaV && <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
+        {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       </div>
     );
   }
@@ -353,13 +554,7 @@ export default function GamePlayer() {
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
-          <section className="launch-only-frame launch-only-frame--host-link" aria-label="Copy the hosted GTA V link">
-            <button type="button" className="launch-play launch-play--external" onClick={() => {
-              navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-            }}><Play size={18} fill="currentColor" /> Copy the game link</button>
-            <span className="launch-note">Copy the link below and open it in a new tab. This site cannot load that build inside its frame. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
-            <input type="text" readOnly value={gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev"} className="host-link-input" onClick={(event) => event.target.select()} />
-          </section>
+          <GtaVNotice hostUrl={gtaVHostUrl} />
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
@@ -369,16 +564,15 @@ export default function GamePlayer() {
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         )}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{showGtaVHostLink ? <button type="button" className="open-external" onClick={() => {
-              navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-            }}><Expand size={15} /> Copy the game link</button> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{!showGtaVHostLink && (game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>)}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
 
         {showGtaVHostLink
-          ? <p className="player-disclaimer player-disclaimer--light">No embed is available for this title on this site. Copy the link below and open it in a new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          ? null
           : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
       </main>
+      {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       {showExtension && <div className="extension-backdrop" onClick={() => setShowExtension(false)}><div ref={extensionModalRef} className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">The Eaglercraft browser extension unlocks the full experience for this title. You can skip it and still try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div><p className="extension-skip-hint">Press <kbd>Esc</kbd> to skip</p></div></div>}
     </div>
   );

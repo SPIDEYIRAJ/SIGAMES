@@ -157,3 +157,282 @@
 @media (prefers-reduced-motion: reduce) {
   .fs-prompt { animation: none; }
 }
+
+/* ——— GTA V notice. There is no embed and no auto-opened tab for this title, so
+   the page hands over a copy button, the link itself, and the browser tip. ——— */
+.gtav-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 26px 22px;
+  border: 1px solid rgba(86, 8, 248, .34);
+  border-radius: 14px;
+  background: #131e36;
+  text-align: center;
+}
+
+.gtav-tag {
+  color: #3EFEFF;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+
+.gtav-notice h2 {
+  color: #f2f6ff;
+  font-size: clamp(19px, 2.6vw, 26px);
+  font-weight: 950;
+  letter-spacing: -.02em;
+}
+
+.gtav-text {
+  max-width: 560px;
+  color: #a7b2d6;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.gtav-copy { max-width: 320px; }
+
+.gtav-link {
+  width: min(100%, 460px);
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  padding: 11px 13px;
+  background: #0a142e;
+  color: #cfe0ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  text-align: center;
+}
+
+.gtav-link:focus { outline: 2px solid #3efeff66; outline-offset: 1px; }
+
+.gtav-browser {
+  width: min(100%, 560px);
+  border: 1px solid rgba(62, 254, 255, .26);
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #182645;
+  color: #c3cfec;
+  text-align: left;
+}
+
+.gtav-browser strong {
+  display: block;
+  color: #f2f6ff;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+
+.gtav-browser p {
+  margin-top: 6px;
+  color: #a9b3d8;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.gtav-command {
+  display: block;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 7px;
+  padding: 9px 11px;
+  background: #0a142e;
+  color: #7ff9ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+
+.gtav-warning {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 212, 0, .3);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: rgba(255, 212, 0, .08);
+  color: #ffd400;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.gtav-fineprint {
+  color: #7485ad;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  line-height: 1.7;
+  text-transform: uppercase;
+}
+
+.launch-report { display: flex; justify-content: center; margin-top: 18px; }
+
+/* ——— Report button and dialog, available on every game page. ——— */
+.report-button { color: #ffd0d8; }
+.report-button:hover { color: #fff; background: rgba(255, 100, 127, .18); border-color: rgba(255, 100, 127, .5); }
+
+.report-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: #080710e0;
+}
+
+.report-dialog {
+  position: relative;
+  width: min(460px, 100%);
+  max-height: 90dvh;
+  overflow-y: auto;
+  border: 1px solid rgba(86, 8, 248, .3);
+  border-radius: 14px;
+  padding: 26px 22px 22px;
+  background: #131e36;
+  color: #eef2ff;
+}
+
+.report-dialog h2 {
+  margin-top: 10px;
+  color: #f2f6ff;
+  font-size: 17px;
+  font-weight: 950;
+  letter-spacing: -.01em;
+}
+
+.report-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 7px;
+  background: #182645;
+  color: #aab4cc;
+  cursor: pointer;
+}
+
+.report-close:hover { color: #fff; background: #1e2d55; }
+
+.report-lead {
+  margin-top: 6px;
+  color: #9fb0d6;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.report-label {
+  display: block;
+  margin-top: 16px;
+  color: #7485ad;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.report-reasons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.report-reason {
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: #182645;
+  color: #c3cfec;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.report-reason:hover { color: #fff; background: #1e2d55; }
+
+.report-reason.is-picked {
+  border-color: #3efeff66;
+  background: rgba(62, 254, 255, .12);
+  color: #fff;
+}
+
+.report-details {
+  width: 100%;
+  margin-top: 9px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: #0a142e;
+  color: #dfe6ff;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.report-details:focus { outline: 2px solid #3efeff40; outline-offset: 1px; }
+
+.report-error {
+  margin-top: 10px;
+  border: 1px solid rgba(255, 100, 127, .4);
+  border-radius: 8px;
+  padding: 9px 11px;
+  background: rgba(255, 100, 127, .12);
+  color: #ffc2ce;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+.report-actions .primary-button,
+.report-actions .soft-button { flex: 1 1 auto; justify-content: center; }
+
+.report-sent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0 4px;
+  text-align: center;
+}
+
+.report-sent-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(62, 254, 255, .14);
+  color: #3efeff;
+}
+
+.report-sent p { color: #9fb0d6; font-size: 12px; line-height: 1.6; }
+
+@media (max-width: 720px) {
+  .gtav-notice { padding: 22px 16px; }
+  .gtav-copy { width: 100%; }
+  .report-dialog { padding: 24px 16px 20px; }
+  .report-actions .primary-button,
+  .report-actions .soft-button { min-height: 48px; }
+}
