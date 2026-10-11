@@ -16,32 +16,6 @@ import { useNavigate } from "react-router";
 import { categories, games, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
 
-const MOST_PLAYED = [
-  { rank: 1, id: "gta-v", label: "Most played", badge: "Gold", href: "/play/gta-v" },
-  { rank: 2, id: "the-race", label: "Most played", badge: "Featured", href: "/play/the-race" },
-  { rank: 3, id: "gta-vicecity", label: "Most played", badge: "Featured", href: "/gta-vicecity" },
-];
-
-function MostPlayedRow({ rank, game, href, badge }: { rank: number; game: Game; href: string; badge: string }) {
-  const isViceCity = game.id === "gta-vicecity";
-  return (
-    <div className="most-played-row">
-      <span className={`most-played-rank badge-${rank} ${game.id === "the-race" || game.id === "gta-v" ? "" : "is-vice-city"}`}><span className="most-played-number">{rank}</span><span className="most-played-label">{badge}</span></span>
-      <div className={`most-played-card ${isViceCity ? "is-vice-city" : ""}`}>
-        <a className="most-played-cta" href={href} target="_blank" rel="noopener noreferrer">
-          <img src={game.thumbnail} alt="" className="most-played-thumb" />
-          <div>
-            <div className="mp-title">{game.title}</div>
-            <div className="mp-sub">{game.category} · {badge}</div>
-          </div>
-          <ArrowRight size={16} className="mp-arrow" />
-        </a>
-        <span className="mp-rank-label">{rank === 1 ? "#1 Most Played" : rank === 2 ? "#2 Most Played" : "#3 Most Played"}</span>
-      </div>
-    </div>
-  );
-}
-
 const PAGE_SIZE = 18;
 const SORTS = [
   { value: "featured", label: "Featured" },
@@ -164,11 +138,6 @@ export default function Landing() {
     };
   }, []);
 
-  const mostPlayedGames = useMemo(() => MOST_PLAYED.map((entry) => {
-    const game = games.find((item) => item.id === entry.id);
-    return Boolean(game) ? { entry, game } : null;
-  }).filter((item): item is { entry: (typeof MOST_PLAYED)[number]; game: Game } => Boolean(item)), []);
-
   const filteredGames = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const matches = games.filter((game) => {
@@ -276,13 +245,6 @@ export default function Landing() {
             </div>
             <div className="float-chip chip-top"><Trophy size={14} /> {String(games.length).padStart(2, "0")} TITLES</div>
             <div className="float-chip chip-bottom"><Gamepad2 size={14} /> READY TO GO</div>
-          </div>
-        </section>
-
-        <section className="most-played-section content-section" aria-labelledby="most-played-title">
-          <div className="section-heading"><div><span className="section-kicker"><Trophy size={14} /> MOST PLAYED</span><h2 id="most-played-title">Your current top picks</h2><p>The titles everyone keeps coming back to on SI GAMES.</p></div></div>
-          <div className="most-played-rows">
-            {mostPlayedGames.map((entry) => <MostPlayedRow key={entry.game.id} rank={entry.entry.rank} game={entry.game} href={entry.entry.href} badge={entry.entry.badge} />)}
           </div>
         </section>
 
