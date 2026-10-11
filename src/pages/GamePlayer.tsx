@@ -105,27 +105,104 @@ function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) 
 
         <GtaVEdgeBlock hostUrl={hostUrl} edgeLink={`microsoft-edge:${encodeURI(hostUrl)}`} />
 
-        <div className="gtav-browser">
-          <strong>Open it in Brave (best) or Opera GX.</strong>
-          <p>
-            Brave runs this build ad-free and without interruptions, so it is the smoothest way to play. Opera GX
-            works too. On Windows, install Brave with one command:
-          </p>
-          <code className="gtav-command">winget install --id Brave.Brave -e</code>
-        </div>
-
         <p className="gtav-warning">
           <AlertTriangle size={14} /> GTA V will not run on many devices. It needs a reasonably strong machine and a
           modern browser.
-        </p>
-        <p className="gtav-fineprint">
+        </p>      <p className="gtav-fineprint">
           A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
           <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
         </p>
-      </section>          {media && <GtaVMedia media={media} />}
+      </section>
 
-        <GtaVEdgeBlock hostUrl={gtaVHostUrl} edgeLink={gtaVEdgeLink} />
+      {media && <GtaVMedia media={media} />}
     </>
+  );
+}
+
+/**
+ * The GTA V browser setup: install uBlock Origin, then copy the link and open it
+ * in Microsoft Edge. If the player is already on Edge the page lets them copy and
+ * paste into a new tab; otherwise it shows the Edge link so they can switch to Edge.
+ */
+function GtaVEdgeBlock({ hostUrl, edgeLink }: { hostUrl: string; edgeLink: string }) {
+  const [copied, setCopied] = useState(false);
+  const isOnEdge = useRef(false);
+  useEffect(() => {
+    isOnEdge.current = /\bedge\//i.test(navigator.userAgent || "");
+  }, []);
+
+  const copyLink = () => {
+    const clipboard = navigator.clipboard;
+    if (!clipboard) return;
+    clipboard.writeText(hostUrl).then(
+      () => setCopied(true),
+      () => setCopied(false),
+    );
+  };
+
+  return (
+    <section className="gtav-edge" aria-labelledby="gtav-edge-title">
+      <span className="gtav-edge-tag">GTA V · BROWSER SETUP</span>
+      <h2 id="gtav-edge-title">Open the game in Microsoft Edge to avoid ads</h2>
+
+      <p className="gtav-ublock-p">Without uBlock Origin the hosted GTA V page can show ads and pop-ups that interrupt play. Add the extension first, then copy the link below and open it in Edge.</p>
+
+      <ol className="gtav-steps">
+        <li>Step 1: Open Microsoft Edge.
+          <a className="edge-link" href="microsoft-edge:https://microsoftedge.microsoft.com/addons/detail/ublock-origin/odfafepnkmbhccpbejgmiehpchacaeak" target="_self" rel="noreferrer">Install uBlock Origin</a>
+        </li>
+        <li>Step 2: If uBlock Origin is already installed, skip this step.
+          <span className="edge-skip">Skip this step</span>
+        </li>
+      </ol>
+
+      <div className="gtav-edge-copy">
+        <span className="section-kicker">STEP 3</span>
+        <p className="gtav-edge-head">Copy the link, then open this HTML link in your browser: <a className="gtav-edge-open" href={edgeLink} target="_self" rel="noreferrer">Open the game in Microsoft Edge</a>, then paste the link into a new tab.
+        <input
+          type="text"
+          readOnly
+          className="gtav-link"
+          value={hostUrl}
+          aria-label="GTA V game link"
+          onFocus={(event) => event.currentTarget.select()}
+          onClick={(event) => event.currentTarget.select()}
+        />
+
+        <button
+          type="button"
+          className="launch-play launch-play--external gtav-copy"
+          onClick={copyLink}
+        >
+          {copied ? <Check size={18} /> : <Copy size={18} />}
+          {copied ? "Link copied" : "Copy the game link"}
+        </button>
+
+        <a
+          className="gtav-edge-open"
+          href={edgeLink}
+          target="_self"
+          rel="noreferrer"
+        >
+          {isOnEdge.current ? "Open in Edge" : "Open in Microsoft Edge"}
+        </a>
+      </div>
+
+      {isOnEdge ? (
+        <p className="gtav-edge-note">
+          You are on Microsoft Edge, so copy the link, then open a new tab and paste it in.
+        </p>
+      ) : (
+        <p className="gtav-edge-note">
+          You are not on Microsoft Edge. Copy the link, then open this HTML link in your browser to switch to Edge and paste the link in.
+        </p>
+      )}
+
+      <p className="gtav-fineprint">
+        A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
+        <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
+      </p>
+    </section>
   );
 }
 
