@@ -61,23 +61,6 @@ const REPORT_REASONS = [
  * player a download button and the link to paste into a fresh tab themselves.
  */
 function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!copied) return;
-    const timer = window.setTimeout(() => setCopied(false), 2400);
-    return () => window.clearTimeout(timer);
-  }, [copied]);
-
-  const copyLink = () => {
-    const clipboard = navigator.clipboard;
-    if (!clipboard) return;
-    clipboard.writeText(hostUrl).then(
-      () => setCopied(true),
-      () => setCopied(false),
-    );
-  };
-
   return (
     <>
       <section className="gtav-notice" aria-labelledby="gtav-notice-title">
@@ -85,23 +68,9 @@ function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) 
         <h2 id="gtav-notice-title">Copy the link, then open it in your own tab</h2>
         <p className="gtav-text">
           GTA V cannot run inside this page, and this site cannot open a new tab for you either — browsers block a
-          tab opened that way. So copy the link, then paste it into a new tab yourself.
+          tab opened that way. Follow the three steps below to copy the link and open it in Microsoft Edge, where it
+          runs ad-free with uBlock Origin.
         </p>
-
-        <button type="button" className="launch-play launch-play--external gtav-copy" onClick={copyLink}>
-          {copied ? <Check size={18} /> : <Copy size={18} />}
-          {copied ? "Link copied" : "Copy the game link"}
-        </button>
-
-        <input
-          type="text"
-          readOnly
-          className="gtav-link"
-          value={hostUrl}
-          aria-label="GTA V game link"
-          onFocus={(event) => event.currentTarget.select()}
-          onClick={(event) => event.currentTarget.select()}
-        />
 
         <GtaVEdgeBlock hostUrl={hostUrl} edgeLink={`microsoft-edge:${encodeURI(hostUrl)}`} />
 
@@ -126,10 +95,8 @@ function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) 
  */
 function GtaVEdgeBlock({ hostUrl, edgeLink }: { hostUrl: string; edgeLink: string }) {
   const [copied, setCopied] = useState(false);
-  const isOnEdge = useRef(false);
-  useEffect(() => {
-    isOnEdge.current = /\bedge\//i.test(navigator.userAgent || "");
-  }, []);
+  /** Edge reports itself as `Edg/`, `EdgA/`, `EdgiOS/` or (legacy) `Edge/`. */
+  const [isOnEdge] = useState(() => /\b(Edg|Edge)\w*\//i.test(navigator.userAgent || ""));
 
   const copyLink = () => {
     const clipboard = navigator.clipboard;
@@ -158,7 +125,12 @@ function GtaVEdgeBlock({ hostUrl, edgeLink }: { hostUrl: string; edgeLink: strin
 
       <div className="gtav-edge-copy">
         <span className="section-kicker">STEP 3</span>
-        <p className="gtav-edge-head">Copy the link, then open this HTML link in your browser: <a className="gtav-edge-open" href={edgeLink} target="_self" rel="noreferrer">Open the game in Microsoft Edge</a>, then paste the link into a new tab.
+        <p className="gtav-edge-head">
+          {isOnEdge
+            ? "You are already on Microsoft Edge. Copy the link, open a new tab and paste it in."
+            : "You are not on Microsoft Edge. Copy the link, then use the button below to hand it straight to Edge."}
+        </p>
+
         <input
           type="text"
           readOnly
@@ -178,29 +150,22 @@ function GtaVEdgeBlock({ hostUrl, edgeLink }: { hostUrl: string; edgeLink: strin
           {copied ? "Link copied" : "Copy the game link"}
         </button>
 
-        <a
-          className="gtav-edge-open"
-          href={edgeLink}
-          target="_self"
-          rel="noreferrer"
-        >
-          {isOnEdge.current ? "Open in Edge" : "Open in Microsoft Edge"}
-        </a>
+        {!isOnEdge && (
+          <a
+            className="gtav-edge-open"
+            href={edgeLink}
+            target="_self"
+            rel="noreferrer"
+          >
+            Open the link in Microsoft Edge
+          </a>
+        )}
       </div>
 
-      {isOnEdge ? (
-        <p className="gtav-edge-note">
-          You are on Microsoft Edge, so copy the link, then open a new tab and paste it in.
-        </p>
-      ) : (
-        <p className="gtav-edge-note">
-          You are not on Microsoft Edge. Copy the link, then open this HTML link in your browser to switch to Edge and paste the link in.
-        </p>
-      )}
-
-      <p className="gtav-fineprint">
-        A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
-        <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
+      <p className="gtav-edge-note">
+        {isOnEdge
+          ? "Already on Edge — nothing to force. Copy the link, open a new tab, paste it and play."
+          : "Not on Edge — this link tells Windows to open the game straight in Microsoft Edge, so Edge gets opened for you."}
       </p>
     </section>
   );
@@ -427,11 +392,6 @@ export default function GamePlayer() {
   /** GTA V lives on its own host. The fallback keeps the copy button working even
    *  if the library entry ever loses its URL. */
   const gtaVHostUrl = game?.sourceUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev";
-
-  /** Edge opens the game host as its own URL. If Edge is not installed, the link
-   *  is ignored by the browser, so other browsers get the same link for copying
-   *  and pasting into a new tab manually. */
-  const gtaVEdgeLink = `microsoft-edge:${encodeURI(gtaVHostUrl)}`;
 
   /** GTA V is the only Most Played title that keeps an explicit host link shown to the user. */
   const isMostPlayedHostLink = useCallback(
@@ -671,7 +631,7 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {isGtaV ? (
-          <GtaVNotice hostUrl={gtaVHostUrl} gtaVHostUrl={gtaVHostUrl} media={game.media} />
+          <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
         ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
@@ -730,7 +690,7 @@ export default function GamePlayer() {
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
-          <GtaVNotice hostUrl={gtaVHostUrl} gtaVHostUrl={gtaVHostUrl} media={game.media} />
+          <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}

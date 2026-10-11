@@ -211,44 +211,6 @@
 
 .gtav-link:focus { outline: 2px solid #3efeff66; outline-offset: 1px; }
 
-.gtav-browser {
-  width: min(100%, 560px);
-  border: 1px solid rgba(62, 254, 255, .26);
-  border-radius: 10px;
-  padding: 14px 16px;
-  background: #182645;
-  color: #c3cfec;
-  text-align: left;
-}
-
-.gtav-browser strong {
-  display: block;
-  color: #f2f6ff;
-  font-size: 12px;
-  font-weight: 900;
-  letter-spacing: .02em;
-}
-
-.gtav-browser p {
-  margin-top: 6px;
-  color: #a9b3d8;
-  font-size: 11px;
-  line-height: 1.6;
-}
-
-.gtav-command {
-  display: block;
-  margin-top: 10px;
-  border: 1px solid rgba(255, 255, 255, .16);
-  border-radius: 7px;
-  padding: 9px 11px;
-  background: #0a142e;
-  color: #7ff9ff;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
-  word-break: break-all;
-}
-
 .gtav-warning {
   display: inline-flex;
   align-items: center;
@@ -271,6 +233,133 @@
   letter-spacing: .06em;
   line-height: 1.7;
   text-transform: uppercase;
+}
+
+/* ——— GTA V browser setup: uBlock first, then the Microsoft Edge hand-off. ——— */
+.gtav-edge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: min(100%, 560px);
+  border: 1px solid rgba(62, 254, 255, .26);
+  border-radius: 10px;
+  padding: 16px;
+  background: #182645;
+  text-align: left;
+}
+
+.gtav-edge-tag { color: #3EFEFF; font-size: 9px; font-weight: 900; letter-spacing: .16em; }
+
+.gtav-edge h2 {
+  color: #f2f6ff;
+  font-size: clamp(15px, 2vw, 19px);
+  font-weight: 950;
+  letter-spacing: -.02em;
+  text-align: center;
+}
+
+.gtav-ublock-p { color: #a9b3d8; font-size: 11px; line-height: 1.65; }
+
+.gtav-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  counter-reset: gtav-step;
+}
+
+.gtav-steps li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: #0a142e;
+  color: #c3cfec;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.edge-link {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(62, 254, 255, .45);
+  border-radius: 7px;
+  padding: 8px 11px;
+  background: rgba(62, 254, 255, .12);
+  color: #7ff9ff;
+  font-size: 10px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.edge-link:hover { background: rgba(62, 254, 255, .22); color: #fff; }
+
+.edge-skip {
+  border: 1px dashed rgba(255, 255, 255, .24);
+  border-radius: 7px;
+  padding: 8px 11px;
+  color: #7485ad;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.gtav-edge-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, .1);
+  padding-top: 14px;
+  text-align: center;
+}
+
+.gtav-edge-head { color: #c3cfec; font-size: 11px; line-height: 1.6; }
+
+.gtav-edge-open {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: min(100%, 320px);
+  min-height: 46px;
+  border: 1px solid rgba(62, 254, 255, .45);
+  border-radius: 8px;
+  padding: 12px 16px;
+  background: rgba(62, 254, 255, .1);
+  color: #7ff9ff;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+
+.gtav-edge-open:hover { background: rgba(62, 254, 255, .2); color: #fff; }
+
+.gtav-edge-note {
+  width: 100%;
+  border: 1px solid rgba(255, 212, 0, .3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 212, 0, .08);
+  color: #ffd400;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.55;
+}
+
+@media (max-width: 720px) {
+  .gtav-edge { padding: 14px; }
+  .gtav-steps li { flex-direction: column; align-items: stretch; }
+  .edge-link,
+  .edge-skip { justify-content: center; text-align: center; }
+  .gtav-edge-open { width: 100%; }
 }
 
 /* ——— GTA V gallery: key art, game facts, the trailer and the video picks.
