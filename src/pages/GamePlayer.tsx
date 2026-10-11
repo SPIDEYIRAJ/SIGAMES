@@ -357,7 +357,8 @@ export default function GamePlayer() {
             <button type="button" className="launch-play launch-play--external" onClick={() => {
               navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
             }}><Play size={18} fill="currentColor" /> Copy the game link</button>
-            <span className="launch-note">The game is hosted on <b>{gtaVHostUrl}</b>. Copy that link and open it in a new tab — this site cannot load it inside the frame here. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            <span className="launch-note">Copy the link below and open it in a new tab. This site cannot load that build inside its frame. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            <input type="text" readOnly value={gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev"} className="host-link-input" onClick={(event) => event.target.select()} />
           </section>
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
@@ -373,7 +374,7 @@ export default function GamePlayer() {
             }}><Expand size={15} /> Copy the game link</button> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
 
         {showGtaVHostLink
-          ? <p className="player-disclaimer player-disclaimer--light">No embed is available for this title on this site. Copy the link and open <b>{gtaVHostUrl}</b> in a new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          ? <p className="player-disclaimer player-disclaimer--light">No embed is available for this title on this site. Copy the link below and open it in a new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
