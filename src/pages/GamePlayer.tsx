@@ -56,28 +56,63 @@ const REPORT_REASONS = [
 ] as const;
 
 /**
- * GTA V cannot be embedded, and a button cannot open its host in a new tab
- * either — the browser blocks that cross-site pop-up. So the page hands the
- * player a download button and the link to paste into a fresh tab themselves.
+ * GTA V cannot be embedded in this page, and a button cannot open its host in
+ * a new tab either — the browser blocks that cross-site pop-up. So the page
+ * hands the player a copy-able link and the Edge handoff, with Server 1 listed
+ * first because it runs ad-free and needs no extra extension setup.
  */
-function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) {
+function GtaVNotice({
+  hostUrl,
+  server1Base,
+  media,
+}: {
+  hostUrl: string;
+  server1Base?: string;
+  media?: GameMedia;
+}) {
+  const [copied, setCopied] = useState(false);
+  const copyLink = (link: string) => {
+    const clipboard = navigator.clipboard;
+    if (!clipboard) return;
+    clipboard
+      .writeText(link)
+      .then(() => setCopied(true), () => setCopied(false));
+  };
+
+  const server1Url = server1Base && server1Base.replace(/\/+$/, "");
+  const useServer1 = Boolean(server1Url);
+
   return (
     <>
       <section className="gtav-notice" aria-labelledby="gtav-notice-title">
         <span className="gtav-tag">GTA V · HOW TO PLAY</span>
-        <h2 id="gtav-notice-title">Copy the link, then open it in your own tab</h2>
+        <h2 id="gtav-notice-title">
+          {useServer1
+            ? "Open GTA V in your own tab — two hosts, pick the one that fits"
+            : "Copy the link, then open it in your own tab"}
+        </h2>
         <p className="gtav-text">
-          GTA V cannot run inside this page, and this site cannot open a new tab for you either — browsers block a
-          tab opened that way. Follow the three steps below to copy the link and open it in Microsoft Edge, where it
-          runs ad-free with uBlock Origin.
+          {useServer1
+            ? "GTA V cannot run inside this page, and this site cannot open a new tab for you either. Browsers block a tab opened that way. Pick a host and mode below, copy the link it gives you, and open it in a fresh tab."
+            : "GTA V cannot run inside this page, and this site cannot open a new tab for you either. Browsers block a tab opened that way. Follow the steps below to copy the link and open it in Microsoft Edge, where it runs ad-free with uBlock Origin."}
         </p>
 
-        <GtaVEdgeBlock hostUrl={hostUrl} edgeLink={`microsoft-edge:${encodeURI(hostUrl)}`} />
+        {useServer1 ? (
+          <GtaVServer1Block
+            server1Base={server1Url}
+            server2Url={hostUrl}
+            onCopyServer1={(link) => copyLink(link)}
+            onCopyServer2={(link) => copyLink(link)}
+          />
+        ) : (
+          <GtaVEdgeBlock hostUrl={hostUrl} edgeLink={`microsoft-edge:${encodeURI(hostUrl)}`} />
+        )}
 
         <p className="gtav-warning">
           <AlertTriangle size={14} /> GTA V will not run on many devices. It needs a reasonably strong machine and a
           modern browser.
-        </p>      <p className="gtav-fineprint">
+        </p>
+        <p className="gtav-fineprint">
           A community browser build of Grand Theft Auto V. SI GAMES does not host or control it.{" "}
           <span className="disclaimer-sign">////SPIDEY_IRAJ////</span>
         </p>
@@ -87,6 +122,155 @@ function GtaVNotice({ hostUrl, media }: { hostUrl: string; media?: GameMedia }) 
     </>
   );
 }
+
+/**
+ * Server 1 for GTA V: ad-free and no extension setup. Server 2 is kept as the
+ * fallback for players who already have an account there.
+ */
+function GtaVServer1Block({
+  server1Base,
+  server2Url,
+  onCopyServer1,
+  onCopyServer2,
+}: {
+  server1Base: string;
+  server2Url: string;
+  onCopyServer1: (url: string) => void;
+  onCopyServer2: (url: string) => void;
+}) {
+  const [mode, setMode] = useState<string>("story");
+  const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<"server1" | "server2">("server1");
+
+  const server1Link = `${server1Base}?mode=${mode}`;
+  const copyServer1 = () => {
+    onCopyServer1(server1Link);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+  const copyServer2 = () => {
+    onCopyServer2(server2Url);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
+  return (
+    <div className="gtav-servers">
+      <div className="gtav-servers-tabs" role="tablist" aria-label="Choose GTA V host">
+        <button
+          type="button"
+          className={`gtav-server-tab ${activeTab === "server1" ? "is-active" : ""}`}
+          role="tab"
+          aria-selected={activeTab === "server1"}
+          onClick={() => setActiveTab("server1")}
+        >
+          Server 1 — ad-free
+        </button>
+        <button
+          type="button"
+          className={`gtav-server-tab ${activeTab === "server2" ? "is-active" : ""}`}
+          role="tab"
+          aria-selected={activeTab === "server2"}
+          onClick={() => setActiveTab("server2")}
+        >
+          Server 2 — existing host
+        </button>
+      </div>
+
+      {activeTab === "server1" ? (
+        <div className="gtav-server-panel" role="tabpanel">
+          <p className="gtav-server-desc">
+            Server 1 runs without ads and does not ask you to install any extension.
+            Pick the mode you want, copy the link and open it in a new tab.
+          </p>
+
+          <fieldset className="gtav-mode-fieldset">
+            <legend className="gtav-mode-legend">Which GTA V mode do you want?</legend>
+            <div className="gtav-mode-options">
+              {GTA_V_MODES.map((option) => (
+                <label key={option.value} className="gtav-mode-option">
+                  <input
+                    type="radio"
+                    name="gtav-mode"
+                    value={option.value}
+                    checked={mode === option.value}
+                    onChange={(event) => setMode(event.target.value)}
+                  />
+                  <span className="gtav-mode-label">{option.label}</span>
+                  <span className="gtav-mode-hint">{option.hint}</span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <div className="gtav-server-copy">
+            <span className="section-kicker">YOUR LINK</span>
+            <input
+              type="text"
+              readOnly
+              className="gtav-link"
+              value={server1Link}
+              aria-label="GTA V Server 1 game link"
+              onFocus={(event) => event.currentTarget.select()}
+              onClick={(event) => event.currentTarget.select()}
+            />
+            <button
+              type="button"
+              className="launch-play launch-play--external gtav-copy"
+              onClick={copyServer1}
+            >
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+              {copied ? "Link copied" : "Copy the game link"}
+            </button>
+            <p className="gtav-server-note">
+              Open the link in a new tab and play. Server 1 remembers the mode you
+              picked, so the link above already includes <code>?mode={mode}</code>.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="gtav-server-panel" role="tabpanel">
+          <p className="gtav-server-desc">
+            Server 2 is the existing hosted GTA V page. It can show ads and may ask
+            you to set up an extension first. Copy the link and open it in a new tab.
+          </p>
+
+          <div className="gtav-server-copy">
+            <span className="section-kicker">YOUR LINK</span>
+            <input
+              type="text"
+              readOnly
+              className="gtav-link"
+              value={server2Url}
+              aria-label="GTA V Server 2 game link"
+              onFocus={(event) => event.currentTarget.select()}
+              onClick={(event) => event.currentTarget.select()}
+            />
+            <button
+              type="button"
+              className="launch-play launch-play--external gtav-copy"
+              onClick={copyServer2}
+            >
+              {copied ? <Check size={18} /> : <Copy size={18} />}
+              {copied ? "Link copied" : "Copy the game link"}
+            </button>
+            <p className="gtav-server-note">
+              If ads or pop-ups show up on Server 2, use Server 1 instead — it does
+              not need the extension setup.
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const GTA_V_MODES = [
+  { value: "sandbox", label: "Sandbox", hint: "Free-roam sandbox build." },
+  { value: "story", label: "Story Mode", hint: "The main single-player campaign." },
+  { value: "vi", label: "GTA VI map", hint: "Preview map build." },
+  { value: "title", label: "Title mode", hint: "Title / selection screen." },
+  { value: "chromebook", label: "Chromebook / light", hint: "Lighter build for low-end devices." },
+] as const;
 
 /**
  * The GTA V browser setup: install uBlock Origin, then copy the link and open it
@@ -455,8 +639,11 @@ export default function GamePlayer() {
     }
     if (game?.id === "gta-v") {
       // GTA V cannot play in this frame because of cross-origin restrictions.
-      // Prompt the user to copy the link and open it in a new tab.
-      navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
+      // Point the player at Server 1 by default (ad-free, no extension setup);
+      // keep Server 2 available on the notice panel if they prefer it.
+      const server1Base = game.gtavServer1Base && game.gtavServer1Base.replace(/\/+$/, "");
+      const hostUrl = server1Base ? `${server1Base}?mode=story` : gtaVHostUrl;
+      navigator.clipboard.writeText(hostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
       return;
     }
     setLaunched(true);
@@ -631,7 +818,7 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {isGtaV ? (
-          <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
+          <GtaVNotice hostUrl={gtaVHostUrl} server1Base={game.gtavServer1Base} media={game.media} />
         ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
@@ -690,7 +877,7 @@ export default function GamePlayer() {
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
         {isGtaV ? (
-          <GtaVNotice hostUrl={gtaVHostUrl} media={game.media} />
+          <GtaVNotice hostUrl={gtaVHostUrl} server1Base={game.gtavServer1Base} media={game.media} />
         ) : (
           <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}

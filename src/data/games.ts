@@ -32,6 +32,8 @@ export type Game = {
   standalone?: boolean;
   extensionNotice?: boolean;
   extensionUrl?: string;
+  /** Server 1 base URL for GTA V, when the listed host is Server 2. */
+  gtavServer1Base?: string;
   /** Gallery and game information shown on the title's own page. */
   media?: GameMedia;
 };
@@ -199,6 +201,7 @@ export const games: Game[] = [
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
     type: "external",
+    gtavServer1Base: "https://solve5.playgta5.net/",
     heavy: true,
     media: {
       logo: "https://gtwfilesie.grandtheftwiki.com/GTAV-logo-bare.png",
@@ -425,144 +428,6 @@ export const games: Game[] = [
     type: "iframe",
     heavy: true,
   },
-  // ——— Play-in-browser links. Each URL is the title's own browser page,
-  // not a GitHub repository. These are listed on the Play in Browser page and
-  // can also be reached from search.
-  //
-  // Source: the site's Play in Browser links list (GitHub repos excluded).
-
-export const browserLinks: { title: string; url: string; note?: string }[] = [
-  { title: "Call of Duty: Black Ops Zombies", url: "http://vel.gg/bo1z" },
-  {
-    title: "Call of Duty: Modern Warfare 2",
-    url: "http://ovz-game-production.up.railway.app",
-    note: "Railway-hosted build.",
-  },
-  {
-    title: "Command & Conquer: Generals Zero Hour",
-    url: "https://generals.wasm.ltd",
-  },
-  {
-    title: "Command & Conquer: Red Alert 2 — Chrono Divide",
-    url: "https://chronodivide.com/",
-  },
-  { title: "Counter-Strike 1.6", url: "https://csjs.live" },
-  {
-    title: "Counter-Strike: Source Bunnyhop",
-    url: "https://bunnyhop.lol",
-    note: "bunnyhop.lol — Bunnyhop.",
-  },
-  {
-    title: "Counter-Strike: Source Surf (Surfd)",
-    url: "http://surfd.net",
-    note: "surfd.net — Surf.",
-  },
-  { title: "Crash Bash Online", url: "https://crashbash.app/" },
-  {
-    title: "Diablo (diablo_web)",
-    url: "http://johnimril.github.io/diablo_web/",
-    note: "Diablo web port by Johnimril.",
-  },
-  {
-    title: "Doom Multiplayer — Silent Space Marine",
-    url: "https://silentspacemarine.com/",
-  },
-  { title: "Grand Theft Auto III", url: "https://wasmarcade.com/gta3" },
-  {
-    title: "Grand Theft Auto V",
-    url: "https://web.archive.org/web/20261006055917/https://playgta5.com/",
-    note: "Internet Archive snapshot of playgta5.com.",
-  },
-  {
-    title: "Grand Theft Auto: Vice City",
-    url: "https://joncodeofficial.github.io/gta-vice-city-wasm/",
-    note: "JonCode's Vice City WASM port.",
-  },
-  { title: "Half-Life (pixelsuft)", url: "http://pixelsuft.github.io/hl/" },
-  {
-    title: "Half-Life and Counter-Strike 1.6 (WebXash)",
-    url: "http://x8bitrain.github.io/webXash/",
-  },
-  {
-    title: "Halo: Combat Evolved",
-    url: "https://mitchellhynes.com/halo/halo.html",
-  },
-  {
-    title: "Halo: Combat Evolved Mobile (HCEMobile)",
-    url: "https://hcemobile.com/",
-  },
-  { title: "LEGO Island", url: "https://isle.pizza/" },
-  { title: "Minecraft 1.8.8 (EaglercraftX)", url: "https://wasmarcade.com/minecraft" },
-  {
-    title: "Moon — Black Ops Zombies (vel.gg)",
-    url: "https://vel.gg/bo1z/moon",
-    note: "Moon map on vel.gg.",
-  },
-  {
-    title: "Nacht der Untoten",
-    url: "https://zombies.bitcoinsapi.com/",
-  },
-  { title: "NetQuake.io", url: "https://www.netquake.io/" },
-  { title: "Pro Evolution Soccer 6", url: "http://pes6.optijuegos.net" },
-  { title: "Quake II (q2.pieter.com)", url: "http://q2.pieter.com" },
-  { title: "Quake III Arena (q3.pieter.com)", url: "https://q3.pieter.com" },
-  { title: "Quake III Arena (q3js)", url: "https://q3js.com/" },
-  { title: "QuakeWorld (q1.pieter.com)", url: "http://q1.pieter.com" },
-  {
-    title: "Return to Castle Wolfenstein (rtcw.pieter.com)",
-    url: "http://rtcw.pieter.com",
-  },
-  {
-    title: "RuneScape Classic",
-    url: "https://runescapeclassic.gold/",
-    note: "RuneScape Classic rebirth.",
-  },
-  { title: "Skate 3 (fan browser game)", url: "http://skate.aaddpp.lol" },
-  {
-    title: "Star Wars Jedi Knight: Jedi Academy",
-    url: "https://jk.q3js.com",
-  },
-  { title: "Super Mario 64 Multiplayer", url: "https://olivers.tools/play/" },
-  { title: "Super Mario Zombies", url: "https://smz.fun/" },
-  {
-    title: "The Simpsons: Hit & Run",
-    url: "http://shar-wasm.cjoseph.workers.dev/?skipmovie",
-  },
-  {
-    title: "Urban Terror (ut.pieter.com)",
-    url: "http://ut.pieter.com",
-  },
-  { title: "WadCMD (Doom in the browser)", url: "https://wadcmd.com/" },
-  {
-    title: "Zelda II: The Adventure of Link (z2rs)",
-    url: "https://z2rs.com/",
-  },
-  {
-    title: "Claude of Duty: Vibe Slops II (froydinger mirror)",
-    url: "https://froydinger.github.io/claude-of-duty/",
-    note: "Vibe Slops II — froydinger mirror.",
-  },
-  {
-    title: "Claude of Duty: Vibe Slops II (GoofyAhhBro69420 mirror)",
-    url: "https://goofyahhbro69420.github.io/Black-Ops-2/",
-    note: "Vibe Slops II — GoofyAhhBro69420 mirror.",
-  },
-  {
-    title: "Diablo (diabloweb)",
-    url: "https://d07riv.github.io/diabloweb/",
-    note: "Diablo web port by d07riv.",
-  },
-  {
-    title: "Kino der Toten (GoofyAhhBro69420 mirror)",
-    url: "https://goofyahhbro69420.github.io/COD-ZOMBIES/",
-    note: "Kino der Toten — GoofyAhhBro69420 mirror.",
-  },  {
-    title: "Kino der Toten (theeagler1234 mirror)",
-    url: "https://theeagler1234-alt.github.io/kino-der-toten/",
-    note: "Kino der Toten — theeagler1234 mirror.",
-  },
-];
-
   {
     id: "moon-zombies",
     title: "Moon — Zombies",
@@ -779,6 +644,151 @@ export const browserLinks: { title: string; url: string; note?: string }[] = [
     type: "iframe",
     heavy: true,
   },
+
+];
+
+  // ——— Play-in-browser links. Each URL is the title's own browser page,
+  // not a GitHub repository. These are listed on the Play in Browser page and
+  // can also be reached from search.
+  //
+  // Source: the site's Play in Browser links list (GitHub repos excluded).
+
+export const browserLinks: { title: string; url: string; note?: string }[] = [
+  { title: "Call of Duty: Black Ops Zombies", url: "http://vel.gg/bo1z" },
+  {
+    title: "Call of Duty: Modern Warfare 2",
+    url: "http://ovz-game-production.up.railway.app",
+    note: "Railway-hosted build.",
+  },
+  {
+    title: "Command & Conquer: Generals Zero Hour",
+    url: "https://generals.wasm.ltd",
+  },
+  {
+    title: "Command & Conquer: Red Alert 2 — Chrono Divide",
+    url: "https://chronodivide.com/",
+  },
+  { title: "Counter-Strike 1.6", url: "https://csjs.live" },
+  {
+    title: "Counter-Strike: Source Bunnyhop",
+    url: "https://bunnyhop.lol",
+    note: "bunnyhop.lol — Bunnyhop.",
+  },
+  {
+    title: "Counter-Strike: Source Surf (Surfd)",
+    url: "http://surfd.net",
+    note: "surfd.net — Surf.",
+  },
+  { title: "Crash Bash Online", url: "https://crashbash.app/" },
+  {
+    title: "Diablo (diablo_web)",
+    url: "http://johnimril.github.io/diablo_web/",
+    note: "Diablo web port by Johnimril.",
+  },
+  {
+    title: "Doom Multiplayer — Silent Space Marine",
+    url: "https://silentspacemarine.com/",
+  },
+  { title: "Grand Theft Auto III", url: "https://wasmarcade.com/gta3" },
+  {
+    title: "Grand Theft Auto V",
+    url: "https://web.archive.org/web/20261006055917/https://playgta5.com/",
+    note: "Internet Archive snapshot of playgta5.com.",
+  },
+  {
+    title: "Grand Theft Auto: Vice City",
+    url: "https://joncodeofficial.github.io/gta-vice-city-wasm/",
+    note: "JonCode's Vice City WASM port.",
+  },
+  { title: "Half-Life (pixelsuft)", url: "http://pixelsuft.github.io/hl/" },
+  {
+    title: "Half-Life and Counter-Strike 1.6 (WebXash)",
+    url: "http://x8bitrain.github.io/webXash/",
+  },
+  {
+    title: "Halo: Combat Evolved",
+    url: "https://mitchellhynes.com/halo/halo.html",
+  },
+  {
+    title: "Halo: Combat Evolved Mobile (HCEMobile)",
+    url: "https://hcemobile.com/",
+  },
+  { title: "LEGO Island", url: "https://isle.pizza/" },
+  { title: "Minecraft 1.8.8 (EaglercraftX)", url: "https://wasmarcade.com/minecraft" },
+  {
+    title: "Moon — Black Ops Zombies (vel.gg)",
+    url: "https://vel.gg/bo1z/moon",
+    note: "Moon map on vel.gg.",
+  },
+  {
+    title: "Nacht der Untoten",
+    url: "https://zombies.bitcoinsapi.com/",
+  },
+  { title: "NetQuake.io", url: "https://www.netquake.io/" },
+  { title: "Pro Evolution Soccer 6", url: "http://pes6.optijuegos.net" },
+  { title: "Quake II (q2.pieter.com)", url: "http://q2.pieter.com" },
+  { title: "Quake III Arena (q3.pieter.com)", url: "https://q3.pieter.com" },
+  { title: "Quake III Arena (q3js)", url: "https://q3js.com/" },
+  { title: "QuakeWorld (q1.pieter.com)", url: "http://q1.pieter.com" },
+  {
+    title: "Return to Castle Wolfenstein (rtcw.pieter.com)",
+    url: "http://rtcw.pieter.com",
+  },
+  {
+    title: "RuneScape Classic",
+    url: "https://runescapeclassic.gold/",
+    note: "RuneScape Classic rebirth.",
+  },
+  { title: "Skate 3 (fan browser game)", url: "http://skate.aaddpp.lol" },
+  {
+    title: "Star Wars Jedi Knight: Jedi Academy",
+    url: "https://jk.q3js.com",
+  },
+  { title: "Super Mario 64 Multiplayer", url: "https://olivers.tools/play/" },
+  { title: "Super Mario Zombies", url: "https://smz.fun/" },
+  {
+    title: "The Simpsons: Hit & Run",
+    url: "http://shar-wasm.cjoseph.workers.dev/?skipmovie",
+  },
+  {
+    title: "Urban Terror (ut.pieter.com)",
+    url: "http://ut.pieter.com",
+  },
+  { title: "WadCMD (Doom in the browser)", url: "https://wadcmd.com/" },
+  {
+    title: "Zelda II: The Adventure of Link (z2rs)",
+    url: "https://z2rs.com/",
+  },
+  {
+    title: "Claude of Duty: Vibe Slops II (froydinger mirror)",
+    url: "https://froydinger.github.io/claude-of-duty/",
+    note: "Vibe Slops II — froydinger mirror.",
+  },
+  {
+    title: "Claude of Duty: Vibe Slops II (GoofyAhhBro69420 mirror)",
+    url: "https://goofyahhbro69420.github.io/Black-Ops-2/",
+    note: "Vibe Slops II — GoofyAhhBro69420 mirror.",
+  },
+  {
+    title: "Diablo (diabloweb)",
+    url: "https://d07riv.github.io/diabloweb/",      note: "Diablo web port by d07riv.",
+  },
+  {
+    title: "Kino der Toten (GoofyAhhBro69420 mirror)",
+    url: "https://goofyahhbro69420.github.io/COD-ZOMBIES/",
+    note: "Kino der Toten — GoofyAhhBro69420 mirror.",
+  },
+  {
+    title: "Kino der Toten (theeagler1234 mirror)",
+    url: "https://theeagler1234-alt.github.io/kino-der-toten/",
+    note: "Kino der Toten — theeagler1234 mirror.",
+  },
+];
+
+export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
+
+export const allGames: Game[] = [
+  ...games,
   ...localGames.map(([title, category, tags, description, controls], index): Game => {
     const id = localSlugs[index];
     return {
@@ -792,9 +802,7 @@ export const browserLinks: { title: string; url: string; note?: string }[] = [
       sourceUrl: `/games/${id}/index.html`,
       type: "iframe",
       htmlGame: true,
-      isNew: id === "51-starfighter-si-01",
-    };
+      isNew: id === "51-starfighter-si-01",    };
   }),
 ];
 
-export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
