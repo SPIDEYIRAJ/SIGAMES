@@ -654,6 +654,8 @@
 .report-actions .primary-button,
 .report-actions .soft-button { flex: 1 1 auto; justify-content: center; }
 
+.report-actions.vertical { flex-direction: column; }
+
 .report-sent {
   display: flex;
   flex-direction: column;

@@ -1,8 +1,6 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
 import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
 
@@ -139,15 +137,40 @@ function GtaVMedia({ media }: { media: GameMedia }) {
   );
 }
 
-/** One dialog, reused on every game page, that files a problem report. */
+/**
+ * One dialog, reused on every game page, that asks what went wrong and then
+ * hands the report to the player's own mail app, pre-addressed to the site
+ * inbox with everything written out.
+ */
+const REPORT_INBOX = "spideyiraj1925@gmail.com";
+
 function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitle: string; onClose: () => void }) {
-  const submitReport = useMutation(api.reports.submit);
   const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
-  const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
-  const [error, setError] = useState("");
   const closeRef = useRef<HTMLButtonElement>(null);
+
+  /** Builds the mailto draft each time it is opened, so it always carries the latest details. */
+  const openMail = useCallback(() => {
+    const subject = `SI GAMES problem report — ${gameTitle}`;
+    const body = [
+      "Problem report from the SI GAMES arcade.",
+      "",
+      `Game: ${gameTitle} (${gameId})`,
+      `Problem: ${reason}`,
+      `Details: ${details.trim() ? details.trim() : "—"}`,
+      `Page: ${window.location.href}`,
+      `When: ${new Date().toLocaleString()}`,
+      "",
+      "— sent from a player's mail app",
+    ].join("\r\n");
+    window.location.href = `mailto:${REPORT_INBOX}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }, [gameId, gameTitle, reason, details]);
+
+  const send = () => {
+    setSent(true);
+    openMail();
+  };
 
   useEffect(() => {
     closeRef.current?.focus({ preventScroll: true });
@@ -166,24 +189,6 @@ function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitl
     };
   }, [onClose]);
 
-  const send = async () => {
-    setSending(true);
-    setError("");
-    try {
-      await submitReport({
-        gameId,
-        gameTitle,
-        reason,
-        details: details.trim() ? details.trim() : undefined,
-      });
-      setSent(true);
-    } catch {
-      setError("That report did not go through. Please try again.");
-    } finally {
-      setSending(false);
-    }
-  };
-
   return (
     <div className="report-backdrop" onClick={onClose}>
       <div
@@ -200,15 +205,18 @@ function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitl
         {sent ? (
           <div className="report-sent">
             <span className="report-sent-icon"><Check size={20} /></span>
-            <h2 id="report-title">Report sent</h2>
-            <p>Thanks — that helps keep {gameTitle} working for everyone.</p>
-            <button type="button" className="primary-button" onClick={onClose}>Close</button>
+            <h2 id="report-title">Your mail app is opening</h2>
+            <p>The draft to spideyiraj1925@gmail.com is written out — game, problem, details and this page's address. Just press send in your own mail app to deliver it.</p>
+            <div className="report-actions vertical">
+              <button type="button" className="soft-button" onClick={openMail}><Send size={15} /> Didn't open? Open it again</button>
+              <button type="button" className="primary-button" onClick={onClose}>Close</button>
+            </div>
           </div>
         ) : (
           <>
             <span className="section-kicker"><Flag size={14} /> REPORT A PROBLEM</span>
             <h2 id="report-title">{gameTitle}</h2>
-            <p className="report-lead">Tell us what went wrong and it gets looked at.</p>
+            <p className="report-lead">Tell us what went wrong — submitting opens your own mail app with the report written out to the SI GAMES inbox.</p>
 
             <span className="report-label">What happened?</span>
             <div className="report-reasons">
@@ -235,11 +243,9 @@ function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitl
               onChange={(event) => setDetails(event.target.value)}
             />
 
-            {error && <p className="report-error">{error}</p>}
-
             <div className="report-actions">
-              <button type="button" className="primary-button" disabled={sending} onClick={() => void send()}>
-                <Send size={15} /> {sending ? "Sending..." : "Send report"}
+              <button type="button" className="primary-button" onClick={send}>
+                <Send size={15} /> Open mail &amp; send
               </button>
               <button type="button" className="soft-button" onClick={onClose}>Cancel</button>
             </div>
