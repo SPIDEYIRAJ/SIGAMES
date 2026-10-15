@@ -226,10 +226,10 @@ export default function Landing() {
           <div className="hero-copy">
             <div className="eyebrow"><span className="eyebrow-icon"><Sparkles size={14} /></span> THE PERSONAL GAME SHELF</div>
             <h1>Play something<br /><span>good today.</span></h1>
-            <p className="hero-subtitle">A soft landing for your next high score. Curated browser games, zero clutter, just press play.</p>
+            <p className="hero-subtitle">A personal shelf of browser games plus a library of direct play-in-browser links for classic titles — all in one place, no clutter.</p>
             <div className="hero-actions">
               <button className="primary-button" onClick={() => playGame(games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
-              <a className="soft-button" href="#library">Explore games <ArrowRight size={16} /></a>
+              <a className="soft-button" href="/play-in-browser">Browse browser links <ArrowRight size={16} /></a>
             </div>
             <div className="hero-note"><span>✦</span> No ads inside SI GAMES <span>✦</span> Press <kbd>/</kbd> to search</div>
           </div>
@@ -262,7 +262,7 @@ export default function Landing() {
           </div>
           <div className="truth-band">
             <AlertTriangle size={18} />
-            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. Every game opens inside SI GAMES, in this same frame.</p>
+            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. The play-in-browser links on the browser links page open in their own tabs, outside this frame.</p>
           </div>
           <div className="library-toolbar">
             <div className="toolbar-row">
