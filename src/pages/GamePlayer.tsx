@@ -79,8 +79,8 @@ function GtaVNotice({
       .then(() => setCopied(true), () => setCopied(false));
   };
 
-  const server1Url = server1Base && server1Base.replace(/\/+$/, "");
-  const useServer1 = Boolean(server1Url);
+  const server1Url = server1Base?.replace(/\/+$/, "") ?? "";
+  const useServer1 = server1Url !== "";
 
   return (
     <>
