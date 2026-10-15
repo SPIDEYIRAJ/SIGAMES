@@ -30,6 +30,8 @@ export type Game = {
   lockLinks?: boolean;
   /** Served from its own top-level page (for example /gta-vicecity). */
   standalone?: boolean;
+  /** Server 1 base URL for titles that offer a multi-server entrance (GTA V). */
+  server1Base?: string;
   extensionNotice?: boolean;
   extensionUrl?: string;
   /** Gallery and game information shown on the title's own page. */
@@ -197,9 +199,11 @@ export const games: Game[] = [
     description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // Server 1 only — the clean, ad-free host. Plays right inside SI GAMES,
-    // and the player page never shows this link to the user.
-    sourceUrl: "https://solve5.playgta5.net/?mode=story",
+    // Server 1 is the clean, ad-free host with five launch modes; Server 2 is
+    // the existing hosted page, which carries ads and expects an extension
+    // setup. The entrance on the game page picks between the two.
+    server1Base: "https://solve5.playgta5.net/",
+    sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
     type: "iframe",
     heavy: true,
     standalone: true,
@@ -648,138 +652,20 @@ export const games: Game[] = [
 
 ];
 
-  // ——— Play-in-browser links. Each URL is the title's own browser page,
-  // not a GitHub repository. These are listed on the Play in Browser page and
-  // can also be reached from search.
-  //
-  // Source: the site's Play in Browser links list (GitHub repos excluded).
 
-export const browserLinks: { title: string; url: string; note?: string }[] = [
-  { title: "Call of Duty: Black Ops Zombies", url: "http://vel.gg/bo1z" },
-  {
-    title: "Call of Duty: Modern Warfare 2",
-    url: "http://ovz-game-production.up.railway.app",
-    note: "Railway-hosted build.",
-  },
-  {
-    title: "Command & Conquer: Generals Zero Hour",
-    url: "https://generals.wasm.ltd",
-  },
-  {
-    title: "Command & Conquer: Red Alert 2 — Chrono Divide",
-    url: "https://chronodivide.com/",
-  },
-  { title: "Counter-Strike 1.6", url: "https://csjs.live" },
-  {
-    title: "Counter-Strike: Source Bunnyhop",
-    url: "https://bunnyhop.lol",
-    note: "bunnyhop.lol — Bunnyhop.",
-  },
-  {
-    title: "Counter-Strike: Source Surf (Surfd)",
-    url: "http://surfd.net",
-    note: "surfd.net — Surf.",
-  },
-  { title: "Crash Bash Online", url: "https://crashbash.app/" },
-  {
-    title: "Diablo (diablo_web)",
-    url: "http://johnimril.github.io/diablo_web/",
-    note: "Diablo web port by Johnimril.",
-  },
-  {
-    title: "Doom Multiplayer — Silent Space Marine",
-    url: "https://silentspacemarine.com/",
-  },
-  { title: "Grand Theft Auto III", url: "https://wasmarcade.com/gta3" },
-  {
-    title: "Grand Theft Auto: Vice City",
-    url: "https://joncodeofficial.github.io/gta-vice-city-wasm/",
-    note: "JonCode's Vice City WASM port.",
-  },
-  { title: "Half-Life (pixelsuft)", url: "http://pixelsuft.github.io/hl/" },
-  {
-    title: "Half-Life and Counter-Strike 1.6 (WebXash)",
-    url: "http://x8bitrain.github.io/webXash/",
-  },
-  {
-    title: "Halo: Combat Evolved",
-    url: "https://mitchellhynes.com/halo/halo.html",
-  },
-  {
-    title: "Halo: Combat Evolved Mobile (HCEMobile)",
-    url: "https://hcemobile.com/",
-  },
-  { title: "LEGO Island", url: "https://isle.pizza/" },
-  { title: "Minecraft 1.8.8 (EaglercraftX)", url: "https://wasmarcade.com/minecraft" },
-  {
-    title: "Moon — Black Ops Zombies (vel.gg)",
-    url: "https://vel.gg/bo1z/moon",
-    note: "Moon map on vel.gg.",
-  },
-  {
-    title: "Nacht der Untoten",
-    url: "https://zombies.bitcoinsapi.com/",
-  },
-  { title: "NetQuake.io", url: "https://www.netquake.io/" },
-  { title: "Pro Evolution Soccer 6", url: "http://pes6.optijuegos.net" },
-  { title: "Quake II (q2.pieter.com)", url: "http://q2.pieter.com" },
-  { title: "Quake III Arena (q3.pieter.com)", url: "https://q3.pieter.com" },
-  { title: "Quake III Arena (q3js)", url: "https://q3js.com/" },
-  { title: "QuakeWorld (q1.pieter.com)", url: "http://q1.pieter.com" },
-  {
-    title: "Return to Castle Wolfenstein (rtcw.pieter.com)",
-    url: "http://rtcw.pieter.com",
-  },
-  {
-    title: "RuneScape Classic",
-    url: "https://runescapeclassic.gold/",
-    note: "RuneScape Classic rebirth.",
-  },
-  { title: "Skate 3 (fan browser game)", url: "http://skate.aaddpp.lol" },
-  {
-    title: "Star Wars Jedi Knight: Jedi Academy",
-    url: "https://jk.q3js.com",
-  },
-  { title: "Super Mario 64 Multiplayer", url: "https://olivers.tools/play/" },
-  { title: "Super Mario Zombies", url: "https://smz.fun/" },
-  {
-    title: "The Simpsons: Hit & Run",
-    url: "http://shar-wasm.cjoseph.workers.dev/?skipmovie",
-  },
-  {
-    title: "Urban Terror (ut.pieter.com)",
-    url: "http://ut.pieter.com",
-  },
-  { title: "WadCMD (Doom in the browser)", url: "https://wadcmd.com/" },
-  {
-    title: "Zelda II: The Adventure of Link (z2rs)",
-    url: "https://z2rs.com/",
-  },
-  {
-    title: "Claude of Duty: Vibe Slops II (froydinger mirror)",
-    url: "https://froydinger.github.io/claude-of-duty/",
-    note: "Vibe Slops II — froydinger mirror.",
-  },
-  {
-    title: "Claude of Duty: Vibe Slops II (GoofyAhhBro69420 mirror)",
-    url: "https://goofyahhbro69420.github.io/Black-Ops-2/",
-    note: "Vibe Slops II — GoofyAhhBro69420 mirror.",
-  },
-  {
-    title: "Diablo (diabloweb)",
-    url: "https://d07riv.github.io/diabloweb/",      note: "Diablo web port by d07riv.",
-  },
-  {
-    title: "Kino der Toten (GoofyAhhBro69420 mirror)",
-    url: "https://goofyahhbro69420.github.io/COD-ZOMBIES/",
-    note: "Kino der Toten — GoofyAhhBro69420 mirror.",
-  },
-  {
-    title: "Kino der Toten (theeagler1234 mirror)",
-    url: "https://theeagler1234-alt.github.io/kino-der-toten/",
-    note: "Kino der Toten — theeagler1234 mirror.",
-  },
-];
+/**
+ * GTA V Server 1 modes. Each ?mode= flips the hosted build's entry screen —
+ * the entrance picker turns these into one URL per option.
+ */
+export const GTA_V_SERVER1_MODES = [
+  { id: "sandbox", label: "Sandbox mode", note: "Free-roam playground, no story pressure" },
+  { id: "story", label: "Story mode", note: "The campaign, starting at the Prologue" },
+  { id: "vi", label: "GTA VI map", note: "Preview build on the futuristic map" },
+  { id: "title", label: "Title / selection mode", note: "Open the build's own title screen" },
+  { id: "chromebook", label: "Light mode (Chromebook)", note: "Slimmed build for weak machines" },
+] as const;
+
+export type GtaVServerMode = (typeof GTA_V_SERVER1_MODES)[number]["id"];
 
 export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
 

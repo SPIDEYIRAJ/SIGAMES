@@ -1,7 +1,7 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
+import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, ShieldCheck, TriangleAlert, X } from "lucide-react";
 import { useNavigate, useParams } from "react-router";
-import { games, type GameMedia } from "@/data/games";
+import { GTA_V_SERVER1_MODES, games, type GameMedia, type GtaVServerMode } from "@/data/games";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-vicecity) have no :id segment. */
@@ -138,6 +138,64 @@ function GtaVMedia({ media }: { media: GameMedia }) {
 }
 
 /**
+ * GTA V entrance: two servers to choose between before the frame loads.
+ * Server 1 is the clean hosted build with five entry modes; Server 2 is the
+ * existing hosted page, which serves ads and expects an extension setup.
+ */
+function GtaVServerPicker({
+  server1Base,
+  server2Url,
+  gameTitle,
+  onPlay,
+}: {
+  server1Base: string;
+  server2Url: string;
+  gameTitle: string;
+  onPlay: (url: string) => void;
+}) {
+  const [mode, setMode] = useState<GtaVServerMode>("story");
+  const server1Url = `${server1Base.replace(/\/+$/, "")}?mode=${mode}`;
+
+  return (
+    <div className="gv-picker" aria-label={`Choose a server for ${gameTitle}`}>
+      <section className="gv-server gv-server--one">
+        <header className="gv-server-head">
+          <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SERVER 1 · CLEAN · NO ADS</span>
+          <p className="gv-server-blurb">The clean build on its own host. Pick how you want to enter the city, then play.</p>
+        </header>
+        <div className="gv-modes" role="group" aria-label="Server 1 entry mode">
+          {GTA_V_SERVER1_MODES.map((option) => (
+            <button
+              type="button"
+              key={option.id}
+              className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
+              aria-pressed={mode === option.id}
+              onClick={() => setMode(option.id)}
+            >
+              <strong>{option.label}</strong>
+              <span>{option.note}</span>
+            </button>
+          ))}
+        </div>
+        <button type="button" className="launch-play gv-play" onClick={() => onPlay(server1Url)}>
+          <Play size={18} fill="currentColor" /> Play on Server 1
+        </button>
+      </section>
+
+      <section className="gv-server gv-server--two">
+        <header className="gv-server-head">
+          <span className="gv-badge gv-badge--two"><TriangleAlert size={13} /> SERVER 2 · HAS ADS · NEEDS EXTENSION SETUP</span>
+          <p className="gv-server-blurb">The existing hosted page. It serves ads, and an ad-blocker / extension setup is expected before playing. Switch back to Server 1 if that bothers you.</p>
+        </header>
+        <button type="button" className="launch-play launch-play--external gv-play" onClick={() => onPlay(server2Url)}>
+          <Play size={18} fill="currentColor" /> Play on Server 2 anyway
+        </button>
+      </section>
+    </div>
+  );
+}
+
+/**
  * One dialog, reused on every game page, that asks what went wrong and then
  * hands the report to the player's own mail app, pre-addressed to the site
  * inbox with everything written out.
@@ -267,6 +325,8 @@ export default function GamePlayer() {
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  // For titles with a server picker (GTA V): the URL chosen at the entrance.
+  const [playUrl, setPlayUrl] = useState<string | null>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
@@ -312,6 +372,7 @@ export default function GamePlayer() {
     setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
     setLaunched(!game.standalone && game.type !== "external");
+    setPlayUrl(null);
   }, [game]);
 
   /** Standalone pages describe the title first, then either load the frame or hand over. */
@@ -321,10 +382,19 @@ export default function GamePlayer() {
       window.location.href = game.sourceUrl;
       return;
     }
+    setPlayUrl(null);
     setLaunched(true);
     setLoading(true);
     setShowFsPrompt(true);
   }, [game]);
+
+  /** Entering through the server picker: the chosen URL becomes the frame source. */
+  const launchServer = useCallback((url: string) => {
+    setPlayUrl(url);
+    setLaunched(true);
+    setLoading(true);
+    setShowFsPrompt(true);
+  }, []);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -492,10 +562,14 @@ export default function GamePlayer() {
           <h1>{game.title}</h1>
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
-          <div className="launch-actions">
-            <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
-            <span className="launch-note">Runs inside SI GAMES. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
-          </div>
+          {game.server1Base ? (
+            <GtaVServerPicker server1Base={game.server1Base} server2Url={game.sourceUrl} gameTitle={game.title} onPlay={launchServer} />
+          ) : (
+            <div className="launch-actions">
+              <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
+              <span className="launch-note">Runs inside SI GAMES. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            </div>
+          )}
           <div className="launch-report">
             <button type="button" className="open-external report-button" onClick={() => setShowReport(true)}>
               <Flag size={15} /> Report a problem
@@ -552,7 +626,7 @@ export default function GamePlayer() {
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
             {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
             <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-            <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>

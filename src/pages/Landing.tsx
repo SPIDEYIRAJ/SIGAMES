@@ -155,6 +155,7 @@ export default function Landing() {
 
   const favoriteGames = games.filter((game) => favorites.includes(game.id));
   const recentGames = recent.map((id) => games.find((game) => game.id === id)).filter((game): game is Game => Boolean(game)).slice(0, 3);
+  const recentTarget = recentGames[0];
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
@@ -226,10 +227,12 @@ export default function Landing() {
           <div className="hero-copy">
             <div className="eyebrow"><span className="eyebrow-icon"><Sparkles size={14} /></span> THE PERSONAL GAME SHELF</div>
             <h1>Play something<br /><span>good today.</span></h1>
-            <p className="hero-subtitle">A personal shelf of browser games plus a library of direct play-in-browser links for classic titles — all in one place, no clutter.</p>
+            <p className="hero-subtitle">A personal shelf of browser games and classic builds — the whole arcade in one place, no clutter.</p>
             <div className="hero-actions">
               <button className="primary-button" onClick={() => playGame(games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
-              <a className="soft-button" href="/play-in-browser">Browse browser links <ArrowRight size={16} /></a>
+              {recentTarget && (
+                <button className="soft-button" onClick={() => playGame(recentTarget)}><ArrowRight size={16} /> Continue playing</button>
+              )}
             </div>
             <div className="hero-note"><span>✦</span> No ads inside SI GAMES <span>✦</span> Press <kbd>/</kbd> to search</div>
           </div>
@@ -262,7 +265,7 @@ export default function Landing() {
           </div>
           <div className="truth-band">
             <AlertTriangle size={18} />
-            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. The play-in-browser links on the browser links page open in their own tabs, outside this frame.</p>
+            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. Every title loads inside this frame — take it fullscreen with <kbd>F</kbd> when you want it edge to edge.</p>
           </div>
           <div className="library-toolbar">
             <div className="toolbar-row">

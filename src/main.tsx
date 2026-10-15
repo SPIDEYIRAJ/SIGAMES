@@ -13,7 +13,6 @@ import "./index.css";
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
-const PlayInBrowser = lazy(() => import("./pages/PlayInBrowser.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -374,7 +373,6 @@ function AnimatedRoutes() {
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
-            <Route path="/play-in-browser" element={<PlayInBrowser />} />
             <Route path="/play/:id" element={<GamePlayer />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
