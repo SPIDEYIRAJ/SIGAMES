@@ -5,6 +5,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
+import "@/css/gtav-server.css";
 
 /** Standalone pages (for example /gta-vicecity) have no :id segment. */
 const STANDALONE_DEFAULT = "gta-vicecity";
@@ -124,8 +125,10 @@ function GtaVNotice({
 }
 
 /**
- * Server 1 for GTA V: ad-free and no extension setup. Server 2 is kept as the
- * fallback for players who already have an account there.
+ * Server picker for GTA V. The page first asks the player which host they want:
+ * Server 1 (clean, ad-free, no extension) or Server 2 (the existing hosted page
+ * that can show ads). Only after Server 1 is chosen does the page ask for the
+ * GTA V mode, because that mode query is specific to Server 1.
  */
 function GtaVServer1Block({
   server1Base,
@@ -138,128 +141,152 @@ function GtaVServer1Block({
   onCopyServer1: (url: string) => void;
   onCopyServer2: (url: string) => void;
 }) {
+  const [server, setServer] = useState<"server1" | "server2">("server1");
   const [mode, setMode] = useState<string>("story");
   const [copied, setCopied] = useState(false);
-  const [activeTab, setActiveTab] = useState<"server1" | "server2">("server1");
 
   const server1Link = `${server1Base}?mode=${mode}`;
-  const copyServer1 = () => {
-    onCopyServer1(server1Link);
+
+  const copySelected = () => {
+    if (server === "server1") {
+      onCopyServer1(server1Link);
+    } else {
+      onCopyServer2(server2Url);
+    }
     setCopied(true);
-    window.setTimeout(() => setCopied(false), 1800);
-  };
-  const copyServer2 = () => {
-    onCopyServer2(server2Url);
     window.setTimeout(() => setCopied(false), 1800);
   };
 
   return (
     <div className="gtav-servers">
-      <div className="gtav-servers-tabs" role="tablist" aria-label="Choose GTA V host">
-        <button
-          type="button"
-          className={`gtav-server-tab ${activeTab === "server1" ? "is-active" : ""}`}
-          role="tab"
-          aria-selected={activeTab === "server1"}
-          onClick={() => setActiveTab("server1")}
+      <span className="gtav-servers-eyebrow">
+        <AlertTriangle size={12} /> WHICH HOST DO YOU WANT?
+      </span>
+      <h3 className="gtav-servers-question">
+        Pick the GTA V host first, then the mode.
+        <small>
+          Server 1 is clean and runs without ads or extra setup. Server 2 is the
+          existing hosted page and can show ads.
+        </small>
+      </h3>
+
+      <div className="gtav-server-cards" role="radiogroup" aria-label="Choose GTA V host">
+        <label
+          className={`gtav-server-card ${server === "server1" ? "is-selected" : ""}`}
         >
-          Server 1 — ad-free
-        </button>
-        <button
-          type="button"
-          className={`gtav-server-tab ${activeTab === "server2" ? "is-active" : ""}`}
-          role="tab"
-          aria-selected={activeTab === "server2"}
-          onClick={() => setActiveTab("server2")}
+          <input
+            type="radio"
+            name="gtav-server"
+            value="server1"
+            checked={server === "server1"}
+            onChange={() => setServer("server1")}
+            className="gtav-server-card-radio"
+          />
+          <span className="gtav-server-card-badge gtav-server-card-badge-clean">Server 1</span>
+          <span className="gtav-server-card-title">Clean host — ad-free</span>
+          <span className="gtav-server-desc">
+            Runs without ads and does not ask you to install any extension. This is
+            the recommended way to play.
+          </span>
+          <span className="gtav-server-card-foot">
+            <span className="gtav-server-card-mark">
+              <span className="gtav-server-card-mark-dot" /> BEST PICK
+            </span>
+          </span>
+        </label>
+
+        <label
+          className={`gtav-server-card ${server === "server2" ? "is-selected" : ""}`}
         >
-          Server 2 — existing host
-        </button>
+          <input
+            type="radio"
+            name="gtav-server"
+            value="server2"
+            checked={server === "server2"}
+            onChange={() => setServer("server2")}
+            className="gtav-server-card-radio"
+          />
+          <span className="gtav-server-card-badge gtav-server-card-badge-ads">Server 2</span>
+          <span className="gtav-server-card-title">Existing hosted page</span>
+          <span className="gtav-server-desc">
+            The current hosted GTA V page. It can show ads and may ask you to set up
+            an extension first.
+          </span>
+          <span className="gtav-server-card-foot">
+            <span className="gtav-server-card-mark">
+              <span className="gtav-server-card-mark-dot is-ads" /> HAS ADS
+            </span>
+          </span>
+        </label>
       </div>
 
-      {activeTab === "server1" ? (
-        <div className="gtav-server-panel" role="tabpanel">
-          <p className="gtav-server-desc">
-            Server 1 runs without ads and does not ask you to install any extension.
-            Pick the mode you want, copy the link and open it in a new tab.
+      {server === "server1" ? (
+        <div className="gtav-mode-picker" role="radiogroup" aria-label="Choose GTA V mode">
+          <span className="gtav-mode-picker-eyebrow">STEP 2 — MODE</span>
+          <h3 className="gtav-mode-picker-title">Which GTA V mode do you want?</h3>
+          <p className="gtav-mode-picker-help">
+            The mode is baked into the link, so Server 1 opens straight into the
+            version you pick.
           </p>
 
-          <fieldset className="gtav-mode-fieldset">
-            <legend className="gtav-mode-legend">Which GTA V mode do you want?</legend>
-            <div className="gtav-mode-options">
-              {GTA_V_MODES.map((option) => (
-                <label key={option.value} className="gtav-mode-option">
-                  <input
-                    type="radio"
-                    name="gtav-mode"
-                    value={option.value}
-                    checked={mode === option.value}
-                    onChange={(event) => setMode(event.target.value)}
-                  />
-                  <span className="gtav-mode-label">{option.label}</span>
-                  <span className="gtav-mode-hint">{option.hint}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-
-          <div className="gtav-server-copy">
-            <span className="section-kicker">YOUR LINK</span>
-            <input
-              type="text"
-              readOnly
-              className="gtav-link"
-              value={server1Link}
-              aria-label="GTA V Server 1 game link"
-              onFocus={(event) => event.currentTarget.select()}
-              onClick={(event) => event.currentTarget.select()}
-            />
-            <button
-              type="button"
-              className="launch-play launch-play--external gtav-copy"
-              onClick={copyServer1}
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? "Link copied" : "Copy the game link"}
-            </button>
-            <p className="gtav-server-note">
-              Open the link in a new tab and play. Server 1 remembers the mode you
-              picked, so the link above already includes <code>?mode={mode}</code>.
-            </p>
+          <div className="gtav-mode-options">
+            {GTA_V_MODES.map((option) => (
+              <label
+                key={option.value}
+                className={`gtav-mode-option ${mode === option.value ? "is-selected" : ""}`}
+              >
+                <input
+                  type="radio"
+                  name="gtav-mode"
+                  value={option.value}
+                  checked={mode === option.value}
+                  onChange={(event) => setMode(event.target.value)}
+                  className="gtav-mode-option-radio"
+                />
+                <span className="gtav-mode-radio-badge" />
+                <span className="gtav-mode-label">{option.label}</span>
+                <span className="gtav-mode-hint">{option.hint}</span>
+              </label>
+            ))}
           </div>
         </div>
       ) : (
-        <div className="gtav-server-panel" role="tabpanel">
-          <p className="gtav-server-desc">
-            Server 2 is the existing hosted GTA V page. It can show ads and may ask
-            you to set up an extension first. Copy the link and open it in a new tab.
-          </p>
-
-          <div className="gtav-server-copy">
-            <span className="section-kicker">YOUR LINK</span>
-            <input
-              type="text"
-              readOnly
-              className="gtav-link"
-              value={server2Url}
-              aria-label="GTA V Server 2 game link"
-              onFocus={(event) => event.currentTarget.select()}
-              onClick={(event) => event.currentTarget.select()}
-            />
-            <button
-              type="button"
-              className="launch-play launch-play--external gtav-copy"
-              onClick={copyServer2}
-            >
-              {copied ? <Check size={18} /> : <Copy size={18} />}
-              {copied ? "Link copied" : "Copy the game link"}
-            </button>
-            <p className="gtav-server-note">
-              If ads or pop-ups show up on Server 2, use Server 1 instead — it does
-              not need the extension setup.
-            </p>
-          </div>
+        <div className="gtav-server2-note">
+          <AlertTriangle size={14} />
+          <span>
+            Server 2 can show ads and pop-ups. If that bothers you, switch back to
+            Server 1 above — it does not need the extension setup.
+          </span>
         </div>
       )}
+
+      <div className="gtav-output">
+        <span className="gtav-output-eyebrow">YOUR LINK</span>
+        <div className="gtav-output-row">
+          <input
+            type="text"
+            readOnly
+            className="gtav-link"
+            value={server === "server1" ? server1Link : server2Url}
+            aria-label={`GTA V ${server === "server1" ? "Server 1" : "Server 2"} game link`}
+            onFocus={(event) => event.currentTarget.select()}
+            onClick={(event) => event.currentTarget.select()}
+          />
+          <button
+            type="button"
+            className={`gtav-copy ${copied ? "is-done" : ""}`}
+            onClick={copySelected}
+          >
+            {copied ? <Check size={18} /> : <Copy size={18} />}
+            {copied ? "Link copied" : "Copy the game link"}
+          </button>
+        </div>
+        <p className="gtav-output-note">
+          {server === "server1"
+            ? `Open the link in a new tab. The mode is already in the link as <code>?mode=${mode}</code>.`
+            : "Open the link in a new tab and play. If ads show up, come back and try Server 1 instead."}
+        </p>
+      </div>
     </div>
   );
 }

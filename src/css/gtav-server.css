@@ -1,0 +1,416 @@
+/* ============================================================
+   GTA V server picker — Server 1 (clean) vs Server 2 (ads).
+   Designed to sit inside .gtav-notice and match its styling.
+   ============================================================ */
+
+.gtav-servers {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(100%, 680px);
+  margin: 0 auto;
+}
+
+.gtav-servers-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #3EFEFF;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.gtav-servers-question {
+  color: #f2f6ff;
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-weight: 950;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.gtav-servers-question small {
+  color: #a7b2d6;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-size: .72em;
+  display: block;
+  margin-top: 6px;
+}
+
+.gtav-server-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gtav-server-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 14px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 12px;
+  background: #0a142e;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+.gtav-server-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: radial-gradient(120% 140% at 50% 0%, rgba(62, 254, 255, .08), transparent 70%);
+  opacity: 0;
+  transition: opacity .25s ease;
+  pointer-events: none;
+}
+
+.gtav-server-card:hover {
+  border-color: rgba(62, 254, 255, .35);
+  background: #10203a;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px -12px rgba(62, 254, 255, .22);
+}
+
+.gtav-server-card:hover::before { opacity: 1; }
+
+.gtav-server-card.is-selected {
+  border-color: #3EFEFF;
+  background: #12243f;
+  box-shadow: 0 0 0 1px #3EFEFF, 0 12px 26px -14px rgba(62, 254, 255, .35);
+}
+
+.gtav-server-card.is-selected::before { opacity: 1; }
+
+.gtav-server-card-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gtav-server-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.gtav-server-card.is-selected .gtav-server-card-badge-clean {
+  background: rgba(62, 254, 255, .16);
+  color: #7ff9ff;
+  border: 1px solid rgba(62, 254, 255, .4);
+}
+
+.gtav-server-card.is-selected .gtav-server-card-badge-ads {
+  background: rgba(255, 212, 0, .14);
+  color: #ffd400;
+  border: 1px solid rgba(255, 212, 0, .35);
+}
+
+.gtav-server-card-badge-clean {
+  background: rgba(62, 254, 255, .08);
+  color: #3EFEFF;
+  border: 1px solid rgba(62, 254, 255, .24);
+}
+
+.gtav-server-card-badge-ads {
+  background: rgba(255, 212, 0, .08);
+  color: #ffd400;
+  border: 1px solid rgba(255, 212, 0, .24);
+}
+
+.gtav-server-card-title {
+  color: #f2f6ff;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+
+.gtav-server-card-desc {
+  color: #a7b2d6;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.gtav-server-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.gtav-server-card-foot .gtav-server-card-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #7485ad;
+}
+
+.gtav-server-card.is-selected .gtav-server-card-foot .gtav-server-card-mark {
+  color: #3EFEFF;
+}
+
+.gtav-server-card-mark-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #3efeff;
+  box-shadow: 0 0 8px #3efeff66;
+}
+
+.gtav-server-card-mark-dot.is-ads {
+  background: #ffd400;
+  box-shadow: 0 0 8px #ffd40066;
+}
+
+/* mode picker — shown after Server 1 is chosen */
+.gtav-mode-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 16px 16px;
+  border: 1px solid rgba(62, 254, 255, .22);
+  border-radius: 12px;
+  background: #0e1c34;
+}
+
+.gtav-mode-picker-eyebrow {
+  color: #3EFEFF;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.gtav-mode-picker-title {
+  color: #f2f6ff;
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 950;
+  letter-spacing: -.02em;
+  line-height: 1.25;
+}
+
+.gtav-mode-picker-help {
+  color: #a7b2d6;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.gtav-mode-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+}
+
+.gtav-mode-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 12px 11px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: #0a142e;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.gtav-mode-option:hover {
+  border-color: rgba(62, 254, 255, .4);
+  background: #10203a;
+  transform: translateY(-1px);
+}
+
+.gtav-mode-option.is-selected {
+  border-color: #3EFEFF;
+  background: #12243f;
+  box-shadow: 0 0 0 1px #3EFEFF, 0 8px 18px -12px rgba(62, 254, 255, .35);
+}
+
+.gtav-mode-option-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gtav-mode-radio-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, .25);
+  background: #0a142e;
+  transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+
+.gtav-mode-option.is-selected .gtav-mode-radio-badge {
+  border-color: #3EFEFF;
+  background: #3EFEFF;
+  box-shadow: 0 0 10px #3efeff88;
+}
+
+.gtav-mode-option.is-selected .gtav-mode-radio-badge::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0a142e;
+}
+
+.gtav-mode-label {
+  color: #f2f6ff;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: -.01em;
+}
+
+.gtav-mode-hint {
+  color: #7485ad;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  line-height: 1.4;
+}
+
+/* link output row */
+.gtav-output {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 14px 15px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  background: #08111f;
+}
+
+.gtav-output-eyebrow {
+  color: #3EFEFF;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.gtav-output-row {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.gtav-link {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 8px;
+  padding: 12px 13px;
+  background: #0a142e;
+  color: #cfe0ff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gtav-link:focus {
+  outline: 2px solid #3efeff66;
+  outline-offset: 1px;
+}
+
+.gtav-copy {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 148px;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1px solid rgba(62, 254, 255, .3);
+  border-radius: 8px;
+  background: rgba(62, 254, 255, .12);
+  color: #7ff9ff;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: background .2s ease, border-color .2s ease, color .2s ease, transform .1s ease;
+}
+
+.gtav-copy:hover {
+  background: rgba(62, 254, 255, .22);
+  border-color: rgba(62, 254, 255, .5);
+  color: #fff;
+}
+
+.gtav-copy:active { transform: translateY(1px); }
+
+.gtav-copy.is-done {
+  background: rgba(62, 254, 255, .18);
+  border-color: #3EFEFF;
+  color: #3EFEFF;
+}
+
+.gtav-output-note {
+  color: #7485ad;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.gtav-output-note code {
+  color: #3EFEFF;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 800;
+  font-size: 10px;
+  background: rgba(62, 254, 255, .1);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* server 2 fallback note */
+.gtav-server2-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px 12px;
+  border: 1px solid rgba(255, 212, 0, .3);
+  border-radius: 9px;
+  background: rgba(255, 212, 0, .07);
+  color: #ffd400;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+/* responsive */
+@media (max-width: 560px) {
+  .gtav-server-cards { grid-template-columns: 1fr; }
+  .gtav-mode-options { grid-template-columns: 1fr 1fr; }
+  .gtav-output-row { flex-direction: column; }
+  .gtav-copy { width: 100%; }
+}
