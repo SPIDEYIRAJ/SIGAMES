@@ -143,54 +143,79 @@ function GtaVMedia({ media }: { media: GameMedia }) {
  * existing hosted page, which serves ads and expects an extension setup.
  */
 function GtaVServerPicker({
-  server1Base,
-  server2Url,
+  gameId,
+  modes,
   gameTitle,
   onPlay,
 }: {
-  server1Base: string;
-  server2Url: string;
+  gameId: string;
+  modes: typeof GTA_V_SERVER1_MODES;
   gameTitle: string;
   onPlay: (url: string) => void;
 }) {
   const [mode, setMode] = useState<GtaVServerMode>("story");
-  const server1Url = `${server1Base.replace(/\/+$/, "")}?mode=${mode}`;
 
   return (
-    <div className="gv-picker" aria-label={`Choose a server for ${gameTitle}`}>
-      <section className="gv-server gv-server--one">
-        <header className="gv-server-head">
-          <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SERVER 1 · CLEAN · NO ADS</span>
-          <p className="gv-server-blurb">The clean build on its own host. Pick how you want to enter the city, then play.</p>
-        </header>
-        <div className="gv-modes" role="group" aria-label="Server 1 entry mode">
-          {GTA_V_SERVER1_MODES.map((option) => (
-            <button
-              type="button"
-              key={option.id}
-              className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
-              aria-pressed={mode === option.id}
-              onClick={() => setMode(option.id)}
-            >
-              <strong>{option.label}</strong>
-              <span>{option.note}</span>
-            </button>
-          ))}
-        </div>
-        <button type="button" className="launch-play gv-play" onClick={() => onPlay(server1Url)}>
-          <Play size={18} fill="currentColor" /> Play on Server 1
-        </button>
-      </section>
+    <div className="gv-picker" aria-label={`Choose an option for ${gameTitle}`}>
+      <header className="gv-server-head">
+        <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SI GAMES · OPEN IN A NEW TAB (NO EDGE, NO AD-BLOCKER)</span>
+        <p className="gv-server-blurb">Open the GTA V title in a new browser tab so the frame stays inside SI GAMES. Pick how you want to enter the city, then open your own tab.</p>
+      </header>
+      <div className="gv-modes" role="group" aria-label="Mode selection">
+        {modes.map((option) => (
+          <button
+            type="button"
+            key={option.id}
+            className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
+            aria-pressed={mode === option.id}
+            onClick={() => setMode(option.id)}
+          >
+            <strong>{option.label}</strong>
+            <span>{option.note}</span>
+          </button>
+        ))}
+      </div>
+      <a
+        href={`https://solve5.playgta5.net/?mode=${mode}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="launch-play gv-play"
+      >
+        <Play size={18} fill="currentColor" /> Open in new tab
+      </a>
+    </div>
+  );
+}) {
+  const [mode, setMode] = useState<GtaVServerMode>("story");
 
-      <section className="gv-server gv-server--two">
-        <header className="gv-server-head">
-          <span className="gv-badge gv-badge--two"><TriangleAlert size={13} /> SERVER 2 · HAS ADS · NEEDS EXTENSION SETUP</span>
-          <p className="gv-server-blurb">The existing hosted page. It serves ads, and an ad-blocker / extension setup is expected before playing. Switch back to Server 1 if that bothers you.</p>
-        </header>
-        <button type="button" className="launch-play launch-play--external gv-play" onClick={() => onPlay(server2Url)}>
-          <Play size={18} fill="currentColor" /> Play on Server 2 anyway
-        </button>
-      </section>
+  return (
+    <div className="gv-picker" aria-label={`Choose an option for ${gameTitle}`}>
+      <header className="gv-server-head">
+        <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SI GAMES · OPEN IN A NEW TAB (NO EDGE, NO AD-BLOCKER)</span>
+        <p className="gv-server-blurb">Open the GTA V title in a new browser tab so the frame stays inside SI GAMES. Pick how you want to enter the city, then open your own tab.</p>
+      </header>
+      <div className="gv-modes" role="group" aria-label="Mode selection">
+        {modes.map((option) => (
+          <button
+            type="button"
+            key={option.id}
+            className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
+            aria-pressed={mode === option.id}
+            onClick={() => setMode(option.id)}
+          >
+            <strong>{option.label}</strong>
+            <span>{option.note}</span>
+          </button>
+        ))}
+      </div>
+      <a
+        href={`https://solve5.playgta5.net/?mode=${mode}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="launch-play gv-play"
+      >
+        <Play size={18} fill="currentColor" /> Open in new tab
+      </a>
     </div>
   );
 }
@@ -567,7 +592,7 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {game.server1Base ? (
-            <GtaVServerPicker server1Base={game.server1Base} server2Url={game.sourceUrl} gameTitle={game.title} onPlay={launchServer} />
+            <GtaVServerPicker gameId={game.id} modes={GTA_V_SERVER1_MODES} gameTitle={game.title} onPlay={() => {}} />
           ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
