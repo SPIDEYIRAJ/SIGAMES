@@ -32,12 +32,15 @@ const schema = defineSchema(
       role: v.optional(roleValidator), // role of the user. do not remove
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
-    // add other tables here
-
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
+    // Player-submitted problem reports, one row per submission from a game page.
+    reports: defineTable({
+      gameId: v.string(),
+      gameTitle: v.string(),
+      reason: v.string(),
+      details: v.optional(v.string()),
+      reporterEmail: v.optional(v.string()),
+      createdAt: v.number(),
+    }).index("by_game", ["gameId"]),
   },
   {
     schemaValidation: false,

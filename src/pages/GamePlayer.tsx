@@ -1,11 +1,11 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Expand, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, X } from "lucide-react";
-import { useNavigate, useParams } from "react-router";
-import { games } from "@/data/games";
+import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, ShieldCheck, TriangleAlert, X } from "lucide-react";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { GTA_V_SERVER1_MODES, games, type GameMedia, type GtaVServerMode } from "@/data/games";
 import "@/player-prompt.css";
 
-/** Standalone pages (for example /gta-vicecity) have no :id segment. */
-const STANDALONE_DEFAULT = "gta-vicecity";
+/** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
+const STANDALONE_DEFAULT = "gta-v";
 
 interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
   src: string;
@@ -44,38 +44,299 @@ function readFavorites(): string[] {
   }
 }
 
+/** The reasons a player can pick from when reporting any game. */
+const REPORT_REASONS = [
+  "Game does not load",
+  "Game is broken or buggy",
+  "Wrong game or wrong link",
+  "Controls do not work",
+  "Something else",
+] as const;
+
+function GtaVMedia({ media }: { media: GameMedia }) {
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const screenshots = media.screenshots ?? [];
+  const videos = media.videos ?? [];
+  const facts = media.facts ?? [];
+
+  return (
+    <section className="gtav-media" aria-label="Grand Theft Auto V images and game information">
+      {media.banner && (
+        <figure className="gtav-hero">
+          <img className="gtav-hero-img" src={media.banner} alt="Grand Theft Auto V key art" loading="lazy" />
+          {media.logo && <img className="gtav-hero-logo" src={media.logo} alt="Grand Theft Auto V logo" loading="lazy" />}
+          <figcaption>Grand Theft Auto V — official key art</figcaption>
+        </figure>
+      )}
+
+      {facts.length > 0 && (
+        <div className="gtav-block">
+          <span className="section-kicker"><MonitorUp size={14} /> GAME INFO</span>
+          <dl className="gtav-facts">
+            {facts.map((fact) => (
+              <div className="gtav-fact" key={fact.label}>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      )}
+
+      {media.trailer && (
+        <figure className="gtav-trailer">
+          <video controls preload="metadata" playsInline poster={media.trailer.poster}>
+            <source src={media.trailer.src} type="video/mp4" />
+            Your browser cannot play this trailer. <a href={media.trailer.src} target="_self" rel="noreferrer">Open the trailer file</a>.
+          </video>
+          <figcaption>{media.trailer.caption}</figcaption>
+        </figure>
+      )}
+
+      {screenshots.length > 0 && (
+        <div className="gtav-block">
+          <span className="section-kicker"><Expand size={14} /> SCREENSHOTS</span>
+          <div className="gtav-shots">
+            {screenshots.map((shot) => (
+              <figure className="gtav-shot" key={shot.src}>
+                <img src={shot.src} alt={shot.caption} loading="lazy" />
+                <figcaption>{shot.caption}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {videos.length > 0 && (
+        <div className="gtav-block">
+          <span className="section-kicker"><Play size={14} /> VIDEOS</span>
+          <div className="gtav-videos">
+            {videos.map((video) => (
+              <div className={`gtav-video ${activeVideo === video.id ? "is-playing" : ""}`} key={video.id}>
+                {activeVideo === video.id ? (
+                  <iframe
+                    src={`https://www.youtube.com/embed/${video.id}?rel=0&autoplay=1`}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                ) : (
+                  <button type="button" className="gtav-video-pick" onClick={() => setActiveVideo(video.id)}>
+                    <img src={video.poster} alt={video.title} loading="lazy" />
+                    <span className="gtav-video-play" aria-hidden="true"><Play size={18} fill="currentColor" /></span>
+                    <span className="gtav-video-meta"><strong>{video.title}</strong><em>{video.author}</em></span>
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * GTA V entrance: two servers to choose between before the frame loads.
+ * Server 1 is the clean hosted build with five entry modes; Server 2 is the
+ * existing hosted page, which serves ads and expects an extension setup.
+ */
+function GtaVServerPicker({
+  server1Base,
+  server2Url,
+  gameTitle,
+  onPlay,
+}: {
+  server1Base: string;
+  server2Url: string;
+  gameTitle: string;
+  onPlay: (url: string) => void;
+}) {
+  const [mode, setMode] = useState<GtaVServerMode>("story");
+  const server1Url = `${server1Base.replace(/\/+$/, "")}?mode=${mode}`;
+
+  return (
+    <div className="gv-picker" aria-label={`Choose a server for ${gameTitle}`}>
+      <section className="gv-server gv-server--one">
+        <header className="gv-server-head">
+          <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SERVER 1 · CLEAN · NO ADS</span>
+          <p className="gv-server-blurb">The clean build on its own host. Pick how you want to enter the city, then play.</p>
+        </header>
+        <div className="gv-modes" role="group" aria-label="Server 1 entry mode">
+          {GTA_V_SERVER1_MODES.map((option) => (
+            <button
+              type="button"
+              key={option.id}
+              className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
+              aria-pressed={mode === option.id}
+              onClick={() => setMode(option.id)}
+            >
+              <strong>{option.label}</strong>
+              <span>{option.note}</span>
+            </button>
+          ))}
+        </div>
+        <button type="button" className="launch-play gv-play" onClick={() => onPlay(server1Url)}>
+          <Play size={18} fill="currentColor" /> Play on Server 1
+        </button>
+      </section>
+
+      <section className="gv-server gv-server--two">
+        <header className="gv-server-head">
+          <span className="gv-badge gv-badge--two"><TriangleAlert size={13} /> SERVER 2 · HAS ADS · NEEDS EXTENSION SETUP</span>
+          <p className="gv-server-blurb">The existing hosted page. It serves ads, and an ad-blocker / extension setup is expected before playing. Switch back to Server 1 if that bothers you.</p>
+        </header>
+        <button type="button" className="launch-play launch-play--external gv-play" onClick={() => onPlay(server2Url)}>
+          <Play size={18} fill="currentColor" /> Play on Server 2 anyway
+        </button>
+      </section>
+    </div>
+  );
+}
+
+/**
+ * One dialog, reused on every game page, that asks what went wrong and then
+ * hands the report to the player's own mail app, pre-addressed to the site
+ * inbox with everything written out.
+ */
+const REPORT_INBOX = "spideyiraj1925@gmail.com";
+
+function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitle: string; onClose: () => void }) {
+  const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
+  const [details, setDetails] = useState("");
+  const [sent, setSent] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  /** Builds the mailto draft each time it is opened, so it always carries the latest details. */
+  const openMail = useCallback(() => {
+    const subject = `SI GAMES problem report — ${gameTitle}`;
+    const body = [
+      "Problem report from the SI GAMES arcade.",
+      "",
+      `Game: ${gameTitle} (${gameId})`,
+      `Problem: ${reason}`,
+      `Details: ${details.trim() ? details.trim() : "—"}`,
+      `Page: ${window.location.href}`,
+      `When: ${new Date().toLocaleString()}`,
+      "",
+      "— sent from a player's mail app",
+    ].join("\r\n");
+    window.location.href = `mailto:${REPORT_INBOX}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }, [gameId, gameTitle, reason, details]);
+
+  const send = () => {
+    setSent(true);
+    openMail();
+  };
+
+  useEffect(() => {
+    closeRef.current?.focus({ preventScroll: true });
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("keydown", handleKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div className="report-backdrop" onClick={onClose}>
+      <div
+        className="report-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="report-title"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button ref={closeRef} type="button" className="report-close" onClick={onClose} aria-label="Close the report form">
+          <X size={18} />
+        </button>
+
+        {sent ? (
+          <div className="report-sent">
+            <span className="report-sent-icon"><Check size={20} /></span>
+            <h2 id="report-title">Your mail app is opening</h2>
+            <p>The draft to spideyiraj1925@gmail.com is written out — game, problem, details and this page's address. Just press send in your own mail app to deliver it.</p>
+            <div className="report-actions vertical">
+              <button type="button" className="soft-button" onClick={openMail}><Send size={15} /> Didn't open? Open it again</button>
+              <button type="button" className="primary-button" onClick={onClose}>Close</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <span className="section-kicker"><Flag size={14} /> REPORT A PROBLEM</span>
+            <h2 id="report-title">{gameTitle}</h2>
+            <p className="report-lead">Tell us what went wrong — submitting opens your own mail app with the report written out to the SI GAMES inbox.</p>
+
+            <span className="report-label">What happened?</span>
+            <div className="report-reasons">
+              {REPORT_REASONS.map((option) => (
+                <button
+                  type="button"
+                  key={option}
+                  className={`report-reason ${reason === option ? "is-picked" : ""}`}
+                  onClick={() => setReason(option)}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+
+            <label className="report-label" htmlFor="report-details">Anything else? (optional)</label>
+            <textarea
+              id="report-details"
+              className="report-details"
+              value={details}
+              rows={4}
+              maxLength={2000}
+              placeholder="What you played on, what you saw, when it happened..."
+              onChange={(event) => setDetails(event.target.value)}
+            />
+
+            <div className="report-actions">
+              <button type="button" className="primary-button" onClick={send}>
+                <Send size={15} /> Open mail &amp; send
+              </button>
+              <button type="button" className="soft-button" onClick={onClose}>Cancel</button>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const game = useMemo(() => games.find((item) => item.id === (id ?? STANDALONE_DEFAULT)), [id]);
+  const { pathname } = useLocation();
+  /** Standalone routes carry the game id in the path itself (/gta-v, /gta-vicecity). */
+  const pathSegment = decodeURIComponent(pathname.replace(/^\/+/, "").split("/")[0] ?? "");
+  const resolvedId = id ?? (games.some((item) => item.id === pathSegment) ? pathSegment : STANDALONE_DEFAULT);
+  const game = useMemo(() => games.find((item) => item.id === resolvedId), [resolvedId]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
   const [isImmersive, setIsImmersive] = useState(false);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  // For titles with a server picker (GTA V): the URL chosen at the entrance.
+  const [playUrl, setPlayUrl] = useState<string | null>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
-    const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
+    const target = games.find((item) => item.id === resolvedId);
     if (!target) return false;
-    if (target.id === "gta-v") return false;
     return !target.standalone && target.type !== "external";
   });
-
-  const gtaVHostUrl = game?.sourceUrl;
-
-  /** GTA V is the only Most Played title that keeps an explicit host link shown to the user. */
-  const isMostPlayedHostLink = useCallback(
-    (game: import("@/data/games").Game | undefined) => Boolean(game && game.id === "gta-v"),
-    [],
-  );
-
-  // Every Most Played title can load in-frame here. The only visible host link
-  // is shown for GTA V; THE RACE and GTA Vice City keep their raw source hidden.
-  const isGtaV = game?.id === "gta-v";
-  const isMostPlayedHostOnly = isGtaV;
-
-  const showGtaVHostLink = isGtaV;
 
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
@@ -115,6 +376,7 @@ export default function GamePlayer() {
     setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
     setLaunched(!game.standalone && game.type !== "external");
+    setPlayUrl(null);
   }, [game]);
 
   /** Standalone pages describe the title first, then either load the frame or hand over. */
@@ -124,16 +386,19 @@ export default function GamePlayer() {
       window.location.href = game.sourceUrl;
       return;
     }
-    if (game?.id === "gta-v") {
-      // GTA V cannot play in this frame because of cross-origin restrictions.
-      // Prompt the user to copy the link and open it in a new tab.
-      navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-      return;
-    }
+    setPlayUrl(null);
     setLaunched(true);
     setLoading(true);
     setShowFsPrompt(true);
   }, [game]);
+
+  /** Entering through the server picker: the chosen URL becomes the frame source. */
+  const launchServer = useCallback((url: string) => {
+    setPlayUrl(url);
+    setLaunched(true);
+    setLoading(true);
+    setShowFsPrompt(true);
+  }, []);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -301,15 +566,24 @@ export default function GamePlayer() {
           <h1>{game.title}</h1>
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
-          <div className="launch-actions">
-            <button type="button" className="launch-play launch-play--external" onClick={() => {
-              navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-            }}><Play size={18} fill="currentColor" /> Copy the game link</button>
-            <span className="launch-note">The game is hosted on <b>{gtaVHostUrl}</b>. Copy that link and open it in a new tab — this site cannot load it inside the frame here. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+          {game.server1Base ? (
+            <GtaVServerPicker server1Base={game.server1Base} server2Url={game.sourceUrl} gameTitle={game.title} onPlay={launchServer} />
+          ) : (
+            <div className="launch-actions">
+              <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
+              <span className="launch-note">Runs inside SI GAMES. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            </div>
+          )}
+          <div className="launch-report">
+            <button type="button" className="open-external report-button" onClick={() => setShowReport(true)}>
+              <Flag size={15} /> Report a problem
+            </button>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
-          <p className="player-disclaimer player-disclaimer--light">No embed is available for this title on this site. Use the copy link button, then open the hosted GTA V page in a new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+          {game.media && <GtaVMedia media={game.media} />}
+          {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
+        {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       </div>
     );
   }
@@ -352,32 +626,21 @@ export default function GamePlayer() {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        {isGtaV ? (
-          <section className="launch-only-frame launch-only-frame--host-link" aria-label="Copy the hosted GTA V link">
-            <button type="button" className="launch-play launch-play--external" onClick={() => {
-              navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-            }}><Play size={18} fill="currentColor" /> Copy the game link</button>
-            <span className="launch-note">The game is hosted on <b>{gtaVHostUrl}</b>. Copy that link and open it in a new tab — this site cannot load it inside the frame here. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
-          </section>
-        ) : (
-          <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
+        <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
             {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
             <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-            <GameFrame key={frameKey} src={game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
-        )}
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{showGtaVHostLink ? <button type="button" className="open-external" onClick={() => {
-              navigator.clipboard.writeText(gtaVHostUrl ?? "https://sigamespremiumrp.spideyiraj1925.workers.dev").catch(() => undefined);
-            }}><Expand size={15} /> Copy the game link</button> : game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}</div></div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
 
-        {showGtaVHostLink
-          ? <p className="player-disclaimer player-disclaimer--light">No embed is available for this title on this site. Copy the link and open <b>{gtaVHostUrl}</b> in a new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
-          : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+        {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+          <p className="player-device-note">This page is built for laptops and PCs. It is not made for phones or every browser tab — if the game area looks cramped or the frame does not load, try this on a computer with a bigger screen and a modern browser. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
       </main>
+      {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       {showExtension && <div className="extension-backdrop" onClick={() => setShowExtension(false)}><div ref={extensionModalRef} className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">The Eaglercraft browser extension unlocks the full experience for this title. You can skip it and still try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div><p className="extension-skip-hint">Press <kbd>Esc</kbd> to skip</p></div></div>}
     </div>
   );

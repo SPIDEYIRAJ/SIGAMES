@@ -16,32 +16,6 @@ import { useNavigate } from "react-router";
 import { categories, games, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
 
-const MOST_PLAYED = [
-  { rank: 1, id: "gta-v", label: "Most played", badge: "Gold", href: "/play/gta-v" },
-  { rank: 2, id: "the-race", label: "Most played", badge: "Featured", href: "/play/the-race" },
-  { rank: 3, id: "gta-vicecity", label: "Most played", badge: "Featured", href: "/gta-vicecity" },
-];
-
-function MostPlayedRow({ rank, game, href, badge }: { rank: number; game: Game; href: string; badge: string }) {
-  const isViceCity = game.id === "gta-vicecity";
-  return (
-    <div className="most-played-row">
-      <span className={`most-played-rank badge-${rank} ${game.id === "the-race" || game.id === "gta-v" ? "" : "is-vice-city"}`}><span className="most-played-number">{rank}</span><span className="most-played-label">{badge}</span></span>
-      <div className={`most-played-card ${isViceCity ? "is-vice-city" : ""}`}>
-        <a className="most-played-cta" href={href} target="_blank" rel="noopener noreferrer">
-          <img src={game.thumbnail} alt="" className="most-played-thumb" />
-          <div>
-            <div className="mp-title">{game.title}</div>
-            <div className="mp-sub">{game.category} · {badge}</div>
-          </div>
-          <ArrowRight size={16} className="mp-arrow" />
-        </a>
-        <span className="mp-rank-label">{rank === 1 ? "#1 Most Played" : rank === 2 ? "#2 Most Played" : "#3 Most Played"}</span>
-      </div>
-    </div>
-  );
-}
-
 const PAGE_SIZE = 18;
 const SORTS = [
   { value: "featured", label: "Featured" },
@@ -164,11 +138,6 @@ export default function Landing() {
     };
   }, []);
 
-  const mostPlayedGames = useMemo(() => MOST_PLAYED.map((entry) => {
-    const game = games.find((item) => item.id === entry.id);
-    return Boolean(game) ? { entry, game } : null;
-  }).filter((item): item is { entry: (typeof MOST_PLAYED)[number]; game: Game } => Boolean(item)), []);
-
   const filteredGames = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     const matches = games.filter((game) => {
@@ -186,6 +155,7 @@ export default function Landing() {
 
   const favoriteGames = games.filter((game) => favorites.includes(game.id));
   const recentGames = recent.map((id) => games.find((game) => game.id === id)).filter((game): game is Game => Boolean(game)).slice(0, 3);
+  const recentTarget = recentGames[0];
 
   const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
@@ -257,10 +227,12 @@ export default function Landing() {
           <div className="hero-copy">
             <div className="eyebrow"><span className="eyebrow-icon"><Sparkles size={14} /></span> THE PERSONAL GAME SHELF</div>
             <h1>Play something<br /><span>good today.</span></h1>
-            <p className="hero-subtitle">A soft landing for your next high score. Curated browser games, zero clutter, just press play.</p>
+            <p className="hero-subtitle">A personal shelf of browser games and classic builds — the whole arcade in one place, no clutter.</p>
             <div className="hero-actions">
-              <button className="primary-button" onClick={() => playGame(games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
-              <a className="soft-button" href="#library">Explore games <ArrowRight size={16} /></a>
+              <button className="primary-button" onClick={() => playGame(games.find((game) => game.id === "gta-v") ?? games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
+              {recentTarget && (
+                <button className="soft-button" onClick={() => playGame(recentTarget)}><ArrowRight size={16} /> Continue playing</button>
+              )}
             </div>
             <div className="hero-note"><span>✦</span> No ads inside SI GAMES <span>✦</span> Press <kbd>/</kbd> to search</div>
           </div>
@@ -279,13 +251,6 @@ export default function Landing() {
           </div>
         </section>
 
-        <section className="most-played-section content-section" aria-labelledby="most-played-title">
-          <div className="section-heading"><div><span className="section-kicker"><Trophy size={14} /> MOST PLAYED</span><h2 id="most-played-title">Your current top picks</h2><p>The titles everyone keeps coming back to on SI GAMES.</p></div></div>
-          <div className="most-played-rows">
-            {mostPlayedGames.map((entry) => <MostPlayedRow key={entry.game.id} rank={entry.entry.rank} game={entry.game} href={entry.entry.href} badge={entry.entry.badge} />)}
-          </div>
-        </section>
-
         {recentGames.length > 0 && (
           <section className="continue-section content-section" id="continue">
             <div className="section-heading compact"><div><span className="section-kicker"><Clock3 size={14} /> PICK UP WHERE YOU LEFT OFF</span><h2>Continue playing</h2></div><span className="section-count">{recentGames.length} recent</span></div>
@@ -300,7 +265,7 @@ export default function Landing() {
           </div>
           <div className="truth-band">
             <AlertTriangle size={18} />
-            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. Every game opens inside SI GAMES, in this same frame.</p>
+            <p><b>Straight talk about this library.</b> {htmlCount} of these titles are plain HTML browser games — small, self-contained builds, and the gameplay can be rough, buggy, or unfinished in places. The other {heavyCount} are heavier external builds that may lag on slower devices. Every title loads inside this frame — take it fullscreen with <kbd>F</kbd> when you want it edge to edge.</p>
           </div>
           <div className="library-toolbar">
             <div className="toolbar-row">
