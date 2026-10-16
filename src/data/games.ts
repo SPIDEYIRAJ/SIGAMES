@@ -30,8 +30,8 @@ export type Game = {
   lockLinks?: boolean;
   /** Served from its own top-level page (for example /gta-vicecity). */
   standalone?: boolean;
-  /** Server 1 base URL for titles that offer a multi-server entrance (GTA V). */
-  server1Base?: string;
+  /** Opens the title in the player's own browser tab instead of the in-page launcher (GTA V). */
+  openInNewTab?: boolean;
   extensionNotice?: boolean;
   extensionUrl?: string;
   /** Gallery and game information shown on the title's own page. */
@@ -199,10 +199,9 @@ export const games: Game[] = [
     description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // Server 1 is the clean, ad-free host with five launch modes; Server 2 is
-    // the existing hosted page, which carries ads and expects an extension
-    // setup. The entrance on the game page picks between the two.
-    server1Base: "https://solve5.playgta5.net/",
+    // The entrance offers one action: open the hosted selection pane in the
+    // player's own browser tab.
+    openInNewTab: true,
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
     type: "iframe",
     heavy: true,
@@ -652,20 +651,6 @@ export const games: Game[] = [
 
 ];
 
-
-/**
- * GTA V Server 1 modes. Each ?mode= flips the hosted build's entry screen —
- * the entrance picker turns these into one URL per option.
- */
-export const GTA_V_SERVER1_MODES = [
-  { id: "sandbox", label: "Sandbox mode", note: "Free-roam playground, no story pressure" },
-  { id: "story", label: "Story mode", note: "The campaign, starting at the Prologue" },
-  { id: "vi", label: "GTA VI map", note: "Preview build on the futuristic map" },
-  { id: "title", label: "Title / selection mode", note: "Open the build's own title screen" },
-  { id: "chromebook", label: "Light mode (Chromebook)", note: "Slimmed build for weak machines" },
-] as const;
-
-export type GtaVServerMode = (typeof GTA_V_SERVER1_MODES)[number]["id"];
 
 export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
 

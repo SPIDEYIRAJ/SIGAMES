@@ -1,7 +1,7 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, ShieldCheck, X } from "lucide-react";
+import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { GTA_V_SERVER1_MODES, games, type GameMedia, type GtaVServerMode } from "@/data/games";
+import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -134,49 +134,6 @@ function GtaVMedia({ media }: { media: GameMedia }) {
         </div>
       )}
     </section>
-  );
-}
-
-/**
- * GTA V entrance: pick an entry mode, then the title opens in the player's own
- * browser tab (no Edge, no ad-blocker extension needed) from the clean build.
- */
-function GtaVServerPicker({
-  base,
-  modes,
-  gameTitle,
-}: {
-  base: string;
-  modes: typeof GTA_V_SERVER1_MODES;
-  gameTitle: string;
-}) {
-  const [mode, setMode] = useState<GtaVServerMode>("story");
-  const playUrl = `${base.replace(/\/+$/, "")}?mode=${mode}`;
-
-  return (
-    <div className="gv-picker" aria-label={`Play options for ${gameTitle}`}>
-      <header className="gv-server-head">
-        <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SI GAMES · OPEN IN A NEW TAB (NO EDGE, NO AD-BLOCKER)</span>
-        <p className="gv-server-blurb">Grand Theft Auto V opens in your own browser tab, straight from the clean build — no Edge, no ad-blocker extension. Pick how you want to enter the city, then open your tab.</p>
-      </header>
-      <div className="gv-modes" role="group" aria-label="Entry mode">
-        {modes.map((option) => (
-          <button
-            type="button"
-            key={option.id}
-            className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
-            aria-pressed={mode === option.id}
-            onClick={() => setMode(option.id)}
-          >
-            <strong>{option.label}</strong>
-            <span>{option.note}</span>
-          </button>
-        ))}
-      </div>
-      <a href={playUrl} target="_blank" rel="noopener noreferrer" className="launch-play gv-play">
-        <Play size={18} fill="currentColor" /> Open in new tab
-      </a>
-    </div>
   );
 }
 
@@ -543,8 +500,11 @@ export default function GamePlayer() {
           <h1>{game.title}</h1>
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
-          {game.server1Base ? (
-            <GtaVServerPicker base={game.server1Base} modes={GTA_V_SERVER1_MODES} gameTitle={game.title} />
+          {game.openInNewTab ? (
+            <div className="launch-actions">
+              <a className="launch-play" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open in new tab</a>
+              <span className="launch-note">Opens GTA V in your own browser tab — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+            </div>
           ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
