@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router";
 import { GTA_V_SERVER1_MODES, games, type GameMedia, type GtaVServerMode } from "@/data/games";
 import "@/player-prompt.css";
 
-/** Standalone pages (for example /gta-vicecity) have no :id segment. */
-const STANDALONE_DEFAULT = "gta-vicecity";
+/** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
+const STANDALONE_DEFAULT = "gta-v";
 
 interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
   src: string;
@@ -317,7 +317,8 @@ function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitl
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const game = useMemo(() => games.find((item) => item.id === (id ?? STANDALONE_DEFAULT)), [id]);
+  const params = useParams<{ id?: string }>();
+  const game = useMemo(() => games.find((item) => item.id === (params.id ?? STANDALONE_DEFAULT)), [params]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
@@ -329,10 +330,17 @@ export default function GamePlayer() {
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
-    const target = games.find((item) => item.id === (id ?? STANDALONE_DEFAULT));
+    const target = games.find((item) => item.id === (useParams<{ id?: string }>().id ?? STANDALONE_DEFAULT));
     if (!target) return false;
     return !target.standalone && target.type !== "external";
   });
+
+  /** For standalone pages the route itself is the game id and has no :id param. */
+  useEffect(() => {
+    const params = useParams<{ id?: string }>();
+    const resolvedId = params.id ?? STANDALONE_DEFAULT;
+    if (resolvedId) return;
+  }, [params.id]);
 
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);

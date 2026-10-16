@@ -372,6 +372,7 @@ function AnimatedRoutes() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
+            <Route path="/gta-v" element={<GamePlayer />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
             <Route path="/play/:id" element={<GamePlayer />} />
             <Route path="*" element={<NotFound />} />
