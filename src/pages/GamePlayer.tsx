@@ -1,6 +1,6 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, ShieldCheck, TriangleAlert, X } from "lucide-react";
-import { useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { GTA_V_SERVER1_MODES, games, type GameMedia, type GtaVServerMode } from "@/data/games";
 import "@/player-prompt.css";
 
@@ -317,8 +317,11 @@ function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitl
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const params = useParams<{ id?: string }>();
-  const game = useMemo(() => games.find((item) => item.id === (params.id ?? STANDALONE_DEFAULT)), [params]);
+  const { pathname } = useLocation();
+  /** Standalone routes carry the game id in the path itself (/gta-v, /gta-vicecity). */
+  const pathSegment = decodeURIComponent(pathname.replace(/^\/+/, "").split("/")[0] ?? "");
+  const resolvedId = id ?? (games.some((item) => item.id === pathSegment) ? pathSegment : STANDALONE_DEFAULT);
+  const game = useMemo(() => games.find((item) => item.id === resolvedId), [resolvedId]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
@@ -330,17 +333,10 @@ export default function GamePlayer() {
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
-    const target = games.find((item) => item.id === (useParams<{ id?: string }>().id ?? STANDALONE_DEFAULT));
+    const target = games.find((item) => item.id === resolvedId);
     if (!target) return false;
     return !target.standalone && target.type !== "external";
   });
-
-  /** For standalone pages the route itself is the game id and has no :id param. */
-  useEffect(() => {
-    const params = useParams<{ id?: string }>();
-    const resolvedId = params.id ?? STANDALONE_DEFAULT;
-    if (resolvedId) return;
-  }, [params.id]);
 
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
