@@ -229,7 +229,7 @@ export default function Landing() {
             <h1>Play something<br /><span>good today.</span></h1>
             <p className="hero-subtitle">A personal shelf of browser games and classic builds — the whole arcade in one place, no clutter.</p>
             <div className="hero-actions">
-              <button className="primary-button" onClick={() => playGame(games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
+              <button className="primary-button" onClick={() => playGame(games.find((game) => game.id === "gta-v") ?? games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
               {recentTarget && (
                 <button className="soft-button" onClick={() => playGame(recentTarget)}><ArrowRight size={16} /> Continue playing</button>
               )}
