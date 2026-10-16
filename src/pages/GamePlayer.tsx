@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, ShieldCheck, TriangleAlert, X } from "lucide-react";
+import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, ShieldCheck, X } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { GTA_V_SERVER1_MODES, games, type GameMedia, type GtaVServerMode } from "@/data/games";
 import "@/player-prompt.css";
@@ -138,59 +138,44 @@ function GtaVMedia({ media }: { media: GameMedia }) {
 }
 
 /**
- * GTA V entrance: two servers to choose between before the frame loads.
- * Server 1 is the clean hosted build with five entry modes; Server 2 is the
- * existing hosted page, which serves ads and expects an extension setup.
+ * GTA V entrance: pick an entry mode, then the title opens in the player's own
+ * browser tab (no Edge, no ad-blocker extension needed) from the clean build.
  */
 function GtaVServerPicker({
-  server1Base,
-  server2Url,
+  base,
+  modes,
   gameTitle,
-  onPlay,
 }: {
-  server1Base: string;
-  server2Url: string;
+  base: string;
+  modes: typeof GTA_V_SERVER1_MODES;
   gameTitle: string;
-  onPlay: (url: string) => void;
 }) {
   const [mode, setMode] = useState<GtaVServerMode>("story");
-  const server1Url = `${server1Base.replace(/\/+$/, "")}?mode=${mode}`;
+  const playUrl = `${base.replace(/\/+$/, "")}?mode=${mode}`;
 
   return (
-    <div className="gv-picker" aria-label={`Choose a server for ${gameTitle}`}>
-      <section className="gv-server gv-server--one">
-        <header className="gv-server-head">
-          <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SERVER 1 · CLEAN · NO ADS</span>
-          <p className="gv-server-blurb">The clean build on its own host. Pick how you want to enter the city, then play.</p>
-        </header>
-        <div className="gv-modes" role="group" aria-label="Server 1 entry mode">
-          {GTA_V_SERVER1_MODES.map((option) => (
-            <button
-              type="button"
-              key={option.id}
-              className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
-              aria-pressed={mode === option.id}
-              onClick={() => setMode(option.id)}
-            >
-              <strong>{option.label}</strong>
-              <span>{option.note}</span>
-            </button>
-          ))}
-        </div>
-        <button type="button" className="launch-play gv-play" onClick={() => onPlay(server1Url)}>
-          <Play size={18} fill="currentColor" /> Play on Server 1
-        </button>
-      </section>
-
-      <section className="gv-server gv-server--two">
-        <header className="gv-server-head">
-          <span className="gv-badge gv-badge--two"><TriangleAlert size={13} /> SERVER 2 · HAS ADS · NEEDS EXTENSION SETUP</span>
-          <p className="gv-server-blurb">The existing hosted page. It serves ads, and an ad-blocker / extension setup is expected before playing. Switch back to Server 1 if that bothers you.</p>
-        </header>
-        <button type="button" className="launch-play launch-play--external gv-play" onClick={() => onPlay(server2Url)}>
-          <Play size={18} fill="currentColor" /> Play on Server 2 anyway
-        </button>
-      </section>
+    <div className="gv-picker" aria-label={`Play options for ${gameTitle}`}>
+      <header className="gv-server-head">
+        <span className="gv-badge gv-badge--one"><ShieldCheck size={13} /> SI GAMES · OPEN IN A NEW TAB (NO EDGE, NO AD-BLOCKER)</span>
+        <p className="gv-server-blurb">Grand Theft Auto V opens in your own browser tab, straight from the clean build — no Edge, no ad-blocker extension. Pick how you want to enter the city, then open your tab.</p>
+      </header>
+      <div className="gv-modes" role="group" aria-label="Entry mode">
+        {modes.map((option) => (
+          <button
+            type="button"
+            key={option.id}
+            className={`gv-mode ${mode === option.id ? "is-picked" : ""}`}
+            aria-pressed={mode === option.id}
+            onClick={() => setMode(option.id)}
+          >
+            <strong>{option.label}</strong>
+            <span>{option.note}</span>
+          </button>
+        ))}
+      </div>
+      <a href={playUrl} target="_blank" rel="noopener noreferrer" className="launch-play gv-play">
+        <Play size={18} fill="currentColor" /> Open in new tab
+      </a>
     </div>
   );
 }
@@ -392,14 +377,6 @@ export default function GamePlayer() {
     setShowFsPrompt(true);
   }, [game]);
 
-  /** Entering through the server picker: the chosen URL becomes the frame source. */
-  const launchServer = useCallback((url: string) => {
-    setPlayUrl(url);
-    setLaunched(true);
-    setLoading(true);
-    setShowFsPrompt(true);
-  }, []);
-
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
     if (!showFsPrompt) return;
@@ -567,7 +544,7 @@ export default function GamePlayer() {
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {game.server1Base ? (
-            <GtaVServerPicker server1Base={game.server1Base} server2Url={game.sourceUrl} gameTitle={game.title} onPlay={launchServer} />
+            <GtaVServerPicker base={game.server1Base} modes={GTA_V_SERVER1_MODES} gameTitle={game.title} />
           ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
@@ -638,6 +615,7 @@ export default function GamePlayer() {
         {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+          <p className="player-device-note">This page is built for laptops and PCs. It is not made for phones or every browser tab — if the game area looks cramped or the frame does not load, try this on a computer with a bigger screen and a modern browser. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
       </main>
       {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       {showExtension && <div className="extension-backdrop" onClick={() => setShowExtension(false)}><div ref={extensionModalRef} className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">The Eaglercraft browser extension unlocks the full experience for this title. You can skip it and still try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div><p className="extension-skip-hint">Press <kbd>Esc</kbd> to skip</p></div></div>}
