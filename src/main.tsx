@@ -6,7 +6,6 @@ import { ConvexReactClient } from "convex/react";
 import React, { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import "./index.css";
 
 // Lazy load route components for better code splitting
@@ -344,45 +343,6 @@ function RouteSyncer() {
 }
 
 
-/**
- * Page-change animation: each route mounts inside a motion layer that slides
- * and fades in while the previous one hands over. Transform + opacity only
- * (composited on the GPU, no layout thrash), and it collapses to a plain
- * crossfade for users who prefer reduced motion.
- */
-function AnimatedRoutes() {
-  const location = useLocation();
-  const reduceMotion = useReducedMotion();
-
-  return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        className="route-motion"
-        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 26 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -18 }}
-        transition={{
-          duration: 0.26,
-          ease: [0.16, 1, 0.3, 1],
-          opacity: { duration: 0.18 },
-        }}
-      >
-        <Suspense fallback={<RouteLoading />}>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/developers" element={<Developers />} />
-            <Route path="/gta-v" element={<GamePlayer />} />
-            <Route path="/gta-vicecity" element={<GamePlayer />} />
-            <Route path="/play/:id" element={<GamePlayer />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
 function AppBootstrap() {
   const [isLoading, setIsLoading] = useState(true);
 
@@ -396,7 +356,7 @@ function AppBootstrap() {
       <BrowserRouter>
         <RouteSyncer />
         <Backdrop />
-        {isLoading ? <LoadingScreen /> : <AnimatedRoutes />}
+        {isLoading ? <LoadingScreen /> : <Suspense fallback={<RouteLoading />}><Routes><Route path="/" element={<Landing />} /><Route path="/developers" element={<Developers />} /><Route path="/gta-vicecity" element={<GamePlayer />} /><Route path="/play/:id" element={<GamePlayer />} /><Route path="*" element={<NotFound />} /></Routes></Suspense>}
       </BrowserRouter>
       <Toaster />
     </ConvexAuthProvider>

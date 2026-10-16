@@ -1,16 +1,3 @@
-/** Cover art, screenshots and video attached to a title's page. */
-export type GameMedia = {
-  /** Transparent logo mark shown over the banner. */
-  logo?: string;
-  /** Wide key art used as the hero image and video poster. */
-  banner?: string;
-  screenshots?: { src: string; caption: string }[];
-  trailer?: { src: string; poster?: string; caption: string };
-  videos?: { id: string; title: string; author: string; poster: string }[];
-  /** Structured extras such as developer, publisher and release date. */
-  facts?: { label: string; value: string }[];
-};
-
 export type Game = {
   id: string;
   title: string;
@@ -30,12 +17,8 @@ export type Game = {
   lockLinks?: boolean;
   /** Served from its own top-level page (for example /gta-vicecity). */
   standalone?: boolean;
-  /** Server 1 base URL for titles that offer a multi-server entrance (GTA V). */
-  server1Base?: string;
   extensionNotice?: boolean;
   extensionUrl?: string;
-  /** Gallery and game information shown on the title's own page. */
-  media?: GameMedia;
 };
 
 /** Decodes a target that is kept out of plain view in the shipped source. */
@@ -189,75 +172,7 @@ const localSlugs = [
   "50-lights-out-game",
 ];
 
-// The three headline titles lead the library, in this order, then the rest follow.
 export const games: Game[] = [
-  {
-    id: "gta-v",
-    title: "Grand Theft Auto V",
-    category: "Action",
-    tags: ["Open World", "Action", "Browser Ready"],
-    description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
-    controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
-    thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // Server 1 is the clean, ad-free host with five launch modes; Server 2 is
-    // the existing hosted page, which carries ads and expects an extension
-    // setup. The entrance on the game page picks between the two.
-    server1Base: "https://solve5.playgta5.net/",
-    sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
-    type: "iframe",
-    heavy: true,
-    standalone: true,
-    lockLinks: true,
-    media: {
-      logo: "https://gtwfilesie.grandtheftwiki.com/GTAV-logo-bare.png",
-      banner: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-Torrent-SteamRip.jpg",
-      screenshots: [
-        {
-          src: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-Pre-Installed-SteamRip.jpg",
-          caption: "Los Santos in full — the Story Mode world.",
-        },
-        {
-          src: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-SteamRip-300x169.jpg",
-          caption: "Street level: cars, cops and open-world chaos.",
-        },
-      ],
-      trailer: {
-        src: "https://videos-rockstargames-com.akamaized.net/v4/1s626s55/flv/en-us-1080p.mp4",
-        poster: "https://steamrip.com/wp-content/uploads/2021/05/GTA-V-Free-Download-Torrent-SteamRip.jpg",
-        caption: "Official trailer — plays right here on this page.",
-      },
-      videos: [
-        {
-          id: "QkkoHAzjnUs",
-          title: "Grand Theft Auto V Trailer",
-          author: "Rockstar Games",
-          poster: "https://i.ytimg.com/vi/QkkoHAzjnUs/hqdefault.jpg",
-        },
-        {
-          id: "hvoD7ehZPcM",
-          title: "Grand Theft Auto V: The Official Trailer",
-          author: "Rockstar Games",
-          poster: "https://i.ytimg.com/vi/hvoD7ehZPcM/hqdefault.jpg",
-        },
-        {
-          id: "nzV5_Uhu08A",
-          title: "GTA V Trailer #2",
-          author: "IGN",
-          poster: "https://i.ytimg.com/vi/nzV5_Uhu08A/hqdefault.jpg",
-        },
-      ],
-      facts: [
-        { label: "Developer", value: "Rockstar North" },
-        { label: "Publisher", value: "Rockstar Games" },
-        { label: "Released", value: "17 September 2013" },
-        { label: "PC release", value: "14 April 2015" },
-        { label: "Genre", value: "Action-adventure · Open world" },
-        { label: "Engine", value: "RAGE" },
-        { label: "Mode", value: "Single-player Story Mode" },
-        { label: "Platforms", value: "PC, PS5, PS4, PS3, Xbox Series X|S, Xbox One, Xbox 360" },
-      ],
-    },
-  },
   {
     id: "the-race",
     title: "THE RACE",
@@ -270,20 +185,6 @@ export const games: Game[] = [
     type: "iframe",
     heavy: true,
     isNew: true,
-  },
-  {
-    id: "gta-vicecity",
-    title: "GTA Vice City",
-    category: "Action",
-    tags: ["Open World", "Driving", "Browser Ready"],
-    description: "Sunset Strip, neon palms and a city that never closes.",
-    controls: "W A S D to move, the mouse to look around, Space to jump or enter a car. It plays in this frame — go fullscreen for the real thing.",
-    thumbnail: "/thumbs/gta-vice-city.png",
-    sourceUrl: decodeTarget("aHR0cHM6Ly92Yy5jaW5ldm8udXM="),
-    type: "iframe",
-    heavy: true,
-    lockLinks: true,
-    standalone: true,
   },
   {
     id: "deadshot-io",
@@ -370,6 +271,20 @@ export const games: Game[] = [
     heavy: true,
   },
   {
+    id: "gta-vicecity",
+    title: "GTA Vice City",
+    category: "Action",
+    tags: ["Open World", "Driving", "Browser Ready"],
+    description: "Sunset Strip, neon palms and a city that never closes.",
+    controls: "W A S D to move, the mouse to look around, Space to jump or enter a car. It plays in this frame — go fullscreen for the real thing.",
+    thumbnail: "/thumbs/gta-vice-city.png",
+    sourceUrl: decodeTarget("aHR0cHM6Ly92Yy5jaW5ldm8udXM="),
+    type: "iframe",
+    heavy: true,
+    lockLinks: true,
+    standalone: true,
+  },
+  {
     id: "subway-surfers-city",
     title: "Subway Surfers City",
     category: "Arcade",
@@ -418,6 +333,47 @@ export const games: Game[] = [
     heavy: true,
     extensionNotice: true,
     extensionUrl: "https://chromewebstore.google.com/detail/jkijbninecngmcipaijcnibjhbejaoch?utm_source=item-share-cb",
+  },  // ——— Most played section: GTA V, THE RACE, and GTA Vice City are treated
+  // differently from the rest of the library. GTA V is the only title here that
+  // is embedded in-frame; the other two are offered through an explicit external
+  // play link only.
+  {
+    id: "gta-v",
+    title: "Grand Theft Auto V",
+    category: "Action",
+    tags: ["Open World", "Most Played", "Browser Ready"],
+    description: "The most played title on SI GAMES. A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
+    controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
+    thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
+    sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
+    type: "external",
+    heavy: true,
+  },
+  {
+    id: "the-race",
+    title: "THE RACE",
+    category: "Racing",
+    tags: ["Most Played", "Racing", "SI Original"],
+    description: "The SI GAMES exclusive. Built for this hub — outrun the field and own the leaderboard.",
+    controls: "Arrow keys or WASD to steer, Space to brake. Hold the racing line and don't lift.",
+    thumbnail: "/thumbs/the-race.svg",
+    sourceUrl: "https://sitherace1925.edgeone.dev",
+    type: "iframe",
+    heavy: true,
+    isNew: true,
+  },
+  {
+    id: "gta-vicecity",
+    title: "GTA Vice City",
+    category: "Action",
+    tags: ["Open World", "Most Played", "Driving"],
+    description: "Sunset Strip, neon palms and a city that never closes.",
+    controls: "W A S D to move, the mouse to look around, Space to jump or enter a car.",
+    thumbnail: "/thumbs/gta-vice-city.png",
+    sourceUrl: decodeTarget("aHR0cHM6Ly92Yy5jaW5ldm8udXM="),
+    type: "iframe",
+    heavy: true,
+    standalone: true,
   },
   // ——— Other fan browser ports. Each URL was checked for reachability and for
   // X-Frame-Options / frame-ancestors before being listed, so every one loads in-frame.
@@ -437,7 +393,7 @@ export const games: Game[] = [
     id: "moon-zombies",
     title: "Moon — Zombies",
     category: "Shooter",
-    tags: ["FPS", "Zombies", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Zombies", "Browser Ready"],
     description: "Fighting zombies on the Moon in a browser port of the fan favourite.",
     controls: "WASD to move, mouse to look, click to fire, R to reload. Mind the low gravity.",
     thumbnail: cover(62),
@@ -449,7 +405,7 @@ export const games: Game[] = [
     id: "kino-der-toten",
     title: "Kino der Toten",
     category: "Shooter",
-    tags: ["FPS", "Zombies", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Zombies", "Browser Ready"],
     description: "The classic theatre map, playable straight in this frame.",
     controls: "WASD to move, mouse to aim, click to shoot, R to reload, F to buy doors off the wall.",
     thumbnail: cover(63),
@@ -461,7 +417,7 @@ export const games: Game[] = [
     id: "bo3-cheese-cube",
     title: "BO3 Cheese Cube",
     category: "Shooter",
-    tags: ["FPS", "Arena", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Arena", "Browser Ready"],
     description: "A tight Black Ops 3 arena built around one cheese cube objective.",
     controls: "WASD to move, mouse to aim, click to shoot, Shift to sprint, R to reload.",
     thumbnail: cover(64),
@@ -473,7 +429,7 @@ export const games: Game[] = [
     id: "black-ops-2",
     title: "Black Ops 2",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "Black Ops 2 running as a browser port. Drop in and start the campaign.",
     controls: "WASD to move, mouse to aim, click to shoot, R to reload, Space to vault.",
     thumbnail: cover(65),
@@ -485,7 +441,7 @@ export const games: Game[] = [
     id: "skate-3",
     title: "Skate 3",
     category: "Sports",
-    tags: ["Skateboarding", "Open World", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["Skateboarding", "Open World", "Browser Ready"],
     description: "Kickflip, grind and bail your way across Skate 3 in a browser port.",
     controls: "Arrow keys or WASD to push and steer, use the trick keys to ollie and grind.",
     thumbnail: cover(66),
@@ -497,7 +453,7 @@ export const games: Game[] = [
     id: "cs-surf",
     title: "Counter-Strike Surf",
     category: "Shooter",
-    tags: ["FPS", "Surf", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Surf", "Browser Ready"],
     description: "Surf the angled ramps and race the clock in this browser CS build.",
     controls: "WASD to move, mouse to steer, hold Strafe into the ramp. Scroll to switch weapons.",
     thumbnail: cover(67),
@@ -509,7 +465,7 @@ export const games: Game[] = [
     id: "halo-ce",
     title: "Halo — Combat Evolved",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "The original Halo campaign, ported to the browser.",
     controls: "WASD to move, mouse to look, click to fire, R to reload, F for melee and grenades.",
     thumbnail: cover(68),
@@ -521,7 +477,7 @@ export const games: Game[] = [
     id: "halo-ce-mobile",
     title: "Halo CE — Mobile Edition",
     category: "Shooter",
-    tags: ["FPS", "Touch", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Touch", "Browser Ready"],
     description: "Halo Combat Evolved built for touch controls and smaller screens.",
     controls: "Left thumb to move, right thumb to look. Tap to fire and use the on-screen buttons.",
     thumbnail: cover(69),
@@ -533,7 +489,7 @@ export const games: Game[] = [
     id: "pes-6",
     title: "Pro Evolution Soccer 6",
     category: "Sports",
-    tags: ["Football", "Classic", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["Football", "Classic", "Browser Ready"],
     description: "PES 6 in the browser. The classic that still plays.",
     controls: "Arrow keys to move and pass, A to shoot, D to through ball, S to sprint.",
     thumbnail: cover(70),
@@ -545,7 +501,7 @@ export const games: Game[] = [
     id: "simpsons-hit-run",
     title: "The Simpsons: Hit & Run",
     category: "Action",
-    tags: ["Open World", "Driving", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["Open World", "Driving", "Browser Ready"],
     description: "Drive Springfield and dodge the robots in this browser port.",
     controls: "WASD to move and drive, mouse to look around, Space to jump out of the car.",
     thumbnail: cover(71),
@@ -557,7 +513,7 @@ export const games: Game[] = [
     id: "quake-1",
     title: "Quake",
     category: "Shooter",
-    tags: ["FPS", "Classic", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Classic", "Browser Ready"],
     description: "The original 1996 Quake, running in this frame.",
     controls: "WASD to move, mouse to aim, click to shoot, Space to jump, E to use.",
     thumbnail: cover(72),
@@ -569,7 +525,7 @@ export const games: Game[] = [
     id: "quake-2",
     title: "Quake 2",
     category: "Shooter",
-    tags: ["FPS", "Classic", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Classic", "Browser Ready"],
     description: "Quake 2 brought to the browser with the same brutal pacing.",
     controls: "WASD to move, mouse to aim, click to fire, Space to jump, F to enter machines.",
     thumbnail: cover(73),
@@ -581,7 +537,7 @@ export const games: Game[] = [
     id: "quake-3",
     title: "Quake 3 Arena",
     category: "Shooter",
-    tags: ["FPS", "Arena", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Arena", "Browser Ready"],
     description: "Pure arena fragging, no campaign, all skill.",
     controls: "WASD to move, mouse to aim, click to fire, Space to jump, Ctrl to crouch.",
     thumbnail: cover(74),
@@ -593,7 +549,7 @@ export const games: Game[] = [
     id: "rtcw",
     title: "Return to Castle Wolfenstein",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "B.J. Blazkowicz breaks out again, in a browser build of RTCW.",
     controls: "WASD to move, mouse to aim, click to shoot, R to reload, F for levers and doors.",
     thumbnail: cover(75),
@@ -605,7 +561,7 @@ export const games: Game[] = [
     id: "unreal-tournament",
     title: "Unreal Tournament",
     category: "Shooter",
-    tags: ["FPS", "Arena", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Arena", "Browser Ready"],
     description: "The 1999 arena classic, online bots and all, in this frame.",
     controls: "WASD to move, mouse to aim, click to fire, Space to jump, Q and E to switch weapons.",
     thumbnail: cover(76),
@@ -617,7 +573,7 @@ export const games: Game[] = [
     id: "half-life",
     title: "Half-Life",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "Gordon Freeman's shift at Black Mesa, ported to the browser.",
     controls: "WASD to move, mouse to look, click to use objects and fire, R to reload, 1-6 for weapons.",
     thumbnail: cover(77),
@@ -629,7 +585,7 @@ export const games: Game[] = [
     id: "cs-1-6",
     title: "Half-Life / CS 1.6",
     category: "Shooter",
-    tags: ["FPS", "Tactical", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Tactical", "Browser Ready"],
     description: "Counter-Strike 1.6 in the browser through the Xash3D engine.",
     controls: "WASD to move, mouse to aim, click to shoot, B for the buy menu, R to reload.",
     thumbnail: cover(78),
@@ -641,7 +597,7 @@ export const games: Game[] = [
     id: "diablo",
     title: "Diablo",
     category: "Action",
-    tags: ["RPG", "Hack and Slash", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["RPG", "Hack and Slash", "Browser Ready"],
     description: "Descend into the cathedral and clear the dungeons in a browser port.",
     controls: "Click to move and attack, number keys for skills. Loot everything you find.",
     thumbnail: cover(79),
@@ -649,28 +605,6 @@ export const games: Game[] = [
     type: "iframe",
     heavy: true,
   },
-
-];
-
-
-/**
- * GTA V Server 1 modes. Each ?mode= flips the hosted build's entry screen —
- * the entrance picker turns these into one URL per option.
- */
-export const GTA_V_SERVER1_MODES = [
-  { id: "sandbox", label: "Sandbox mode", note: "Free-roam playground, no story pressure" },
-  { id: "story", label: "Story mode", note: "The campaign, starting at the Prologue" },
-  { id: "vi", label: "GTA VI map", note: "Preview build on the futuristic map" },
-  { id: "title", label: "Title / selection mode", note: "Open the build's own title screen" },
-  { id: "chromebook", label: "Light mode (Chromebook)", note: "Slimmed build for weak machines" },
-] as const;
-
-export type GtaVServerMode = (typeof GTA_V_SERVER1_MODES)[number]["id"];
-
-export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
-
-export const allGames: Game[] = [
-  ...games,
   ...localGames.map(([title, category, tags, description, controls], index): Game => {
     const id = localSlugs[index];
     return {
@@ -684,7 +618,9 @@ export const allGames: Game[] = [
       sourceUrl: `/games/${id}/index.html`,
       type: "iframe",
       htmlGame: true,
-      isNew: id === "51-starfighter-si-01",    };
+      isNew: id === "51-starfighter-si-01",
+    };
   }),
 ];
 
+export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
