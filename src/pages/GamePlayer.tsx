@@ -161,9 +161,7 @@ const MODE_CARDS = [
 
 type ModeId = (typeof MODE_CARDS)[number]["id"];
 
-const DEFAULT_MODE: ModeId = "sandbox";
-
-/** Accepts only modes a card actually offers; anything else falls back to the default. */
+/** Accepts only modes a card actually offers; anything else counts as "not chosen yet". */
 function isModeId(value: string | null | undefined): value is ModeId {
   return Boolean(value && MODE_CARDS.some((card) => card.id === value));
 }
@@ -322,10 +320,11 @@ export default function GamePlayer() {
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   // Copy-link flow (GTA V): confirm the link hit the clipboard.
   const [linkCopied, setLinkCopied] = useState(false);
-  // Selection mode: the active mode lives in `?mode=`; picking a card rewrites it.
+  // Selection mode: nothing is picked until the visitor chooses a card. The
+  // pick lives in `?mode=`, and the link/copy row only appears once it exists.
   const [searchParams, setSearchParams] = useSearchParams();
   const modeParam = searchParams.get("mode");
-  const mode: ModeId = isModeId(modeParam) ? modeParam : DEFAULT_MODE;
+  const mode: ModeId | null = isModeId(modeParam) ? modeParam : null;
   const linkInputRef = useRef<HTMLInputElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
@@ -563,8 +562,10 @@ export default function GamePlayer() {
   }
 
   if (!launched) {
-    // The link the entrance shows and copies: hosted entry plus the chosen mode.
-    const modeLink = `${game.sourceUrl.replace(/\/+$/, "")}?mode=${mode}`;
+    // The link the entrance shows and copies — only exists once a mode is chosen.
+    const modeLink = mode
+      ? `${game.sourceUrl.replace(/\/+$/, "")}?mode=${mode}`
+      : null;
     return (
       <div className="player-page launch-page">
         <header className="player-topbar">
@@ -606,24 +607,33 @@ export default function GamePlayer() {
                     </button>
                   ))}
                 </div>
-                <div className="copy-link-row">
-                  <input
-                    ref={linkInputRef}
-                    className="copy-link-url"
-                    readOnly
-                    value={modeLink}
-                    aria-label={`${game.title} link for mode ${mode}`}
-                    onFocus={(event) => event.currentTarget.select()}
-                  />
-                  <button
-                    type="button"
-                    className="launch-play copy-link-btn"
-                    onClick={() => copyModeLink(modeLink)}
-                  >
-                    {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied!" : "Copy link"}
-                  </button>
-                </div>
-                <span className="launch-note">Choose a mode, copy the link, open a new browser tab, and paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                {mode && modeLink ? (
+                  <>
+                    <span className="copy-link-mode" aria-live="polite">
+                      Selected: ?mode={mode}
+                    </span>
+                    <div className="copy-link-row">
+                      <input
+                        ref={linkInputRef}
+                        className="copy-link-url"
+                        readOnly
+                        value={modeLink}
+                        aria-label={`${game.title} link for mode ${mode}`}
+                        onFocus={(event) => event.currentTarget.select()}
+                      />
+                      <button
+                        type="button"
+                        className="launch-play copy-link-btn"
+                        onClick={() => copyModeLink(modeLink)}
+                      >
+                        {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied!" : "Copy link"}
+                      </button>
+                    </div>
+                    <span className="launch-note">Copy the link, open a new browser tab, and paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                  </>
+                ) : (
+                  <span className="launch-note">Pick a mode card above to reveal your link. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                )}
               </div>
             </div>
           ) : (
