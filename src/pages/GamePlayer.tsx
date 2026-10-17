@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
@@ -144,6 +144,27 @@ function GtaVMedia({ media }: { media: GameMedia }) {
  */
 const REPORT_INBOX = "spideyiraj1925@gmail.com";
 
+/** Server URLs the GTA V launcher offers, ordered by the mode they set.
+ *
+ * The entrance only stores what the launcher currently serves, so these are
+ * exact paths just like `sourceUrl`. The button list above swaps in the same
+ * `sourceUrl` when no link was chosen yet, and each button copies the
+ * selected mode URL to the clipboard.
+ */
+const MODE_LINKS: string[] = [
+  "https://sigamespremiumrp.spideyiraj1925.workers.dev/official",
+  "https://sigamespremiumrp.spideyiraj1925.workers.dev/standard",
+  "https://sigamespremiumrp.spideyiraj1925.workers.dev/extreme",
+  "https://sigamespremiumrp.spideyiraj1925.workers.dev/retro",
+];
+
+const MODE_LABELS: Record<string, string> = {
+  official: "Official",
+  standard: "Standard",
+  extreme: "Extreme",
+  retro: "Retro",
+};
+
 function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitle: string; onClose: () => void }) {
   const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
@@ -275,6 +296,14 @@ export default function GamePlayer() {
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   // Copy-link flow (GTA V): confirm the link hit the clipboard.
   const [linkCopied, setLinkCopied] = useState(false);
+  // Selection mode: pick one link from the mode list, then copy it.
+  const [mode, setMode] = useState("official");
+  const [modeLinks, setModeLinks] = useState<string[]>([
+    "https://sigamespremiumrp.spideyiraj1925.workers.dev/official",
+    "https://sigamespremiumrp.spideyiraj1925.workers.dev/standard",
+    "https://sigamespremiumrp.spideyiraj1925.workers.dev/extreme",
+    "https://sigamespremiumrp.spideyiraj1925.workers.dev/retro",
+  ]);
   const linkInputRef = useRef<HTMLInputElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
@@ -292,10 +321,12 @@ export default function GamePlayer() {
     setFrameKey((key) => key + 1);
   }, []);
 
-  const copyGameLink = useCallback(async () => {
-    if (!game) return;
+  const copyModeLink = useCallback(async (nextMode: string) => {
+    const next = modeLinks.find((item) => item.endsWith(`/${nextMode}`)) ?? modeLinks[0];
+    if (!next) return;
+    setMode(nextMode);
     try {
-      await navigator.clipboard.writeText(game.sourceUrl);
+      await navigator.clipboard.writeText(next);
       setLinkCopied(true);
       window.setTimeout(() => setLinkCopied(false), 2500);
     } catch {
@@ -303,7 +334,7 @@ export default function GamePlayer() {
       // the field so the player can copy it manually.
       linkInputRef.current?.select();
     }
-  }, [game]);
+  }, [modeLinks]);
 
   useEffect(() => {
     setFavorites(readFavorites());
@@ -519,7 +550,24 @@ export default function GamePlayer() {
           {game.openInNewTab ? (
             <div className="launch-actions">
               <div className="copy-link">
-                <span className="copy-link-label"><Copy size={13} /> Copy the link below</span>
+                <span className="copy-link-label"><Save size={13} /> Choose a mode</span>
+                <div className="mode-picker">
+                  {modeLinks.map((link) => {
+                    const next = link.replace(/\/$/, "");
+                    const nextMode = next.split("/").pop() ?? "official";
+                    return (
+                      <button
+                        key={next}
+                        type="button"
+                        className={`mode-option ${mode === nextMode ? "is-active" : ""}`}
+                        onClick={() => copyModeLink(nextMode)}
+                      >
+                        <span className="mode-name">{nextMode}</span>
+                        {mode === nextMode && <span className="mode-dot" />}
+                      </button>
+                    );
+                  })}
+                </div>
                 <div className="copy-link-row">
                   <input
                     ref={linkInputRef}
@@ -529,11 +577,15 @@ export default function GamePlayer() {
                     aria-label={`${game.title} link`}
                     onFocus={(event) => event.currentTarget.select()}
                   />
-                  <button type="button" className="launch-play copy-link-btn" onClick={copyGameLink}>
+                  <button
+                    type="button"
+                    className="launch-play copy-link-btn"
+                    onClick={() => copyModeLink(mode)}
+                  >
                     {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied!" : "Copy link"}
                   </button>
                 </div>
-                <span className="launch-note">Copy it, open a new browser tab, and paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                <span className="launch-note">Choose a mode, copy the link, open a new browser tab, and paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
               </div>
             </div>
           ) : (
