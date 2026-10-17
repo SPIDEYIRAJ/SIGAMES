@@ -7,6 +7,8 @@ import React, { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { RequireAuth } from "./components/RequireAuth";
+import Dashboard from "./pages/Dashboard";
 import "./index.css";
 
 // Lazy load route components for better code splitting
@@ -375,6 +377,14 @@ function AnimatedRoutes() {
             <Route path="/gta-v" element={<GamePlayer />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
             <Route path="/play/:id" element={<GamePlayer />} />
+            <Route
+              path="/dashboard"
+              element={
+                <RequireAuth>
+                  <Dashboard />
+                </RequireAuth>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>

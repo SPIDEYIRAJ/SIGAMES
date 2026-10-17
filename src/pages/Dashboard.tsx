@@ -1,11 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
+import { Navigate, useNavigate } from "react-router";
 import { LayoutDashboard, LogOut } from "lucide-react";
-import { useNavigate } from "react-router";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
+
+  if (!user) {
+    return <Navigate to="/auth?returnTo=/dashboard" replace />;
+  }
+
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
