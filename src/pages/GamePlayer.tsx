@@ -357,6 +357,8 @@ export default function GamePlayer() {
       await navigator.clipboard.writeText(link);
       setLinkCopied(true);
       window.setTimeout(() => setLinkCopied(false), 2500);
+      // Copy is done — hand the player a fresh blank tab to paste into.
+      window.open("about:blank", "_blank");
     } catch {
       // Clipboard can be blocked (permission or non-secure context) — select
       // the field so the player can copy it manually.
@@ -626,10 +628,10 @@ export default function GamePlayer() {
                         className="launch-play copy-link-btn"
                         onClick={() => copyModeLink(modeLink)}
                       >
-                        {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied!" : "Copy link"}
+                        {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied! Opening tab..." : "Copy & open new tab"}
                       </button>
                     </div>
-                    <span className="launch-note">Copy the link, open a new browser tab, and paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                    <span className="launch-note">Copies the link, then opens a blank tab — paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
                   </>
                 ) : (
                   <span className="launch-note">Pick a mode card above to reveal your link. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
