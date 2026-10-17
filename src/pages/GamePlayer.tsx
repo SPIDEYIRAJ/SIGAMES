@@ -161,6 +161,9 @@ const MODE_CARDS = [
 
 type ModeId = (typeof MODE_CARDS)[number]["id"];
 
+/** Seconds the player waits after copying before the new tab opens with the copied link. */
+const OPEN_COUNTDOWN_SECONDS = 3;
+
 /** Accepts only modes a card actually offers; anything else counts as "not chosen yet". */
 function isModeId(value: string | null | undefined): value is ModeId {
   return Boolean(value && MODE_CARDS.some((card) => card.id === value));
@@ -352,19 +355,40 @@ export default function GamePlayer() {
     [searchParams, setSearchParams],
   );
 
+  /** After a copy: count down, then open the copied URL (never about:blank) in a new tab. */
+  const [pendingOpen, setPendingOpen] = useState<{ link: string; seconds: number } | null>(null);
+  const [openBlocked, setOpenBlocked] = useState(false);
+
   const copyModeLink = useCallback(async (link: string) => {
+    setOpenBlocked(false);
     try {
       await navigator.clipboard.writeText(link);
       setLinkCopied(true);
       window.setTimeout(() => setLinkCopied(false), 2500);
-      // Copy is done — hand the player a fresh blank tab to paste into.
-      window.open("about:blank", "_blank");
+      setPendingOpen({ link, seconds: OPEN_COUNTDOWN_SECONDS });
     } catch {
       // Clipboard can be blocked (permission or non-secure context) — select
       // the field so the player can copy it manually.
       linkInputRef.current?.select();
     }
   }, []);
+
+  /** Ticks the countdown once a second; opens the copied link when it reaches zero. */
+  useEffect(() => {
+    if (!pendingOpen) return;
+    const finishing = pendingOpen.seconds <= 1;
+    const delay = pendingOpen.seconds <= 0 ? 0 : 1000;
+    const timer = window.setTimeout(() => {
+      if (!finishing) {
+        setPendingOpen((current) => (current ? { ...current, seconds: current.seconds - 1 } : current));
+        return;
+      }
+      const opened = window.open(pendingOpen.link, "_blank");
+      if (!opened) setOpenBlocked(true);
+      setPendingOpen(null);
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [pendingOpen]);
 
   useEffect(() => {
     setFavorites(readFavorites());
@@ -614,6 +638,16 @@ export default function GamePlayer() {
                     <span className="copy-link-mode" aria-live="polite">
                       Selected: ?mode={mode}
                     </span>
+                    {pendingOpen && (
+                      <span className="copy-open-countdown" role="status">
+                        Opening the copied link in a new tab in {pendingOpen.seconds}…
+                      </span>
+                    )}
+                    {openBlocked && (
+                      <span className="copy-open-blocked" role="alert">
+                        Your browser blocked the new tab — paste the copied link manually.
+                      </span>
+                    )}
                     <div className="copy-link-row">
                       <input
                         ref={linkInputRef}
@@ -628,10 +662,10 @@ export default function GamePlayer() {
                         className="launch-play copy-link-btn"
                         onClick={() => copyModeLink(modeLink)}
                       >
-                        {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied! Opening tab..." : "Copy & open new tab"}
+                        {linkCopied || pendingOpen ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {pendingOpen ? `Opening in ${pendingOpen.seconds}s…` : linkCopied ? "Copied!" : "Copy & open new tab"}
                       </button>
                     </div>
-                    <span className="launch-note">Copies the link, then opens a blank tab — paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                    <span className="launch-note">Copies the link, then opens it in a new tab after a {OPEN_COUNTDOWN_SECONDS}-second countdown — no blank tab, no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
                   </>
                 ) : (
                   <span className="launch-note">Pick a mode card above to reveal your link. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
