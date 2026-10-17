@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
-import { ArrowLeft, Check, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
@@ -273,6 +273,9 @@ export default function GamePlayer() {
   const [showReport, setShowReport] = useState(false);
   // For titles with a server picker (GTA V): the URL chosen at the entrance.
   const [playUrl, setPlayUrl] = useState<string | null>(null);
+  // Copy-link flow (GTA V): confirm the link hit the clipboard.
+  const [linkCopied, setLinkCopied] = useState(false);
+  const linkInputRef = useRef<HTMLInputElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === resolvedId);
@@ -288,6 +291,19 @@ export default function GamePlayer() {
     setLoading(true);
     setFrameKey((key) => key + 1);
   }, []);
+
+  const copyGameLink = useCallback(async () => {
+    if (!game) return;
+    try {
+      await navigator.clipboard.writeText(game.sourceUrl);
+      setLinkCopied(true);
+      window.setTimeout(() => setLinkCopied(false), 2500);
+    } catch {
+      // Clipboard can be blocked (permission or non-secure context) — select
+      // the field so the player can copy it manually.
+      linkInputRef.current?.select();
+    }
+  }, [game]);
 
   useEffect(() => {
     setFavorites(readFavorites());
@@ -502,8 +518,23 @@ export default function GamePlayer() {
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
           {game.openInNewTab ? (
             <div className="launch-actions">
-              <a className="launch-play" href={game.sourceUrl} target="_blank" rel="noopener noreferrer"><Play size={18} fill="currentColor" /> Open in new tab</a>
-              <span className="launch-note">Opens GTA V in your own browser tab — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+              <div className="copy-link">
+                <span className="copy-link-label"><Copy size={13} /> Copy the link below</span>
+                <div className="copy-link-row">
+                  <input
+                    ref={linkInputRef}
+                    className="copy-link-url"
+                    readOnly
+                    value={game.sourceUrl}
+                    aria-label={`${game.title} link`}
+                    onFocus={(event) => event.currentTarget.select()}
+                  />
+                  <button type="button" className="launch-play copy-link-btn" onClick={copyGameLink}>
+                    {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied!" : "Copy link"}
+                  </button>
+                </div>
+                <span className="launch-note">Copy it, open a new browser tab, and paste the link there to play — no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+              </div>
             </div>
           ) : (
             <div className="launch-actions">
