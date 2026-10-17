@@ -1,22 +1,28 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { Navigate, useNavigate } from "react-router";
 import { LayoutDashboard, LogOut } from "lucide-react";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
-
-  if (!user) {
-    return <Navigate to="/auth?returnTo=/dashboard" replace />;
-  }
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/auth?returnTo=/dashboard", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
