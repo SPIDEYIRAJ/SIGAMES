@@ -1,6 +1,6 @@
-import { createElement, useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { createElement, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
 import { games, type GameMedia } from "@/data/games";
 import "@/player-prompt.css";
 
@@ -144,26 +144,52 @@ function GtaVMedia({ media }: { media: GameMedia }) {
  */
 const REPORT_INBOX = "spideyiraj1925@gmail.com";
 
-/** Server URLs the GTA V launcher offers, ordered by the mode they set.
+/** The five ways into the hosted build, offered at the entrance as 3D cards.
  *
- * The entrance only stores what the launcher currently serves, so these are
- * exact paths just like `sourceUrl`. The button list above swaps in the same
- * `sourceUrl` when no link was chosen yet, and each button copies the
- * selected mode URL to the clipboard.
+ * Each card owns an accent colour and maps to one `?mode=` query value.
+ * Picking a card rewrites the page link (`sourceUrl?mode=<id>`), the readonly
+ * input shows that modified link, and the copy button hands it to the
+ * clipboard.
  */
-const MODE_LINKS: string[] = [
-  "https://sigamespremiumrp.spideyiraj1925.workers.dev/official",
-  "https://sigamespremiumrp.spideyiraj1925.workers.dev/standard",
-  "https://sigamespremiumrp.spideyiraj1925.workers.dev/extreme",
-  "https://sigamespremiumrp.spideyiraj1925.workers.dev/retro",
-];
+const MODE_CARDS = [
+  { id: "sandbox", emoji: "🎮", label: "Sandbox", accent: "#3EFEFF" },
+  { id: "story", emoji: "📖", label: "Story", accent: "#FFD400" },
+  { id: "vi", emoji: "🗺️", label: "GTA VI Map", accent: "#FF4E85" },
+  { id: "title", emoji: "🎬", label: "Title", accent: "#FF8A3D" },
+  { id: "chromebook", emoji: "💻", label: "Chromebook", accent: "#4FDF8B" },
+] as const;
 
-const MODE_LABELS: Record<string, string> = {
-  official: "Official",
-  standard: "Standard",
-  extreme: "Extreme",
-  retro: "Retro",
-};
+type ModeId = (typeof MODE_CARDS)[number]["id"];
+
+const DEFAULT_MODE: ModeId = "sandbox";
+
+/** Accepts only modes a card actually offers; anything else falls back to the default. */
+function isModeId(value: string | null | undefined): value is ModeId {
+  return Boolean(value && MODE_CARDS.some((card) => card.id === value));
+}
+
+/** Pointer tilt: the hovered card leans toward the cursor and lights up under it. */
+function tiltModeCard(event: PointerEvent<HTMLDivElement>) {
+  const target = event.target as HTMLElement;
+  const card = target.closest(".mode-card") as HTMLElement | null;
+  if (!card) return;
+  const bounds = card.getBoundingClientRect();
+  const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+  const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+  card.style.setProperty("--tilt-x", `${(-y * 10).toFixed(2)}deg`);
+  card.style.setProperty("--tilt-y", `${(x * 10).toFixed(2)}deg`);
+  card.style.setProperty("--glow-x", `${((x + 0.5) * 100).toFixed(1)}%`);
+  card.style.setProperty("--glow-y", `${((y + 0.5) * 100).toFixed(1)}%`);
+}
+
+function resetModeTilt() {
+  document.querySelectorAll<HTMLElement>(".mode-card").forEach((card) => {
+    card.style.removeProperty("--tilt-x");
+    card.style.removeProperty("--tilt-y");
+    card.style.removeProperty("--glow-x");
+    card.style.removeProperty("--glow-y");
+  });
+}
 
 function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitle: string; onClose: () => void }) {
   const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
@@ -296,14 +322,10 @@ export default function GamePlayer() {
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   // Copy-link flow (GTA V): confirm the link hit the clipboard.
   const [linkCopied, setLinkCopied] = useState(false);
-  // Selection mode: pick one link from the mode list, then copy it.
-  const [mode, setMode] = useState("official");
-  const [modeLinks, setModeLinks] = useState<string[]>([
-    "https://sigamespremiumrp.spideyiraj1925.workers.dev/official",
-    "https://sigamespremiumrp.spideyiraj1925.workers.dev/standard",
-    "https://sigamespremiumrp.spideyiraj1925.workers.dev/extreme",
-    "https://sigamespremiumrp.spideyiraj1925.workers.dev/retro",
-  ]);
+  // Selection mode: the active mode lives in `?mode=`; picking a card rewrites it.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const mode: ModeId = isModeId(modeParam) ? modeParam : DEFAULT_MODE;
   const linkInputRef = useRef<HTMLInputElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
@@ -321,12 +343,19 @@ export default function GamePlayer() {
     setFrameKey((key) => key + 1);
   }, []);
 
-  const copyModeLink = useCallback(async (nextMode: string) => {
-    const next = modeLinks.find((item) => item.endsWith(`/${nextMode}`)) ?? modeLinks[0];
-    if (!next) return;
-    setMode(nextMode);
+  /** Rewrites the page link so the chosen `?mode=` survives a refresh or a share. */
+  const selectMode = useCallback(
+    (nextMode: ModeId) => {
+      const params = new URLSearchParams(searchParams);
+      params.set("mode", nextMode);
+      setSearchParams(params, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
+  const copyModeLink = useCallback(async (link: string) => {
     try {
-      await navigator.clipboard.writeText(next);
+      await navigator.clipboard.writeText(link);
       setLinkCopied(true);
       window.setTimeout(() => setLinkCopied(false), 2500);
     } catch {
@@ -334,7 +363,7 @@ export default function GamePlayer() {
       // the field so the player can copy it manually.
       linkInputRef.current?.select();
     }
-  }, [modeLinks]);
+  }, []);
 
   useEffect(() => {
     setFavorites(readFavorites());
@@ -534,6 +563,8 @@ export default function GamePlayer() {
   }
 
   if (!launched) {
+    // The link the entrance shows and copies: hosted entry plus the chosen mode.
+    const modeLink = `${game.sourceUrl.replace(/\/+$/, "")}?mode=${mode}`;
     return (
       <div className="player-page launch-page">
         <header className="player-topbar">
@@ -551,36 +582,43 @@ export default function GamePlayer() {
             <div className="launch-actions">
               <div className="copy-link">
                 <span className="copy-link-label"><Save size={13} /> Choose a mode</span>
-                <div className="mode-picker">
-                  {modeLinks.map((link) => {
-                    const next = link.replace(/\/$/, "");
-                    const nextMode = next.split("/").pop() ?? "official";
-                    return (
-                      <button
-                        key={next}
-                        type="button"
-                        className={`mode-option ${mode === nextMode ? "is-active" : ""}`}
-                        onClick={() => copyModeLink(nextMode)}
-                      >
-                        <span className="mode-name">{nextMode}</span>
-                        {mode === nextMode && <span className="mode-dot" />}
-                      </button>
-                    );
-                  })}
+                <div
+                  className="mode-cards"
+                  role="radiogroup"
+                  aria-label={`${game.title} mode`}
+                  onPointerMove={tiltModeCard}
+                  onPointerLeave={resetModeTilt}
+                >
+                  {MODE_CARDS.map((card) => (
+                    <button
+                      key={card.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={mode === card.id}
+                      className={`mode-card ${mode === card.id ? "is-active" : ""}`}
+                      style={{ "--mode-accent": card.accent } as CSSProperties}
+                      onClick={() => selectMode(card.id)}
+                    >
+                      <span className="mode-card-emoji" aria-hidden="true">{card.emoji}</span>
+                      <span className="mode-card-label">{card.label}</span>
+                      <span className="mode-card-param">?mode={card.id}</span>
+                      {mode === card.id && <span className="mode-card-dot" aria-hidden="true" />}
+                    </button>
+                  ))}
                 </div>
                 <div className="copy-link-row">
                   <input
                     ref={linkInputRef}
                     className="copy-link-url"
                     readOnly
-                    value={game.sourceUrl}
-                    aria-label={`${game.title} link`}
+                    value={modeLink}
+                    aria-label={`${game.title} link for mode ${mode}`}
                     onFocus={(event) => event.currentTarget.select()}
                   />
                   <button
                     type="button"
                     className="launch-play copy-link-btn"
-                    onClick={() => copyModeLink(mode)}
+                    onClick={() => copyModeLink(modeLink)}
                   >
                     {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied!" : "Copy link"}
                   </button>
