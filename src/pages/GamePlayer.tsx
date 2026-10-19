@@ -53,19 +53,19 @@ const REPORT_REASONS = [
   "Something else",
 ] as const;
 
-function GtaVMedia({ media }: { media: GameMedia }) {
+function GameMediaPanel({ media, title }: { media: GameMedia; title: string }) {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const screenshots = media.screenshots ?? [];
   const videos = media.videos ?? [];
   const facts = media.facts ?? [];
 
   return (
-    <section className="gtav-media" aria-label="Grand Theft Auto V images and game information">
+    <section className="gtav-media" aria-label={`${title} images and game information`}>
       {media.banner && (
         <figure className="gtav-hero">
-          <img className="gtav-hero-img" src={media.banner} alt="Grand Theft Auto V key art" loading="lazy" />
-          {media.logo && <img className="gtav-hero-logo" src={media.logo} alt="Grand Theft Auto V logo" loading="lazy" />}
-          <figcaption>Grand Theft Auto V — official key art</figcaption>
+          <img className="gtav-hero-img" src={media.banner} alt={`${title} key art`} loading="lazy" />
+          {media.logo && <img className="gtav-hero-logo" src={media.logo} alt={`${title} logo`} loading="lazy" />}
+          <figcaption>{title} — key art</figcaption>
         </figure>
       )}
 
@@ -684,7 +684,7 @@ export default function GamePlayer() {
             </button>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
-          {game.media && <GtaVMedia media={game.media} />}
+          {game.media && <GameMediaPanel media={game.media} title={game.title} />}
           {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
         {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
