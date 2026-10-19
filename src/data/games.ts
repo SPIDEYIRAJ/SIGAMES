@@ -285,7 +285,7 @@ export const games: Game[] = [
     media: {
       banner: "/thumbs/endurance-race.svg",
       trailer: {
-        src: "/videos/endurance-race.mp4",
+        src: "https://cdn-in.recordit.dev/media/51da14b3-301a-4ba2-97e4-11879f35f5c7/content.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=DO801UKKPV7QEVRY7JEQ%2F20261019%2Fblr1%2Fs3%2Faws4_request&X-Amz-Date=20261019T085819Z&X-Amz-Expires=3600&X-Amz-Signature=76a04591db1da3150f04f63879388193401a4adf9cf542bff8e8bec5ca653520&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
         poster: "/thumbs/endurance-race.svg",
         caption: "Endurance Race — a car drifting through the rain on a wet night circuit.",
       },
