@@ -512,6 +512,88 @@ const remoteGames: RemoteGame[] = [
 /** Every SI premium game route lives under this proxy Worker origin. */
 const SI_PREMIUM_ORIGIN = "https://sigamespremiumrp.spideyiraj1925.workers.dev";
 
+/** [id, title, category, tags, description, controls, sourceUrl, type, heavy] for titles played on their own site. */
+type LinkedGame = [string, string, string, string[], string, string, string, Game["type"], boolean];
+
+// Hosts that refuse to be framed (X-Frame-Options / CSP frame-ancestors) or are
+// plain pages rather than an embeddable build: each card hands the player over
+// to the game's own page instead of loading it in this frame. Every URL was
+// checked for reachability and for its framing headers before being listed.
+const linkedGames: LinkedGame[] = [
+  ["snail-mail", "Snail Mail", "Arcade", ["Casual", "Side Scroller", "Browser Ready"],
+    "Deliver the mail at a snail's pace — crawl, boost and pipe your way across each letter run.",
+    "Click the frame first so it takes the keyboard, then use the arrow keys to move and Space for a burst of speed. Reach the mailbox at the end of the route.",
+    "https://snail.banteg.xyz/", "iframe", false],
+  ["nfs-most-wanted", "Need for Speed: Most Wanted", "Racing", ["Police Chase", "Open World", "Classic"],
+    "The blacklist pursuit against the cops, in the Game Boy Advance edition that runs from its own page.",
+    "Arrow keys to accelerate, brake and steer, with the emulator's on-screen pad mirroring the console buttons. Start the page's player first, then run.",
+    "https://gamesnostalgia.net/game/need-for-speed-most-wanted", "external", false],
+  ["nfs-underground-2", "Need for Speed: Underground 2", "Racing", ["Street Racing", "Tuning", "Night"],
+    "Street racing after dark: build the car, run the circuits and own Bayview.",
+    "Arrow keys or W A S D to drive, Space for the handbrake, Shift for nitrous. Click into the game window so it takes the keyboard.",
+    "https://nfsu2.xyz/", "external", true],
+  ["midnight-club-3-dub", "Midnight Club 3: DUB Edition", "Racing", ["Street Racing", "Open World", "Browser Ready"],
+    "Three cities, tuned rides and the DUB remix scene, streamed in this frame through the RetroStic player.",
+    "Click the frame to focus it, then steer with the arrow keys and use the emulator's button keys for the menus. The ROM streams in first — give it a moment.",
+    "https://www.retrostic.com/roms/psp/midnight-club-3-dub-edition-83822/play", "iframe", true],
+  ["wwe-smackdown-raw-2011", "WWE SmackDown vs. Raw 2011", "Sports", ["Wrestling", "Fighting"],
+    "The full 2011 roster, story mode and pay-per-views, running on the game's own site.",
+    "Arrow keys to move around the ring, with the action keys for strikes, grapples and signatures. Follow the key map the site shows before each match.",
+    "https://wwe2011.online/", "external", true],
+  ["pes-2014", "PES 2014", "Sports", ["Football", "Classic"],
+    "Pro Evolution Soccer 2014, playable from its Game-Game page — the supplied link had moved.",
+    "Arrow keys to move and pass, A to shoot, D to through ball, S to sprint, following the site's on-screen key map.",
+    "https://game-game.com/online-pes2014/", "external", true],
+  ["fifa-14", "FIFA 14", "Sports", ["Football", "Classic"],
+    "FIFA 14 in the browser on Y8 — kick-offs, leagues and Ultimate-style squads from its own page.",
+    "Arrow keys or W A S D to move, the letter keys to pass, shoot and slide as shown by the site's overlay. Click the game first so it takes the keys.",
+    "https://www.y8.com/games/fifa_14", "external", false],
+  ["tekken-5-dark-resurrection", "Tekken 5: Dark Resurrection", "Fighting", ["Fighting", "Classic", "Browser Ready"],
+    "The PSP Dark Resurrection cut with the full roster and extra stages, streamed in this frame.",
+    "Click the frame to focus it, then move with the arrow keys and attack with the emulator's button keys. The ROM streams in before the fight starts.",
+    "https://www.retrostic.com/roms/psp/tekken-dark-resurrection-83778/play", "iframe", true],
+  ["pes-2011", "PES 2011", "Sports", ["Football", "Flash"],
+    "The PES 2011 browser game on JeuxD, played full-screen on its own page.",
+    "Arrow keys to move and pass, Space to shoot — the page runs its game once it loads. This host only serves plain HTTP, so it opens as a normal page.",
+    "http://www.jeuxd.fr/pes-2011-flash-gratuit-en-plein-ecran", "external", false],
+  ["world-at-war-zombies-2", "World at War Zombies (2nd Server)", "Shooter", ["FPS", "Zombies", "Browser Ready", "2nd Server"],
+    "A second route into the same browser Zombies build the library already carries — hold the rounds whichever door you come through.",
+    "W A S D to move, mouse to aim, click to shoot, R to reload, F to buy doors and weapons.",
+    "https://vel.gg/bo1z", "iframe", true],
+  ["pokemon-games", "Pokémon Games (18)", "RPG", ["Collection", "Retro"],
+    "Eighteen Pokémon titles gathered on one RetroGamesNexus series page — the classic handheld generations in one place.",
+    "Pick a generation on the series page, then play with that game's own controls; the handheld originals follow the usual D-pad and A/B layout.",
+    "https://retrogamesnexus.com/game-series/pokemon-games", "external", false],
+  ["majesty-gold-hd", "Majesty Gold HD", "Strategy", ["Kingdom", "Classic"],
+    "The GOG.com page for Majesty Gold HD — the kingdom-defence classic with its expansions.",
+    "Left-click to place buildings and post bounties, drag to scroll the map. Heroes act on their own; your job is the economy and the rewards.",
+    "https://www.gog.com/game/majesty_gold_hd", "external", false],
+  ["portal", "Portal", "Puzzle", ["FPS", "First-Person", "Classic", "Browser Ready"],
+    "The Aperture test chambers, ported to the browser — the whole run downloads straight into this frame.",
+    "W A S D to move, mouse to look, click to fire the portal gun, E to lift objects. Blue is your entry, orange your exit.",
+    "https://yikes.pw/portal/", "iframe", true],
+  ["no-one-lives-forever", "No One Lives Forever", "Shooter", ["FPS", "Spy", "Classic", "Browser Ready"],
+    "Cate Archer's sixties spy-caper FPS in the browser — gadgets, disguises and cat-and-mouse missions.",
+    "W A S D to move, mouse to aim, click to fire, R to reload, F for doors and pickups. Use the gadgets when stealth stops working.",
+    "https://playnolf.com", "iframe", true],
+  ["morrowind", "The Elder Scrolls III: Morrowind", "RPG", ["Open World", "Fantasy"],
+    "Vvardenfell through the Virtastic browser build of Morrowind — the page opens on the host's own site.",
+    "W A S D to move, mouse to look, left-click to attack, I for inventory and J for the journal. Reading the journal is half the trip.",
+    "https://morrowind.virtastic.app", "external", true],
+  ["super-monkey-ball", "Super Monkey Ball", "Arcade", ["Party", "Classic", "Browser Ready"],
+    "AiAi and the crew rolling through the maze worlds in a browser port of the party classic.",
+    "Arrow keys or the mouse to tilt the world; the monkey rolls wherever you point it. Keep to the middle of the path — the edges drop away.",
+    "https://monkeyball-online.pages.dev", "iframe", true],
+  ["quake-episode-1", "Quake (Episode 1)", "Shooter", ["FPS", "Classic", "Browser Ready"],
+    "The original Quake's first episode running through the netquake.io port, right in this frame.",
+    "W A S D to move, mouse to aim, click to shoot, Space to jump, E to use switches. The first slipgate is straight ahead.",
+    "https://www.netquake.io/", "iframe", true],
+  ["crimsonland", "Crimsonland", "Shooter", ["Top Down", "Survival", "Classic"],
+    "The top-down carnage classic — dozens of weapons and a screen full of bugs, on the game's own site.",
+    "W A S D or the arrows to move, mouse to aim and shoot, Space for the special weapon. Grab every perk that drops.",
+    "https://crimson.land/play", "external", true],
+];
+
 export const games: Game[] = [
   {
     id: "gta-v",
@@ -1016,6 +1098,19 @@ export const games: Game[] = [
     // SI premium routes hand the player their link — copy it, then the game
     // opens in a new tab, exactly the way the GTA V entrance behaves.
     openInNewTab: sourceUrl.startsWith(SI_PREMIUM_ORIGIN),
+  })),
+  ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy], index): Game => ({
+    id,
+    title,
+    category,
+    tags,
+    description,
+    controls,
+    sourceUrl,
+    thumbnail: cover(500 + index),
+    type,
+    heavy,
+    isNew: true,
   })),
 ];
 
