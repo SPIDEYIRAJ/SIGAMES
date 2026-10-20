@@ -32,6 +32,8 @@ export type Game = {
   standalone?: boolean;
   /** Opens the title in the player's own browser tab instead of the in-page launcher (GTA V). */
   openInNewTab?: boolean;
+  /** Entrance asks for a hosted-pane mode card and copies `sourceUrl?mode=<id>` (GTA V). */
+  modePicker?: boolean;
   extensionNotice?: boolean;
   extensionUrl?: string;
   /** Gallery and game information shown on the title's own page. */
@@ -507,6 +509,9 @@ const remoteGames: RemoteGame[] = [
 ];
 
 // The three headline titles lead the library, in this order, then the rest follow.
+/** Every SI premium game route lives under this proxy Worker origin. */
+const SI_PREMIUM_ORIGIN = "https://sigamespremiumrp.spideyiraj1925.workers.dev";
+
 export const games: Game[] = [
   {
     id: "gta-v",
@@ -519,6 +524,7 @@ export const games: Game[] = [
     // The entrance offers one action: open the hosted selection pane in the
     // player's own browser tab.
     openInNewTab: true,
+    modePicker: true,
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
     type: "iframe",
     heavy: true,
@@ -1007,6 +1013,9 @@ export const games: Game[] = [
     type: "iframe",
     heavy,
     isNew: true,
+    // SI premium routes hand the player their link — copy it, then the game
+    // opens in a new tab, exactly the way the GTA V entrance behaves.
+    openInNewTab: sourceUrl.startsWith(SI_PREMIUM_ORIGIN),
   })),
 ];
 

@@ -323,17 +323,31 @@ export default function GamePlayer() {
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   // Copy-link flow (GTA V): confirm the link hit the clipboard.
   const [linkCopied, setLinkCopied] = useState(false);
-  // Selection mode: nothing is picked until the visitor chooses a card. The
-  // pick lives in `?mode=`, and the link/copy row only appears once it exists.
+  // Selection mode: a mode-picker title (GTA V) shows no link until its card is
+  // picked — the pick lives in `?mode=`. Other proxied titles show theirs right away.
   const [searchParams, setSearchParams] = useSearchParams();
   const modeParam = searchParams.get("mode");
-  const mode: ModeId | null = isModeId(modeParam) ? modeParam : null;
+  /** Only a hosted pane that understands `?mode=` (GTA V) asks for a mode pick. */
+  const modePicker = Boolean(game?.openInNewTab && game?.modePicker);
+  const mode: ModeId | null = modePicker && isModeId(modeParam) ? modeParam : null;
+  /**
+   * The link the entrance shows and copies: the plain hosted URL for every
+   * proxied title, with `?mode=` appended only when this game offers mode cards.
+   */
+  const modeLink = !game?.openInNewTab
+    ? null
+    : mode
+      ? `${game.sourceUrl.replace(/\/+$/, "")}?mode=${mode}`
+      : modePicker
+        ? null
+        : game.sourceUrl;
   const linkInputRef = useRef<HTMLInputElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === resolvedId);
     if (!target) return false;
-    return !target.standalone && target.type !== "external";
+    // Titles that hand over their link (openInNewTab) always open at the entrance.
+    return !target.standalone && !target.openInNewTab && target.type !== "external";
   });
 
   const [frameKey, setFrameKey] = useState(0);
@@ -418,7 +432,7 @@ export default function GamePlayer() {
     // Pressing PLAY always offers fullscreen first — it is the option, never a forced jump.
     setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
-    setLaunched(!game.standalone && game.type !== "external");
+    setLaunched(!game.standalone && !game.openInNewTab && game.type !== "external");
     setPlayUrl(null);
   }, [game]);
 
@@ -588,10 +602,6 @@ export default function GamePlayer() {
   }
 
   if (!launched) {
-    // The link the entrance shows and copies — only exists once a mode is chosen.
-    const modeLink = mode
-      ? `${game.sourceUrl.replace(/\/+$/, "")}?mode=${mode}`
-      : null;
     return (
       <div className="player-page launch-page">
         <header className="player-topbar">
@@ -608,36 +618,40 @@ export default function GamePlayer() {
           {game.openInNewTab ? (
             <div className="launch-actions">
               <div className="copy-link">
-                <span className="copy-link-label"><Save size={13} /> Choose a mode</span>
-                <div
-                  className="mode-cards"
-                  role="radiogroup"
-                  aria-label={`${game.title} mode`}
-                  onPointerMove={tiltModeCard}
-                  onPointerLeave={resetModeTilt}
-                >
-                  {MODE_CARDS.map((card) => (
-                    <button
-                      key={card.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={mode === card.id}
-                      className={`mode-card ${mode === card.id ? "is-active" : ""}`}
-                      style={{ "--mode-accent": card.accent } as CSSProperties}
-                      onClick={() => selectMode(card.id)}
-                    >
-                      <span className="mode-card-emoji" aria-hidden="true">{card.emoji}</span>
-                      <span className="mode-card-label">{card.label}</span>
-                      <span className="mode-card-param">?mode={card.id}</span>
-                      {mode === card.id && <span className="mode-card-dot" aria-hidden="true" />}
-                    </button>
-                  ))}
-                </div>
-                {mode && modeLink ? (
+                <span className="copy-link-label"><Save size={13} /> {modePicker ? "Choose a mode" : "Your link"}</span>
+                {modePicker && (
+                  <div
+                    className="mode-cards"
+                    role="radiogroup"
+                    aria-label={`${game.title} mode`}
+                    onPointerMove={tiltModeCard}
+                    onPointerLeave={resetModeTilt}
+                  >
+                    {MODE_CARDS.map((card) => (
+                      <button
+                        key={card.id}
+                        type="button"
+                        role="radio"
+                        aria-checked={mode === card.id}
+                        className={`mode-card ${mode === card.id ? "is-active" : ""}`}
+                        style={{ "--mode-accent": card.accent } as CSSProperties}
+                        onClick={() => selectMode(card.id)}
+                      >
+                        <span className="mode-card-emoji" aria-hidden="true">{card.emoji}</span>
+                        <span className="mode-card-label">{card.label}</span>
+                        <span className="mode-card-param">?mode={card.id}</span>
+                        {mode === card.id && <span className="mode-card-dot" aria-hidden="true" />}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {modeLink ? (
                   <>
-                    <span className="copy-link-mode" aria-live="polite">
-                      Selected: ?mode={mode}
-                    </span>
+                    {mode && (
+                      <span className="copy-link-mode" aria-live="polite">
+                        Selected: ?mode={mode}
+                      </span>
+                    )}
                     {pendingOpen && (
                       <span className="copy-open-countdown" role="status">
                         Opening the copied link in a new tab in {pendingOpen.seconds}…
@@ -654,7 +668,7 @@ export default function GamePlayer() {
                         className="copy-link-url"
                         readOnly
                         value={modeLink}
-                        aria-label={`${game.title} link for mode ${mode}`}
+                        aria-label={mode ? `${game.title} link for mode ${mode}` : `${game.title} link`}
                         onFocus={(event) => event.currentTarget.select()}
                       />
                       <button
@@ -685,7 +699,7 @@ export default function GamePlayer() {
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
           {game.media && <GameMediaPanel media={game.media} title={game.title} />}
-          {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+          {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.openInNewTab ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link, then opens it for you. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
         {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       </div>
