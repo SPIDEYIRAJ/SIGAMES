@@ -441,7 +441,7 @@ const remoteGames: RemoteGame[] = [
 
 // The three headline titles lead the library, in this order, then the rest follow.
 /** Hosts that send X-Frame-Options / CSP frame-ancestors, so they cannot load in this frame. */
-const NON_FRAMABLE_HOSTS = ["wasmarcade.com", "spawn.co", "playgta5.pro"];
+const NON_FRAMABLE_HOSTS = ["wasmarcade.com", "spawn.co"];
 
 /** [id, title, category, tags, description, controls, sourceUrl, type, heavy] for titles played on their own site. */
 type LinkedGame = [string, string, string, string[], string, string, string, Game["type"], boolean];
@@ -577,12 +577,12 @@ export const games: Game[] = [
     description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // playgta5.pro refuses framing, so the entrance is a plain link: no mode
-    // cards — the player copies it and opens it in their own tab.
+    // GTA V hands over its link instead of loading here: the entrance is a
+    // plain link with no mode cards — the player copies it and opens their own tab.
     openInNewTab: true,
-    sourceUrl: "https://cdn.playgta5.pro/index.html",
+    sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
     servers: [
-      { id: "playgta5", label: "Server 1 — playgta5.pro", url: "https://cdn.playgta5.pro/index.html", external: true, note: "Story Mode build; the site runs its own setup once it opens." },
+      { id: "playgta5", label: "Server 1 — SI Premium", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The main GTA V build, served through the SI premium proxy." },
       { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2", note: "Second build, served through the SI premium proxy. It asks for its own options on the plain site, so this entrance stays clean." },
     ],
     type: "iframe",
