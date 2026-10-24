@@ -18,8 +18,6 @@ export type GameServer = {
   url: string;
   /** Host refuses framing (X-Frame-Options / CSP frame-ancestors): hand the link over instead. */
   external?: boolean;
-  /** The hosted pane understands `?mode=` and shows the mode cards (GTA V server 1). */
-  modePicker?: boolean;
   note?: string;
 };
 
@@ -585,7 +583,7 @@ export const games: Game[] = [
     sourceUrl: "https://cdn.playgta5.pro/index.html",
     servers: [
       { id: "playgta5", label: "Server 1 — playgta5.pro", url: "https://cdn.playgta5.pro/index.html", external: true, note: "Story Mode build; the site runs its own setup once it opens." },
-      { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://gta5-87g.pages.dev", note: "Second build. It asks for its own options on the plain site, so this entrance stays clean." },
+      { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2", note: "Second build, served through the SI premium proxy. It asks for its own options on the plain site, so this entrance stays clean." },
     ],
     type: "iframe",
     heavy: true,
