@@ -44,8 +44,6 @@ export type Game = {
   standalone?: boolean;
   /** Opens the title in the player's own browser tab instead of the in-page launcher (GTA V). */
   openInNewTab?: boolean;
-  /** Entrance asks for a hosted-pane mode card and copies `sourceUrl?mode=<id>` (GTA V). */
-  modePicker?: boolean;
   /** Mirrors of the same game; the launch page lets the player pick one (one card on the home). */
   servers?: GameServer[];
   extensionNotice?: boolean;
@@ -377,10 +375,6 @@ const remoteGames: RemoteGame[] = [
     "The old-school world of Gielinor, exactly as slow and as charming as you remember.",
     "Click to walk, fight and gather. Read the skills menu before you grind.",
     "https://runescapeclassic.gold/", true],
-  ["web-gta3-online", "GTA III (Online)", "Action", ["Open World", "Multiplayer", "Browser Ready"],
-    "GTA III's Liberty City, opened up to play online in the browser.",
-    "W A S D to walk and drive, mouse to look, Enter to enter vehicles.",
-    "https://quenq.com/apps/iii-online/", true],
   ["web-pokemon-redstone", "Pokémon Redstone", "Sandbox", ["Pokemon", "Adventure", "Browser Ready"],
     "A fan-made Pokémon adventure built on the Redstone engine.",
     "Arrow keys or W A S D to move, Enter to interact and talk. Keep the team fed and healthy.",
@@ -445,10 +439,6 @@ const remoteGames: RemoteGame[] = [
     "Wumpa-fuelled party games for up to four.",
     "Arrows to move, Space to use your item, number keys for player two and beyond.",
     "https://crashbash.app/", true],
-  ["web-gta-vicecity-3", "GTA Vice City (3rd Server)", "Action", ["Open World", "Driving", "Browser Ready", "2nd Server"],
-    "A third route into Vice City, straight from the standalone port.",
-    "W A S D to move, mouse to look, Enter to jack a car, Space to jump.",
-    "https://quenq.com/apps/vice-city/", true],
 ];
 
 // The three headline titles lead the library, in this order, then the rest follow.
@@ -537,6 +527,49 @@ const linkedGames: LinkedGame[] = [
     "https://crimson.land/play", "external", true],
 ];
 
+// Titles that carry more than one mirror. They stay a single card in the library;
+// the player picks which server to use on the game's own page. A server that
+// refuses framing is marked `external` and hands over its link instead.
+const serverGames: Game[] = [
+  {
+    id: "cs16",
+    title: "Counter-Strike 1.6",
+    category: "Shooter",
+    tags: ["FPS", "Multiplayer", "Browser Ready"],
+    description: "The original Counter-Strike 1.6 in the browser, across five community servers.",
+    controls: "W A S D to move, mouse to aim, click to fire, R to reload, B for the buy menu. Walk before you shoot.",
+    thumbnail: cover(900),
+    sourceUrl: "https://wasm.rip/files/gstrike/index.html",
+    type: "iframe",
+    heavy: true,
+    isNew: true,
+    servers: [
+      { id: "wasmrip", label: "Server 1 — wasm.rip", url: "https://wasm.rip/files/gstrike/index.html" },
+      { id: "combat", label: "Server 2 — CombatSkirmish", url: "https://combatskirmish.net/quickjoin" },
+      { id: "csjs", label: "Server 3 — CSJS", url: "https://csjs.live/" },
+      { id: "spawn", label: "Server 4 — Spawn", url: "https://www.spawn.co/@smallzero/counter-strike-spawn/play", external: true, note: "Spawn blocks embedding, so this one opens in your own tab." },
+      { id: "xash", label: "Server 5 — Xash3D", url: "https://x8bitrain.github.io/webXash/", note: "The Half-Life / CS 1.6 Xash3D port." },
+    ],
+  },
+  {
+    id: "gta3",
+    title: "GTA III",
+    category: "Action",
+    tags: ["Open World", "Driving", "Browser Ready"],
+    description: "Liberty City in 2001: steal cars, run jobs and keep moving through the story.",
+    controls: "W A S D or the arrows to walk and drive, mouse to look, Enter to get in and out of cars.",
+    thumbnail: cover(901),
+    sourceUrl: "https://wasm.rip/files/gta3/index.html",
+    type: "iframe",
+    heavy: true,
+    isNew: true,
+    servers: [
+      { id: "wasmrip", label: "Server 1 — wasm.rip", url: "https://wasm.rip/files/gta3/index.html" },
+      { id: "arcade", label: "Server 2 — wasmarcade", url: "https://wasmarcade.com/gta3", external: true, note: "The arcade host blocks embedding, so this one opens in your own tab." },
+    ],
+  },
+];
+
 export const games: Game[] = [
   {
     id: "gta-v",
@@ -546,11 +579,14 @@ export const games: Game[] = [
     description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // The entrance offers one action: open the hosted selection pane in the
-    // player's own browser tab.
+    // playgta5.pro refuses framing, so the entrance is a plain link: no mode
+    // cards — the player copies it and opens it in their own tab.
     openInNewTab: true,
-    modePicker: true,
-    sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev",
+    sourceUrl: "https://cdn.playgta5.pro/index.html",
+    servers: [
+      { id: "playgta5", label: "Server 1 — playgta5.pro", url: "https://cdn.playgta5.pro/index.html", external: true, note: "Story Mode build; the site runs its own setup once it opens." },
+      { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://gta5-87g.pages.dev", note: "Second build. It asks for its own options on the plain site, so this entrance stays clean." },
+    ],
     type: "iframe",
     heavy: true,
     standalone: true,
@@ -660,6 +696,10 @@ export const games: Game[] = [
     heavy: true,
     lockLinks: true,
     standalone: true,
+    servers: [
+      { id: "cinevo", label: "Server 1 — vc.cinevo.us", url: decodeTarget("aHR0cHM6Ly92Yy5jaW5ldm8udXM=") },
+      { id: "arcade", label: "Server 2 — wasmarcade", url: "https://wasmarcade.com/vice-city", external: true, note: "The arcade host blocks embedding, so this one opens in your own tab." },
+    ],
   },
   {
     id: "deadshot-io",
@@ -708,6 +748,10 @@ export const games: Game[] = [
     sourceUrl: "https://stgames.top/unity/amongus/",
     type: "iframe",
     heavy: true,
+    servers: [
+      { id: "stgames", label: "Server 1 — stgames", url: "https://stgames.top/unity/amongus/" },
+      { id: "wasmrip", label: "Server 2 — wasm.rip", url: "https://wasm.rip/files/amongus/index.html" },
+    ],
   },
   {
     id: "traffic-rider",
@@ -921,13 +965,17 @@ export const games: Game[] = [
     id: "simpsons-hit-run",
     title: "The Simpsons: Hit & Run",
     category: "Action",
-    tags: ["Open World", "Driving", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["Open World", "Driving", "Browser Ready"],
     description: "Drive Springfield and dodge the robots in this browser port.",
     controls: "WASD to move and drive, mouse to look around, Space to jump out of the car.",
     thumbnail: cover(71),
     sourceUrl: "https://shar-wasm.cjoseph.workers.dev/?skipmovie",
     type: "iframe",
     heavy: true,
+    servers: [
+      { id: "wasm", label: "Server 1 — WASM build", url: "https://shar-wasm.cjoseph.workers.dev/?skipmovie" },
+      { id: "arcade", label: "Server 2 — wasmarcade", url: "https://wasmarcade.com/simpsons", external: true, note: "The arcade host blocks embedding, so this one opens in your own tab." },
+    ],
   },
   {
     id: "quake-1",
@@ -957,13 +1005,17 @@ export const games: Game[] = [
     id: "quake-3",
     title: "Quake 3 Arena",
     category: "Shooter",
-    tags: ["FPS", "Arena", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Arena", "Browser Ready"],
     description: "Pure arena fragging, no campaign, all skill.",
     controls: "WASD to move, mouse to aim, click to fire, Space to jump, Ctrl to crouch.",
     thumbnail: cover(74),
     sourceUrl: "https://q3.pieter.com",
     type: "iframe",
     heavy: true,
+    servers: [
+      { id: "pieter", label: "Server 1 — pieter", url: "https://q3.pieter.com" },
+      { id: "q3js", label: "Server 2 — Q3JS", url: "https://q3js.com/" },
+    ],
   },
   {
     id: "rtcw",
@@ -1002,18 +1054,6 @@ export const games: Game[] = [
     heavy: true,
   },
   {
-    id: "cs-1-6",
-    title: "Half-Life / CS 1.6",
-    category: "Shooter",
-    tags: ["FPS", "Tactical", "Browser Ready", "ZZZZ_REMOVE"],
-    description: "Counter-Strike 1.6 in the browser through the Xash3D engine.",
-    controls: "WASD to move, mouse to aim, click to shoot, B for the buy menu, R to reload.",
-    thumbnail: cover(78),
-    sourceUrl: "https://x8bitrain.github.io/webXash/",
-    type: "iframe",
-    heavy: true,
-  },
-  {
     id: "diablo",
     title: "Diablo",
     category: "Action",
@@ -1041,6 +1081,7 @@ export const games: Game[] = [
     // Hosts that refuse framing hand the player the link instead.
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
   })),
+  ...serverGames,
   ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy], index): Game => ({
     id,
     title,

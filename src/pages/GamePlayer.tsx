@@ -1,7 +1,7 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router";
-import { games, type GameMedia } from "@/data/games";
+import { useLocation, useNavigate, useParams } from "react-router";
+import { games, type Game, type GameMedia, type GameServer } from "@/data/games";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -151,40 +151,39 @@ const REPORT_INBOX = "spideyiraj1925@gmail.com";
  * input shows that modified link, and the copy button hands it to the
  * clipboard.
  */
-const MODE_CARDS = [
-  { id: "sandbox", emoji: "🎮", label: "Sandbox", accent: "#3EFEFF" },
-  { id: "story", emoji: "📖", label: "Story", accent: "#FFD400" },
-  { id: "vi", emoji: "🗺️", label: "GTA VI Map", accent: "#FF4E85" },
-  { id: "title", emoji: "🎬", label: "Title", accent: "#FF8A3D" },
-  { id: "chromebook", emoji: "💻", label: "Chromebook", accent: "#4FDF8B" },
-] as const;
-
-type ModeId = (typeof MODE_CARDS)[number]["id"];
-
 /** Seconds the player waits after copying before the new tab opens with the copied link. */
 const OPEN_COUNTDOWN_SECONDS = 3;
 
-/** Accepts only modes a card actually offers; anything else counts as "not chosen yet". */
-function isModeId(value: string | null | undefined): value is ModeId {
-  return Boolean(value && MODE_CARDS.some((card) => card.id === value));
+/** Every title resolves to a server list; single-host games just wrap their own URL. */
+function serversFor(game: Game): GameServer[] {
+  if (game.servers?.length) return game.servers;
+  return [{ id: "main", label: "Default server", url: game.sourceUrl, external: game.openInNewTab }];
 }
 
-/** Pointer tilt: the hovered card leans toward the cursor and lights up under it. */
-function tiltModeCard(event: PointerEvent<HTMLDivElement>) {
+/** True when a title offers more than one server, so its entrance asks for a pick. */
+function hasServerChoice(game: Game): boolean {
+  return Boolean(game.servers && game.servers.length > 1);
+}
+
+/** Accent per server card so a long server list still reads as one picker. */
+const SERVER_ACCENTS = ["#3EFEFF", "#FFD400", "#4FDF8B", "#FF4E85", "#8A7BFF", "#FF8A3D"] as const;
+
+/** Pointer tilt: the hovered server card leans toward the cursor and lights up under it. */
+function tiltServerCard(event: PointerEvent<HTMLDivElement>) {
   const target = event.target as HTMLElement;
-  const card = target.closest(".mode-card") as HTMLElement | null;
+  const card = target.closest(".server-card") as HTMLElement | null;
   if (!card) return;
   const bounds = card.getBoundingClientRect();
   const x = (event.clientX - bounds.left) / bounds.width - 0.5;
   const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-  card.style.setProperty("--tilt-x", `${(-y * 10).toFixed(2)}deg`);
-  card.style.setProperty("--tilt-y", `${(x * 10).toFixed(2)}deg`);
+  card.style.setProperty("--tilt-x", `${(-y * 8).toFixed(2)}deg`);
+  card.style.setProperty("--tilt-y", `${(x * 8).toFixed(2)}deg`);
   card.style.setProperty("--glow-x", `${((x + 0.5) * 100).toFixed(1)}%`);
   card.style.setProperty("--glow-y", `${((y + 0.5) * 100).toFixed(1)}%`);
 }
 
-function resetModeTilt() {
-  document.querySelectorAll<HTMLElement>(".mode-card").forEach((card) => {
+function resetServerTilt() {
+  document.querySelectorAll<HTMLElement>(".server-card").forEach((card) => {
     card.style.removeProperty("--tilt-x");
     card.style.removeProperty("--tilt-y");
     card.style.removeProperty("--glow-x");
@@ -319,35 +318,24 @@ export default function GamePlayer() {
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
   const [showFsPrompt, setShowFsPrompt] = useState(false);
   const [showReport, setShowReport] = useState(false);
-  // For titles with a server picker (GTA V): the URL chosen at the entrance.
+  // For titles with a server picker: the URL chosen at the entrance.
   const [playUrl, setPlayUrl] = useState<string | null>(null);
-  // Copy-link flow (GTA V): confirm the link hit the clipboard.
+  // Copy-link flow: confirm the link hit the clipboard.
   const [linkCopied, setLinkCopied] = useState(false);
-  // Selection mode: a mode-picker title (GTA V) shows no link until its card is
-  // picked — the pick lives in `?mode=`. Other proxied titles show theirs right away.
-  const [searchParams, setSearchParams] = useSearchParams();
-  const modeParam = searchParams.get("mode");
-  /** Only a hosted pane that understands `?mode=` (GTA V) asks for a mode pick. */
-  const modePicker = Boolean(game?.openInNewTab && game?.modePicker);
-  const mode: ModeId | null = modePicker && isModeId(modeParam) ? modeParam : null;
-  /**
-   * The link the entrance shows and copies: the plain hosted URL for every
-   * proxied title, with `?mode=` appended only when this game offers mode cards.
-   */
-  const modeLink = !game?.openInNewTab
-    ? null
-    : mode
-      ? `${game.sourceUrl.replace(/\/+$/, "")}?mode=${mode}`
-      : modePicker
-        ? null
-        : game.sourceUrl;
+  /** Mirrors this title exposes; single-host games just wrap their own URL. */
+  const servers = useMemo<GameServer[]>(() => (game ? serversFor(game) : []), [game]);
+  const [serverId, setServerId] = useState<string | null>(null);
+  const activeServer = servers.find((item) => item.id === serverId) ?? servers[0] ?? null;
+  /** Hosts that refuse framing hand the player a link instead of loading here. */
+  const handsLink = Boolean(activeServer?.external);
   const linkInputRef = useRef<HTMLInputElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === resolvedId);
     if (!target) return false;
-    // Titles that hand over their link (openInNewTab) always open at the entrance.
-    return !target.standalone && !target.openInNewTab && target.type !== "external";
+    // Titles that hand over their link, or offer more than one server, open at
+    // the entrance — the player picks a server or copies the link from there.
+    return !target.standalone && !target.openInNewTab && target.type !== "external" && !hasServerChoice(target);
   });
 
   const [frameKey, setFrameKey] = useState(0);
@@ -359,21 +347,11 @@ export default function GamePlayer() {
     setFrameKey((key) => key + 1);
   }, []);
 
-  /** Rewrites the page link so the chosen `?mode=` survives a refresh or a share. */
-  const selectMode = useCallback(
-    (nextMode: ModeId) => {
-      const params = new URLSearchParams(searchParams);
-      params.set("mode", nextMode);
-      setSearchParams(params, { replace: true });
-    },
-    [searchParams, setSearchParams],
-  );
-
   /** After a copy: count down, then open the copied URL (never about:blank) in a new tab. */
   const [pendingOpen, setPendingOpen] = useState<{ link: string; seconds: number } | null>(null);
   const [openBlocked, setOpenBlocked] = useState(false);
 
-  const copyModeLink = useCallback(async (link: string) => {
+  const copyLink = useCallback(async (link: string) => {
     setOpenBlocked(false);
     try {
       await navigator.clipboard.writeText(link);
@@ -432,8 +410,11 @@ export default function GamePlayer() {
     // Pressing PLAY always offers fullscreen first — it is the option, never a forced jump.
     setShowFsPrompt(!game.standalone);
     setShowExtension(Boolean(game.extensionNotice));
-    setLaunched(!game.standalone && !game.openInNewTab && game.type !== "external");
+    // A game that offers several servers, or hands over a link, opens at the
+    // entrance so the player can choose; everything else loads straight in.
+    setLaunched(!game.standalone && !game.openInNewTab && game.type !== "external" && !hasServerChoice(game));
     setPlayUrl(null);
+    setServerId(null);
   }, [game]);
 
   /** Standalone pages describe the title first, then either load the frame or hand over. */
@@ -443,11 +424,12 @@ export default function GamePlayer() {
       window.location.href = game.sourceUrl;
       return;
     }
-    setPlayUrl(null);
+    // Single-host titles keep loading their own URL; mirrors load the picked one.
+    setPlayUrl(servers.length > 1 ? (activeServer?.url ?? null) : null);
     setLaunched(true);
     setLoading(true);
     setShowFsPrompt(true);
-  }, [game]);
+  }, [game, activeServer, servers.length]);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -615,81 +597,72 @@ export default function GamePlayer() {
           <h1>{game.title}</h1>
           <p className="launch-description">{game.description}</p>
           <div className="launch-tags">{game.tags.map((tag) => <span key={tag}>{tag}</span>)}<span>{game.category}</span></div>
-          {game.openInNewTab ? (
+          {servers.length > 1 && (
+            <div className="server-picker">
+              <span className="server-picker-label"><Send size={13} /> Choose a server</span>
+              <div
+                className="server-cards"
+                role="radiogroup"
+                aria-label={`${game.title} server`}
+                onPointerMove={tiltServerCard}
+                onPointerLeave={resetServerTilt}
+              >
+                {servers.map((server, index) => (
+                  <button
+                    key={server.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={activeServer?.id === server.id}
+                    className={`server-card ${activeServer?.id === server.id ? "is-active" : ""}`}
+                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length] } as CSSProperties}
+                    onClick={() => setServerId(server.id)}
+                  >
+                    <span className="server-card-label">{server.label}</span>
+                    {activeServer?.id === server.id && <span className="server-card-dot" aria-hidden="true" />}
+                  </button>
+                ))}
+              </div>
+              {activeServer?.note && <span className="server-note">{activeServer.note}</span>}
+            </div>
+          )}
+          {handsLink ? (
             <div className="launch-actions">
               <div className="copy-link">
-                <span className="copy-link-label"><Save size={13} /> {modePicker ? "Choose a mode" : "Your link"}</span>
-                {modePicker && (
-                  <div
-                    className="mode-cards"
-                    role="radiogroup"
-                    aria-label={`${game.title} mode`}
-                    onPointerMove={tiltModeCard}
-                    onPointerLeave={resetModeTilt}
+                <span className="copy-link-label"><Save size={13} /> Your link</span>
+                {pendingOpen && (
+                  <span className="copy-open-countdown" role="status">
+                    Opening the copied link in a new tab in {pendingOpen.seconds}…
+                  </span>
+                )}
+                {openBlocked && (
+                  <span className="copy-open-blocked" role="alert">
+                    Your browser blocked the new tab — paste the copied link manually.
+                  </span>
+                )}
+                <div className="copy-link-row">
+                  <input
+                    ref={linkInputRef}
+                    className="copy-link-url"
+                    readOnly
+                    value={activeServer?.url ?? game.sourceUrl}
+                    aria-label={`${game.title} link`}
+                    onFocus={(event) => event.currentTarget.select()}
+                  />
+                  <button
+                    type="button"
+                    className="launch-play copy-link-btn"
+                    onClick={() => copyLink(activeServer?.url ?? game.sourceUrl)}
                   >
-                    {MODE_CARDS.map((card) => (
-                      <button
-                        key={card.id}
-                        type="button"
-                        role="radio"
-                        aria-checked={mode === card.id}
-                        className={`mode-card ${mode === card.id ? "is-active" : ""}`}
-                        style={{ "--mode-accent": card.accent } as CSSProperties}
-                        onClick={() => selectMode(card.id)}
-                      >
-                        <span className="mode-card-emoji" aria-hidden="true">{card.emoji}</span>
-                        <span className="mode-card-label">{card.label}</span>
-                        <span className="mode-card-param">?mode={card.id}</span>
-                        {mode === card.id && <span className="mode-card-dot" aria-hidden="true" />}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {modeLink ? (
-                  <>
-                    {mode && (
-                      <span className="copy-link-mode" aria-live="polite">
-                        Selected: ?mode={mode}
-                      </span>
-                    )}
-                    {pendingOpen && (
-                      <span className="copy-open-countdown" role="status">
-                        Opening the copied link in a new tab in {pendingOpen.seconds}…
-                      </span>
-                    )}
-                    {openBlocked && (
-                      <span className="copy-open-blocked" role="alert">
-                        Your browser blocked the new tab — paste the copied link manually.
-                      </span>
-                    )}
-                    <div className="copy-link-row">
-                      <input
-                        ref={linkInputRef}
-                        className="copy-link-url"
-                        readOnly
-                        value={modeLink}
-                        aria-label={mode ? `${game.title} link for mode ${mode}` : `${game.title} link`}
-                        onFocus={(event) => event.currentTarget.select()}
-                      />
-                      <button
-                        type="button"
-                        className="launch-play copy-link-btn"
-                        onClick={() => copyModeLink(modeLink)}
-                      >
-                        {linkCopied || pendingOpen ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {pendingOpen ? `Opening in ${pendingOpen.seconds}s…` : linkCopied ? "Copied!" : "Copy & open new tab"}
-                      </button>
-                    </div>
-                    <span className="launch-note">Copies the link, then opens it in a new tab after a {OPEN_COUNTDOWN_SECONDS}-second countdown — no blank tab, no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
-                  </>
-                ) : (
-                  <span className="launch-note">Pick a mode card above to reveal your link. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
-                )}
+                    {linkCopied || pendingOpen ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {pendingOpen ? `Opening in ${pendingOpen.seconds}s…` : linkCopied ? "Copied!" : "Copy & open new tab"}
+                  </button>
+                </div>
+                <span className="launch-note">Copies the link, then opens it in a new tab after a {OPEN_COUNTDOWN_SECONDS}-second countdown — no blank tab, no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
               </div>
             </div>
           ) : (
             <div className="launch-actions">
               <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
-              <span className="launch-note">{game.type === "external" ? "Opens the game's own page in this tab." : "Runs inside SI GAMES."} <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+              <span className="launch-note">{game.type === "external" ? "Opens the game's own page in this tab." : servers.length > 1 ? "Runs inside SI GAMES on the server picked above." : "Runs inside SI GAMES."} <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
             </div>
           )}
           <div className="launch-report">
@@ -699,7 +672,7 @@ export default function GamePlayer() {
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
           {game.media && <GameMediaPanel media={game.media} title={game.title} />}
-          {game.type === "external" ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.openInNewTab ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link, then opens it for you. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+          {game.type === "external" ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : handsLink ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link, then opens it for you. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
         {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       </div>
@@ -748,7 +721,7 @@ export default function GamePlayer() {
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
             {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
             <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-            <GameFrame key={frameKey} src={playUrl ?? game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? activeServer?.url ?? game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
