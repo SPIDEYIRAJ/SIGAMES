@@ -620,7 +620,7 @@ export const games: Game[] = handOverPremium([
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
           { id: "sandbox", label: "Sandbox Mode", query: "?mode=sandbox", note: "Free roam on the GTA V map at a random spot, every weapon unlocked." },
-          { id: "gtavi", label: "GTA VI Map", query: "?mode=gtavi", note: "Sandbox Mode on the env_test level — the GTA VI Map." },
+          { id: "gtavi", label: "GTA VI Map", query: "?mode=sandbox&map=env_test", note: "Sandbox Mode on the env_test level — the GTA VI Map." },
           { id: "chromebook", label: "Chromebook", query: "?mode=chromebook&play=story", note: "Lightweight preset: 960×540, 30 FPS, two engine cores and the low-memory profile." },
           { id: "title", label: "Title screen", query: "?mode=", note: "No preset — the game's own title screen asks (Enter = Story, Space = Sandbox)." },
         ],
