@@ -613,10 +613,10 @@ export const games: Game[] = handOverPremium([
       {
         id: "gta5v2",
         label: "Server 2 — GTA V V2",
-        url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2",
+        url: "https://v1-game.playgta5.pro/",
         external: true,
-        note: "Second build, served through the SI premium proxy. Pick a mode below — the link opens in your own tab with that mode appended.",
-        // The V2 page reads ?mode=story | sandbox | chromebook, ?map=env_test and ?play=.
+        note: "Second build on the v1-game host. Pick a mode below — the link opens in your own tab with that mode appended.",
+        // This host reads ?mode=story | sandbox | chromebook, ?map=env_test and ?play=.
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
           { id: "sandbox", label: "Sandbox Mode", query: "?mode=sandbox", note: "Free roam on the GTA V map at a random spot, every weapon unlocked." },
