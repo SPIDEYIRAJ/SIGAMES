@@ -453,7 +453,7 @@ const remoteGames: RemoteGame[] = [
 
 // The three headline titles lead the library, in this order, then the rest follow.
 /** Hosts that send X-Frame-Options / CSP frame-ancestors, so they cannot load in this frame. */
-const NON_FRAMABLE_HOSTS = ["wasmarcade.com", "spawn.co"];
+const NON_FRAMABLE_HOSTS = ["wasmarcade.com", "spawn.co", "playgta5.pro"];
 
 /** SI premium proxy routes are always handed over as a link, never framed: every
  * title (or server) whose URL points at this host opens in the player's own tab. */
@@ -483,9 +483,9 @@ const linkedGames: LinkedGame[] = [
     "Click the frame first so it takes the keyboard, then use the arrow keys to move and Space for a burst of speed. Reach the mailbox at the end of the route.",
     "https://snail.banteg.xyz/", "iframe", false],
   ["nfs-most-wanted", "Need for Speed: Most Wanted", "Racing", ["Police Chase", "Open World", "Classic"],
-    "The blacklist pursuit against the cops, in the Game Boy Advance edition that runs from its own page.",
-    "Arrow keys to accelerate, brake and steer, with the emulator's on-screen pad mirroring the console buttons. Start the page's player first, then run.",
-    "https://gamesnostalgia.net/game/need-for-speed-most-wanted", "external", false],
+    "The blacklist pursuit against the cops — the BMW M3 GTR run, played from the game's own playgta5.pro page.",
+    "Click the page first so it takes the keyboard, then drive with the key map in its Keyboard and gamepad panel; a gamepad works too. Set the resolution and full screen from the page's own options.",
+    "https://nfs.playgta5.pro", "external", false],
   ["nfs-underground-2", "Need for Speed: Underground 2", "Racing", ["Street Racing", "Tuning", "Night"],
     "Street racing after dark: build the car, run the circuits and own Bayview.",
     "Arrow keys or W A S D to drive, Space for the handbrake, Shift for nitrous. Click into the game window so it takes the keyboard.",
@@ -550,6 +550,14 @@ const linkedGames: LinkedGame[] = [
     "The top-down carnage classic — dozens of weapons and a screen full of bugs, on the game's own site.",
     "W A S D or the arrows to move, mouse to aim and shoot, Space for the special weapon. Grab every perk that drops.",
     "https://crimson.land/play", "external", true],
+  ["cricket-07", "Cricket 07", "Sports", ["Cricket", "Sports", "Multiplayer"],
+    "Cricket 07 in the browser — full innings with bat and ball, plus online 1v1 through the page's own room codes.",
+    "Batting: S for the normal shot, hold Shift for the lofted one, D for the advanced shot, arrows for shot direction, D to take a run and A to cancel. Bowling: S for the stock delivery, A / D / Shift / Alt for the specials, arrows to place the ball. W to go back, Esc to pause.",
+    "https://cricket.playgta5.pro", "external", false],
+  ["road-rash", "Road Rash", "Racing", ["Motorbike", "Beat 'em up", "Classic"],
+    "Road Rash back in your browser — race, fight and relive the classic motorcycle brawls from its own play page.",
+    "Accelerate with ↑, steer with ← and →, punch with Space, kick with K, and pause with Esc. Land your hits while you hold your speed.",
+    "https://roadrash.playgta5.pro/play.html", "external", false],
 ];
 
 // Titles that carry more than one mirror. They stay a single card in the library;
@@ -1132,6 +1140,8 @@ export const games: Game[] = handOverPremium([
     type,
     heavy,
     isNew: true,
+    // Hosts that refuse framing hand their link over instead of loading here.
+    openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
   })),
 ]);
 
