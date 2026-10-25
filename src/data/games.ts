@@ -443,6 +443,21 @@ const remoteGames: RemoteGame[] = [
 /** Hosts that send X-Frame-Options / CSP frame-ancestors, so they cannot load in this frame. */
 const NON_FRAMABLE_HOSTS = ["wasmarcade.com", "spawn.co"];
 
+/** SI premium proxy routes are always handed over as a link, never framed: every
+ * title (or server) whose URL points at this host opens in the player's own tab. */
+const PREMIUM_HOST = "sigamespremiumrp.spideyiraj1925.workers.dev";
+
+function handOverPremium<T extends Game>(list: T[]): T[] {
+  return list.map((game) => {
+    const onPremium = game.sourceUrl.includes(PREMIUM_HOST);
+    const servers = game.servers?.map((server) =>
+      server.url.includes(PREMIUM_HOST) && !server.external ? { ...server, external: true } : server,
+    );
+    if (!onPremium && !servers) return game;
+    return { ...game, ...(servers ? { servers } : {}), ...(onPremium ? { openInNewTab: true } : {}) };
+  });
+}
+
 /** [id, title, category, tags, description, controls, sourceUrl, type, heavy] for titles played on their own site. */
 type LinkedGame = [string, string, string, string[], string, string, string, Game["type"], boolean];
 
@@ -568,7 +583,7 @@ const serverGames: Game[] = [
   },
 ];
 
-export const games: Game[] = [
+export const games: Game[] = handOverPremium([
   {
     id: "gta-v",
     title: "Grand Theft Auto V",
@@ -583,7 +598,7 @@ export const games: Game[] = [
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
     servers: [
       { id: "playgta5", label: "Server 1 — SI Premium", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The main GTA V build, served through the SI premium proxy." },
-      { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2", note: "Second build, served through the SI premium proxy. It asks for its own options on the plain site, so this entrance stays clean." },
+      { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2", external: true, note: "Second build, served through the SI premium proxy. It opens in your own tab — the plain site asks for its own options." },
     ],
     type: "iframe",
     heavy: true,
@@ -1078,9 +1093,8 @@ export const games: Game[] = [
     isNew: true,
     // Hosts that refuse framing hand the player the link instead.
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
-  })),
-  ...serverGames,
-  ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy], index): Game => ({
+  })),    ...serverGames,
+    ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy], index): Game => ({
     id,
     title,
     category,
@@ -1093,12 +1107,12 @@ export const games: Game[] = [
     heavy,
     isNew: true,
   })),
-];
+]);
 
 
 export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
 
-export const allGames: Game[] = [
+export const allGames: Game[] = handOverPremium([
   ...games,
   ...localGames.map(([title, category, tags, description, controls], index): Game => {
     const id = localSlugs[index];
@@ -1115,5 +1129,5 @@ export const allGames: Game[] = [
       htmlGame: true,
       isNew: id === "51-starfighter-si-01",    };
   }),
-];
+]);
 
