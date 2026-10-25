@@ -1,7 +1,7 @@
 import { createElement, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
-import { games, type Game, type GameMedia, type GameServer } from "@/data/games";
+import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -326,6 +326,14 @@ export default function GamePlayer() {
   const servers = useMemo<GameServer[]>(() => (game ? serversFor(game) : []), [game]);
   const [serverId, setServerId] = useState<string | null>(null);
   const activeServer = servers.find((item) => item.id === serverId) ?? servers[0] ?? null;
+  /** Presets the active server offers (GTA V V2 asks for its start mode). */
+  const modes = useMemo<GameMode[]>(() => activeServer?.modes ?? [], [activeServer]);
+  const [modeId, setModeId] = useState<string | null>(null);
+  const activeMode = modes.find((mode) => mode.id === modeId) ?? modes[0] ?? null;
+  /** What the player actually launches: the picked server plus its picked `?mode=` query. */
+  const launchLink = activeMode
+    ? `${activeServer?.url ?? game?.sourceUrl ?? ""}${activeMode.query}`
+    : activeServer?.url ?? game?.sourceUrl ?? "";
   /** Hosts that refuse framing hand the player a link instead of loading here. */
   const handsLink = Boolean(activeServer?.external);
   const linkInputRef = useRef<HTMLInputElement>(null);
@@ -415,6 +423,7 @@ export default function GamePlayer() {
     setLaunched(!game.standalone && !game.openInNewTab && game.type !== "external" && !hasServerChoice(game));
     setPlayUrl(null);
     setServerId(null);
+    setModeId(null);
   }, [game]);
 
   /** Standalone pages describe the title first, then either load the frame or hand over. */
@@ -425,11 +434,11 @@ export default function GamePlayer() {
       return;
     }
     // Single-host titles keep loading their own URL; mirrors load the picked one.
-    setPlayUrl(servers.length > 1 ? (activeServer?.url ?? null) : null);
+    setPlayUrl(servers.length > 1 || activeMode ? launchLink : null);
     setLaunched(true);
     setLoading(true);
     setShowFsPrompt(true);
-  }, [game, activeServer, servers.length]);
+  }, [game, launchLink, servers.length, activeMode]);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -625,6 +634,34 @@ export default function GamePlayer() {
               {activeServer?.note && <span className="server-note">{activeServer.note}</span>}
             </div>
           )}
+          {modes.length > 0 && (
+            <div className="server-picker mode-picker">
+              <span className="server-picker-label"><Send size={13} /> Choose a mode</span>
+              <div
+                className="server-cards"
+                role="radiogroup"
+                aria-label={`${game.title} mode`}
+                onPointerMove={tiltServerCard}
+                onPointerLeave={resetServerTilt}
+              >
+                {modes.map((mode, index) => (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={activeMode?.id === mode.id}
+                    className={`server-card ${activeMode?.id === mode.id ? "is-active" : ""}`}
+                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length] } as CSSProperties}
+                    onClick={() => setModeId(mode.id)}
+                  >
+                    <span className="server-card-label">{mode.label}</span>
+                    {activeMode?.id === mode.id && <span className="server-card-dot" aria-hidden="true" />}
+                  </button>
+                ))}
+              </div>
+              {activeMode?.note && <span className="server-note">{activeMode.note}</span>}
+            </div>
+          )}
           {handsLink ? (
             <div className="launch-actions">
               <div className="copy-link">
@@ -644,19 +681,19 @@ export default function GamePlayer() {
                     ref={linkInputRef}
                     className="copy-link-url"
                     readOnly
-                    value={activeServer?.url ?? game.sourceUrl}
+                    value={launchLink}
                     aria-label={`${game.title} link`}
                     onFocus={(event) => event.currentTarget.select()}
                   />
                   <button
                     type="button"
                     className="launch-play copy-link-btn"
-                    onClick={() => copyLink(activeServer?.url ?? game.sourceUrl)}
+                    onClick={() => copyLink(launchLink)}
                   >
                     {linkCopied || pendingOpen ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {pendingOpen ? `Opening in ${pendingOpen.seconds}s…` : linkCopied ? "Copied!" : "Copy & open new tab"}
                   </button>
                 </div>
-                <span className="launch-note">Copies the link, then opens it in a new tab after a {OPEN_COUNTDOWN_SECONDS}-second countdown — no blank tab, no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                <span className="launch-note">Copies the link{activeMode ? <> (with <code>{activeMode.query}</code> for {activeMode.label})</> : null}, then opens it in a new tab after a {OPEN_COUNTDOWN_SECONDS}-second countdown — no blank tab, no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
               </div>
             </div>
           ) : (
@@ -721,7 +758,7 @@ export default function GamePlayer() {
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
             {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
             <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
-            <GameFrame key={frameKey} src={playUrl ?? activeServer?.url ?? game.sourceUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? launchLink} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>

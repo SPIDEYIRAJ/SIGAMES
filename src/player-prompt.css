@@ -10,6 +10,7 @@
 .launch-play { display: inline-flex; align-items: center; gap: 10px; border: 0; border-radius: 8px; padding: 16px 34px; color: #fff; background: #5608F8; font-size: 13px; font-weight: 950; letter-spacing: .12em; cursor: pointer; }
 .launch-play:hover { background: #4320e0; }
 .launch-note { color: #6f7ca7; font-size: 9px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.launch-note code { color: #3efeff; text-transform: none; letter-spacing: .02em; font-family: inherit; word-break: break-all; }
 .copy-link { display: flex; flex-direction: column; align-items: center; gap: 10px; width: min(560px, 100%); }
 .copy-link-label { display: inline-flex; align-items: center; gap: 7px; color: #5608F8; font-size: 10px; font-weight: 950; letter-spacing: .14em; text-transform: uppercase; }
 .copy-link-row { display: flex; align-items: stretch; gap: 8px; width: 100%; }
@@ -23,6 +24,8 @@
 
 /* Server picker — one card per mirror; the pick decides what loads or gets copied. */
 .server-picker { display: flex; flex-direction: column; align-items: center; gap: 9px; width: 100%; margin-bottom: 4px; }
+.mode-picker { margin-bottom: 12px; }
+.mode-picker .server-card { padding: 12px 10px 11px; }
 .server-picker-label { display: inline-flex; align-items: center; gap: 6px; color: #8fa0cd; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
 .server-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; width: 100%; perspective: 900px; }
 .server-card { position: relative; display: flex; align-items: center; justify-content: center; padding: 14px 10px 12px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; background: #131e36; cursor: pointer; font-family: inherit; transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)); transform-style: preserve-3d; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease; box-shadow: 0 12px 24px rgba(4,8,22,.45); }

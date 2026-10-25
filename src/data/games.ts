@@ -11,6 +11,15 @@ export type GameMedia = {
   facts?: { label: string; value: string }[];
 };
 
+/** A preset asked at the entrance before the link is built. `query` is appended
+ * to the server URL as-is (it always carries the `?mode=` parameter). */
+export type GameMode = {
+  id: string;
+  label: string;
+  query: string;
+  note?: string;
+};
+
 /** One way to launch a title: most games have a single server, some carry mirrors. */
 export type GameServer = {
   id: string;
@@ -19,6 +28,9 @@ export type GameServer = {
   /** Host refuses framing (X-Frame-Options / CSP frame-ancestors): hand the link over instead. */
   external?: boolean;
   note?: string;
+  /** Presets the player picks on this server's own page; the chosen `query` is
+   * appended to `url` (GTA V V2 asks for its start mode this way). */
+  modes?: GameMode[];
 };
 
 export type Game = {
@@ -598,7 +610,21 @@ export const games: Game[] = handOverPremium([
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
     servers: [
       { id: "playgta5", label: "Server 1 — SI Premium", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The main GTA V build, served through the SI premium proxy." },
-      { id: "gta5v2", label: "Server 2 — GTA V V2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2", external: true, note: "Second build, served through the SI premium proxy. It opens in your own tab — the plain site asks for its own options." },
+      {
+        id: "gta5v2",
+        label: "Server 2 — GTA V V2",
+        url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/GTAVV2",
+        external: true,
+        note: "Second build, served through the SI premium proxy. Pick a mode below — the link opens in your own tab with that mode appended.",
+        // The V2 page reads ?mode=story | sandbox | chromebook, ?map=env_test and ?play=.
+        modes: [
+          { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
+          { id: "sandbox", label: "Sandbox Mode", query: "?mode=sandbox", note: "Free roam on the GTA V map at a random spot, every weapon unlocked." },
+          { id: "gtavi", label: "GTA VI Map", query: "?mode=sandbox&map=env_test", note: "Sandbox Mode on the env_test level — the GTA VI Map." },
+          { id: "chromebook", label: "Chromebook", query: "?mode=chromebook&play=story", note: "Lightweight preset: 960×540, 30 FPS, two engine cores and the low-memory profile." },
+          { id: "title", label: "Title screen", query: "?mode=", note: "No preset — the game's own title screen asks (Enter = Story, Space = Sandbox)." },
+        ],
+      },
     ],
     type: "iframe",
     heavy: true,
