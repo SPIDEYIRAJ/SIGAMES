@@ -1,0 +1,22 @@
+# SI GAMES — response headers (Netlify / Cloudflare Pages).
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+# Vite writes content-hashed filenames here, so these are safe to cache forever
+# and make repeat visits nearly instant after the first load.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Un-hashed static content: cached, but short-lived so updates propagate.
+/games/*
+  Cache-Control: public, max-age=3600, must-revalidate
+/vendor/*
+  Cache-Control: public, max-age=86400, must-revalidate
+/thumbs/*
+  Cache-Control: public, max-age=86400, must-revalidate
+/videos/*
+  Cache-Control: public, max-age=604800, must-revalidate
+/manifest.webmanifest
+  Cache-Control: public, max-age=0, must-revalidate

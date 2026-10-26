@@ -1,0 +1,5 @@
+# SI GAMES — SPA fallback.
+# React Router owns /play/:id, /gta-v, /dashboard, etc. Any path that does not
+# match a real file in the deploy output must return index.html (status 200),
+# otherwise reloading or sharing a deep link returns the host's 404 page.
+/*    /index.html   200
