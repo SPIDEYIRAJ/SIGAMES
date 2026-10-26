@@ -7,6 +7,15 @@ import "@/player-prompt.css";
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
 const STANDALONE_DEFAULT = "gta-v";
 
+/** Fullscreen has no exit button: leaving it always takes a deliberate hold. */
+/** Press-and-hold on the side tab before the exit option appears. */
+const TAB_HOLD_MS = 650;
+/** Desktop gestures — hold Esc this long, or Alt + Esc for the quicker combo. */
+const ESC_HOLD_MS = 5000;
+const ALT_ESC_HOLD_MS = 1200;
+/** The exit card retires on its own so it never sits over a game. */
+const EXIT_MENU_MS = 8000;
+
 interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
   src: string;
   title: string;
@@ -318,6 +327,15 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
   const [isImmersive, setIsImmersive] = useState(false);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
+  /** Either kind of fullscreen — that is when every fullscreen button disappears. */
+  const inFullscreen = isNativeFullscreen || isImmersive;
+  /** The held gestures that replace the exit button while fullscreen. */
+  const [fsMenuOpen, setFsMenuOpen] = useState(false);
+  const [tabHolding, setTabHolding] = useState(false);
+  const [keyHold, setKeyHold] = useState<{ label: string; ms: number; id: number } | null>(null);
+  const tabHoldTimer = useRef<number | null>(null);
+  const keyHoldTimer = useRef<number | null>(null);
+  const keyHoldId = useRef(0);
   const [showFsPrompt, setShowFsPrompt] = useState(() => (game ? !game.standalone : false));
   const [showReport, setShowReport] = useState(false);
   // For titles with a server picker: the URL chosen at the entrance.
@@ -373,14 +391,93 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
     }
   }, []);
 
+  /** Abort a half-finished hold on Esc / Alt + Esc. */
+  const cancelKeyHold = useCallback(() => {
+    if (keyHoldTimer.current) {
+      window.clearTimeout(keyHoldTimer.current);
+      keyHoldTimer.current = null;
+    }
+    setKeyHold(null);
+  }, []);
+
+  /** The only way out of fullscreen: drop the overlay, or exit the browser's. */
+  const exitFullscreenMode = useCallback(async () => {
+    cancelKeyHold();
+    setFsMenuOpen(false);
+    if (document.fullscreenElement) {
+      setIsImmersive(false);
+      await document.exitFullscreen().catch(() => undefined);
+      return;
+    }
+    setIsImmersive(false);
+  }, [cancelKeyHold]);
+
+  /** Abort a half-finished press on the side tab. */
+  const cancelTabHold = useCallback(() => {
+    if (tabHoldTimer.current) {
+      window.clearTimeout(tabHoldTimer.current);
+      tabHoldTimer.current = null;
+    }
+    setTabHolding(false);
+  }, []);
+
+  /** Only a held press opens the exit option — a quick tap does nothing. */
+  const startTabHold = useCallback(() => {
+    if (fsMenuOpen) {
+      setFsMenuOpen(false);
+      return;
+    }
+    if (tabHoldTimer.current) return;
+    setTabHolding(true);
+    tabHoldTimer.current = window.setTimeout(() => {
+      tabHoldTimer.current = null;
+      setTabHolding(false);
+      setFsMenuOpen(true);
+    }, TAB_HOLD_MS);
+  }, [fsMenuOpen]);
+
+  /** Holding a key for its full span is the desktop way out of fullscreen. */
+  const beginKeyHold = useCallback((label: string, ms: number) => {
+    if (keyHoldTimer.current) return;
+    keyHoldId.current += 1;
+    setKeyHold({ label, ms, id: keyHoldId.current });
+    keyHoldTimer.current = window.setTimeout(() => {
+      keyHoldTimer.current = null;
+      setKeyHold(null);
+      void exitFullscreenMode();
+    }, ms);
+  }, [exitFullscreenMode]);
+
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsNativeFullscreen(Boolean(document.fullscreenElement));
       if (!document.fullscreenElement) setIsImmersive(false);
+      setFsMenuOpen(false);
+      cancelTabHold();
+      cancelKeyHold();
     };
     document.addEventListener("fullscreenchange", handleFullscreenChange);
-    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
-  }, []);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      if (tabHoldTimer.current) window.clearTimeout(tabHoldTimer.current);
+      if (keyHoldTimer.current) window.clearTimeout(keyHoldTimer.current);
+    };
+  }, [cancelTabHold, cancelKeyHold]);
+
+  /** The exit card opens on a hold, then retires on its own or on a stray tap. */
+  useEffect(() => {
+    if (!fsMenuOpen) return;
+    const closeOnOutside = (event: Event) => {
+      const target = event.target;
+      if (!(target instanceof Element) || !target.closest(".fs-side")) setFsMenuOpen(false);
+    };
+    const timer = window.setTimeout(() => setFsMenuOpen(false), EXIT_MENU_MS);
+    document.addEventListener("pointerdown", closeOnOutside, true);
+    return () => {
+      document.removeEventListener("pointerdown", closeOnOutside, true);
+      window.clearTimeout(timer);
+    };
+  }, [fsMenuOpen]);
 
   useEffect(() => {
     if (!game) return;
@@ -544,8 +641,17 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        if (document.fullscreenElement) return;
-        setIsImmersive(false);
+        // Fullscreen turns Escape into a hold gesture, never a one-press exit.
+        if (inFullscreen && !showReport && !showExtension) {
+          // Best effort: where the engine allows it, this holds back the browser's
+          // own one-press Esc exit so the gesture can run its full span.
+          event.preventDefault();
+          const quick = event.altKey;
+          beginKeyHold(
+            quick ? "Hold Alt + Esc to exit fullscreen" : "Hold Esc for 5s to exit fullscreen",
+            quick ? ALT_ESC_HOLD_MS : ESC_HOLD_MS,
+          );
+        }
         return;
       }
       // F flips fullscreen from anywhere on the page.
@@ -556,9 +662,19 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
         void toggleFullscreen();
       }
     };
+    const handleKeyUp = (event: KeyboardEvent) => {
+      // Letting go before the span is up cancels the gesture.
+      if (event.key === "Escape") cancelKeyHold();
+    };
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleFullscreen]);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", cancelKeyHold);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", cancelKeyHold);
+    };
+  }, [toggleFullscreen, inFullscreen, showReport, showExtension, beginKeyHold, cancelKeyHold]);
 
   if (!game) {
     return <div className="player-page"><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> Back to library</button><div className="player-not-found">That game wandered off.</div></div>;
@@ -707,7 +823,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
-        <div className="player-actions"><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button><button className="player-icon-button" onClick={toggleFullscreen} aria-label={isNativeFullscreen || isImmersive ? "Exit fullscreen gameplay" : "Enter fullscreen gameplay"}>{isNativeFullscreen || isImmersive ? <Minimize2 size={18} /> : <Expand size={18} />}</button><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
+        <div className="player-actions"><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
       </header>
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
@@ -715,7 +831,37 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
         <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
             {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
-            <button className="immersive-exit" onClick={toggleFullscreen} aria-label="Exit fullscreen gameplay"><Minimize2 size={16} /> Exit fullscreen</button>
+            {inFullscreen && (
+              <div className="fs-side">
+                <button
+                  type="button"
+                  className={`fs-side-tab ${tabHolding ? "is-holding" : ""}`}
+                  style={{ "--fs-hold-ms": `${TAB_HOLD_MS}ms` } as CSSProperties}
+                  onPointerDown={(event) => { event.preventDefault(); startTabHold(); }}
+                  onPointerUp={cancelTabHold}
+                  onPointerLeave={cancelTabHold}
+                  onPointerCancel={cancelTabHold}
+                  onContextMenu={(event) => event.preventDefault()}
+                  aria-label="Hold to open the fullscreen menu"
+                  title="Hold to open the fullscreen menu"
+                >
+                  <span className="fs-side-fill" />
+                  <span className="fs-side-grip" aria-hidden="true"><i /><i /><i /></span>
+                </button>
+                {fsMenuOpen && (
+                  <div className="fs-exit-menu" role="group" aria-label="Fullscreen options">
+                    <button type="button" className="fs-exit-option" onClick={() => void exitFullscreenMode()}><Minimize2 size={14} /> Exit fullscreen</button>
+                    <span className="fs-exit-hint">or hold <kbd>Esc</kbd> 5s · <kbd>Alt</kbd> + <kbd>Esc</kbd></span>
+                  </div>
+                )}
+              </div>
+            )}
+            {keyHold && (
+              <div className="fs-hold-chip" key={keyHold.id}>
+                <span className="fs-hold-label">{keyHold.label}</span>
+                <span className="fs-hold-track"><span className="fs-hold-fill" style={{ "--fs-hold-ms": `${keyHold.ms}ms` } as CSSProperties} /></span>
+              </div>
+            )}
             <GameFrame key={frameKey} src={playUrl ?? launchLink} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>

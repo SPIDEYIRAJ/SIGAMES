@@ -705,6 +705,158 @@
 
 .report-sent p { color: #9fb0d6; font-size: 12px; line-height: 1.6; }
 
+/* ——— Fullscreen chrome. There is no exit button while fullscreen: a very small
+   side tab does the work, and it only reveals the exit option while held.
+   Desktop gets the same idea on the keyboard — hold Esc, or Alt + Esc. ——— */
+.fs-side {
+  position: absolute;
+  z-index: 14;
+  top: 50%;
+  right: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+}
+
+.fs-side-tab {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 52px;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .2);
+  border-right: 0;
+  border-radius: 7px 0 0 7px;
+  background: rgba(8, 12, 26, .7);
+  color: #dfe6ff;
+  cursor: pointer;
+  opacity: .45;
+  transition: opacity .2s ease;
+  touch-action: none;
+}
+
+.fs-side-tab:hover,
+.fs-side-tab:focus-visible { opacity: 1; }
+
+.fs-side-tab:focus-visible { outline: 2px solid var(--si-glow-40); outline-offset: 1px; }
+
+.fs-side-fill {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 0;
+  background: rgba(62, 254, 255, .45);
+  transition: height .12s ease;
+  pointer-events: none;
+}
+
+.fs-side-tab.is-holding { opacity: 1; }
+
+/* The fill takes exactly as long as the hold, so it reads as a progress bar. */
+.fs-side-tab.is-holding .fs-side-fill { height: 100%; transition: height var(--fs-hold-ms, 650ms) linear; }
+
+.fs-side-grip { position: relative; display: grid; gap: 3px; }
+.fs-side-grip i { display: block; width: 7px; height: 1.5px; border-radius: 2px; background: #cfe0ff; }
+
+.fs-exit-menu {
+  position: absolute;
+  z-index: 14;
+  top: 50%;
+  right: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 10px;
+  background: rgba(8, 12, 26, .95);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .55);
+  animation: fs-menu-in .18s ease-out;
+}
+
+@keyframes fs-menu-in {
+  from { opacity: 0; transform: translate(8px, -50%); }
+  to { opacity: 1; transform: translate(0, -50%); }
+}
+
+.fs-exit-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 8px;
+  padding: 9px 13px;
+  background: var(--si-panel-raised);
+  color: #eef2ff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  cursor: pointer;
+}
+
+.fs-exit-option:hover { background: var(--si-accent); border-color: transparent; color: #fff; }
+
+.fs-exit-hint { color: #7f8cab; font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+
+.fs-exit-hint kbd {
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 4px;
+  padding: 1px 5px;
+  background: var(--si-kbd);
+  color: #dfe6ff;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+/* Feedback while a keyboard hold is running — the bar fills for the full span. */
+.fs-hold-chip {
+  position: absolute;
+  z-index: 14;
+  left: 50%;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px 11px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 10px;
+  background: rgba(8, 12, 26, .92);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, .5);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fs-hold-label { color: #c3cfec; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+
+.fs-hold-track { width: 150px; height: 3px; border-radius: 999px; background: rgba(255, 255, 255, .14); overflow: hidden; }
+
+.fs-hold-fill {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: var(--si-glow);
+  animation: fs-hold-fill var(--fs-hold-ms, 5000ms) linear forwards;
+}
+
+@keyframes fs-hold-fill { to { width: 100%; } }
+
+@media (max-width: 720px) {
+  .fs-side-tab { width: 17px; height: 60px; }
+  .fs-exit-menu { right: 30px; }
+  .fs-hold-chip { bottom: calc(14px + env(safe-area-inset-bottom)); width: calc(100% - 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fs-exit-menu { animation: none; }
+}
+
 @media (max-width: 720px) {
   .gtav-notice { padding: 22px 16px; }
   .gtav-media { gap: 18px; margin-top: 20px; }
