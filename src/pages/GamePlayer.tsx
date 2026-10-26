@@ -429,8 +429,9 @@ export default function GamePlayer() {
   /** Standalone pages describe the title first, then either load the frame or hand over. */
   const launch = useCallback(() => {
     if (game?.type === "external") {
-      // Not embeddable: hand the player over to the game itself, in this same tab.
-      window.location.href = game.sourceUrl;
+      // Not embeddable: hand the player over to the game itself, in this same
+      // tab — the active server's link, with the chosen mode's query attached.
+      window.location.href = launchLink;
       return;
     }
     // Single-host titles keep loading their own URL; mirrors load the picked one.

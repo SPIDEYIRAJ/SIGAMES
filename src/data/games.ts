@@ -452,8 +452,32 @@ const remoteGames: RemoteGame[] = [
 ];
 
 // The three headline titles lead the library, in this order, then the rest follow.
-/** Hosts that send X-Frame-Options / CSP frame-ancestors, so they cannot load in this frame. */
-const NON_FRAMABLE_HOSTS = ["wasmarcade.com", "spawn.co", "playgta5.pro"];
+/** Hosts that send X-Frame-Options / CSP frame-ancestors, so they cannot load in this frame.
+ * Each entry was probed: the cross-origin iframe is refused, so its card hands over a link. */
+const NON_FRAMABLE_HOSTS = [
+  "wasmarcade.com",
+  "spawn.co",
+  "playgta5.pro",
+  "dos.zone",
+  "bunnyhop.lol",
+  "2004.lostcity.rs",
+  "lasvegasherogame.com",
+  "waw.fun",
+  "zombies.concentric.live",
+  "fifa14.online",
+  "pes14.online",
+  "wwepain.online",
+  "burnout3.online",
+  "mortalkombatsm.online",
+  "tekkendr.live",
+  "nfsunderground2.site",
+  "midnighhtclub3.online",
+  "morrowind.app",
+  "pokeweb.morisoba.moe",
+];
+
+/** Cover art that ships with the latest batch of titles. */
+const IMG = "https://www.inxanitylabs.com/assets/games/";
 
 /** SI premium proxy routes are always handed over as a link, never framed: every
  * title (or server) whose URL points at this host opens in the player's own tab. */
@@ -470,8 +494,8 @@ function handOverPremium<T extends Game>(list: T[]): T[] {
   });
 }
 
-/** [id, title, category, tags, description, controls, sourceUrl, type, heavy] for titles played on their own site. */
-type LinkedGame = [string, string, string, string[], string, string, string, Game["type"], boolean];
+/** [id, title, category, tags, description, controls, sourceUrl, type, heavy, cover?] for titles played on their own site. */
+type LinkedGame = [string, string, string, string[], string, string, string, Game["type"], boolean, string?];
 
 // Hosts that refuse to be framed (X-Frame-Options / CSP frame-ancestors) or are
 // plain pages rather than an embeddable build: each card hands the player over
@@ -514,10 +538,6 @@ const linkedGames: LinkedGame[] = [
     "The PES 2011 browser game on JeuxD, played full-screen on its own page.",
     "Arrow keys to move and pass, Space to shoot — the page runs its game once it loads. This host only serves plain HTTP, so it opens as a normal page.",
     "http://www.jeuxd.fr/pes-2011-flash-gratuit-en-plein-ecran", "external", false],
-  ["world-at-war-zombies-2", "World at War Zombies (2nd Server)", "Shooter", ["FPS", "Zombies", "Browser Ready", "2nd Server"],
-    "A second route into the same browser Zombies build the library already carries — hold the rounds whichever door you come through.",
-    "W A S D to move, mouse to aim, click to shoot, R to reload, F to buy doors and weapons.",
-    "https://vel.gg/bo1z", "iframe", true],
   ["pokemon-games", "Pokémon Games (18)", "RPG", ["Collection", "Retro"],
     "Eighteen Pokémon titles gathered on one RetroGamesNexus series page — the classic handheld generations in one place.",
     "Pick a generation on the series page, then play with that game's own controls; the handheld originals follow the usual D-pad and A/B layout.",
@@ -558,6 +578,128 @@ const linkedGames: LinkedGame[] = [
     "Road Rash back in your browser — race, fight and relive the classic motorcycle brawls from its own play page.",
     "Accelerate with ↑, steer with ← and →, punch with Space, kick with K, and pause with Esc. Land your hits while you hold your speed.",
     "https://roadrash.playgta5.pro/play.html", "external", false],
+  // ── Latest batch: titles that run inside this frame ───────────────────────
+  ["princejs", "Prince of Persia (JS)", "Platformer", ["Classic", "Browser Ready"],
+    "The 1989 classic rebuilt in JavaScript — the same twelve rooms and the same sixty minutes, no emulator in the way.",
+    "Arrows to run, jump and climb, Shift to stand and crouch, Ctrl to stab. Click the frame first so it takes the keys.",
+    "https://princejs.com/", "iframe", false],
+  ["harvest", "Harvest: Massive Encounter", "Strategy", ["Tower Defense", "Base Building", "Browser Ready"],
+    "Drop harvester beams on an alien world and hold the line — every night brings a bigger wave of bugs.",
+    "Left-click to place harvesters, turrets and research labs, drag to scroll the map. Build wide early and let the lasers do the rest.",
+    "https://harvest.banteg.xyz/", "iframe", true, IMG + "harvest-massive-encounter-art.webp"],
+  ["myth", "Myth: The Fallen Levels", "Strategy", ["Tactics", "Fantasy", "Browser Ready"],
+    "Bungie's tactical classic — small armies, real physics and no rebuilding the dead between fights.",
+    "Left-click to select your warband, right-click to move or attack, Tab to cycle units, B for the minimap. Lead with the archers.",
+    "https://myth.game/", "iframe", true],
+  ["cyberpunk", "Cyberpunk 2077", "RPG", ["Open World", "Story", "Browser Ready"],
+    "Night City through the browser build — the whole prologue to the endgame, no launcher required.",
+    "W A S D to move, mouse to look, click to attack, Tab for the inventory. Follow the page's own key map for the rest.",
+    "https://cyberpunk2077.lol/game", "iframe", true, IMG + "cyberpunk-2077-art.webp"],
+  ["cuphead-wally", "Cuphead: Wally Warbles", "Action", ["Boss Fight", "Run and Gun", "Scratch"],
+    "Wally Warbles in a cage match — one of Cuphead's feathered boss fights, running from its own build.",
+    "Arrow keys to move, Space to jump, Z to shoot and X to dash — the project shows its own key layout on the start screen. Watch for the eggs.",
+    "https://turbowarp.org/178944041", "iframe", false, IMG + "cuphead-wally-warbles-art.webp"],
+  // ── Latest batch: titles that hand over their own page ────────────────────
+  ["bunnyhop", "bunnyhop.lol", "Shooter", ["Counter-Strike", "Bunnyhop", "Multiplayer"],
+    "Counter-Strike: Source bunny hopping across 600+ maps, from bhop_eazy to the hardest runs — nothing to install.",
+    "Hold jump and keep your strafe rhythm: A and D to strafe with the mouse turning in sync. Click the frame first so it takes the keys.",
+    "https://bunnyhop.lol/", "external", false],
+  ["2004scape", "2004Scape", "RPG", ["MMO", "Browser", "Multiplayer"],
+    "A free, open-source preservation of the 2004-era browser MMO — community-run and free to play.",
+    "Click to walk, use the tabs for inventory, stats and the map, and the chat box for commands. Make an account on the page to keep your progress.",
+    "https://2004.lostcity.rs/", "external", true],
+  ["gh3", "Guitar Hero III", "Rhythm", ["Music", "Guitar", "Browser"],
+    "Legends of rock from the site's own browser page — the fretboard and the crowd in one place.",
+    "The site's own key map runs the frets and the strum — click the page first so it takes the keyboard, then keep to the beat.",
+    "https://lasvegasherogame.com/gh3/", "external", false, IMG + "guitar-hero-3-art.webp"],
+  ["wwepain", "WWE Here Comes the Pain", "Sports", ["Wrestling", "Fighting"],
+    "SmackDown! Here Comes the Pain in the browser — solo exhibition or an online 1v1.",
+    "Arrow keys to move around the ring, the action keys for strikes, grapples and finishers — the page shows its key map before the bell.",
+    "https://wwepain.online/", "external", true, IMG + "wwe-here-comes-the-pain-art.webp"],
+  ["burnout3", "Burnout 3: Takedown", "Racing", ["Racing", "Destruction", "Classic"],
+    "Burnout 3 in the browser — crash traffic for takedowns and boost through the races.",
+    "Arrow keys or W A S D to drive, Space for the handbrake. The page also takes a gamepad.",
+    "https://burnout3.online/", "external", true, IMG + "burnout-3-art.webp"],
+  ["mk-shaolin-monks", "Mortal Kombat: Shaolin Monks", "Fighting", ["Fighting", "Co-op", "Classic"],
+    "Shaolin Monks on the browser build — story mode with a friend or a straight Versus bout.",
+    "Arrow keys to move and jump, the action keys for punches, kicks and grapples — the page's key map shows the rest.",
+    "https://mortalkombatsm.online/", "external", true, IMG + "mk-shaolin-monks-art.webp"],
+  ["diablo2", "Diablo II", "Action", ["RPG", "Hack and Slash", "DOS"],
+    "The 2000 action-RPG classic through the DOS.zone player — Baal, the Cow King and all.",
+    "Left-click to move and attack, right-click for skills, I for inventory, C for the character sheet, Esc to save and quit.",
+    "https://dos.zone/diablo-2/", "external", true, IMG + "diablo.webp"],
+  ["mk-trilogy", "Mortal Kombat Trilogy", "Fighting", ["Fighting", "Classic", "DOS"],
+    "Every fighter and every arena from the 1996 compilation, in the browser.",
+    "Arrows to move, jump and crouch, Ctrl and Alt for the attacks, Enter to block. The pause screen shows the full key map.",
+    "https://dos.zone/mortal-kombat-trilogy/", "external", true],
+  ["resident-evil", "Resident Evil", "Horror", ["Survival Horror", "Classic", "DOS"],
+    "Survive the Spencer Mansion — the original 1996 survival horror through the DOS.zone player.",
+    "Arrows to move, Enter to interact and fire through doors, Esc for the menu. Ink ribbons still save your game.",
+    "https://dos.zone/resident-evil/", "external", true],
+  ["tomb-raider", "Tomb Raider", "Action", ["Adventure", "Classic", "DOS"],
+    "Lara's first outing — the 1996 original through the DOS.zone player.",
+    "Arrows to move and turn, Ctrl to interact, Shift to jump and grab ledges, Space to walk carefully. The start screen shows the key map.",
+    "https://dos.zone/tomb-raider/", "external", true],
+  ["fallout", "Fallout", "RPG", ["Post Apocalyptic", "Turn Based", "DOS"],
+    "The 1997 wasteland classic through the DOS.zone player — choices first, gunfire second.",
+    "The mouse rules the wasteland: left-click to move and act, right-click to inspect, I for inventory, Esc to save.",
+    "https://dos.zone/fallout/", "external", true],
+  ["theme-hospital", "Theme Hospital", "Simulation", ["Management", "Classic", "DOS"],
+    "Cure bloaty-headed patients and keep the ward in the black — Bullfrog's 1997 classic in the browser.",
+    "Left-click to place rooms and buy equipment, drag to scroll, and the bottom bar for finances and research.",
+    "https://dos.zone/theme-hospital/", "external", true],
+  ["worms-armageddon", "Worms Armageddon", "Strategy", ["Turn Based", "Multiplayer", "DOS"],
+    "The worm-fighting peak — land, aim, and blow the other team into next week.",
+    "Left-click to aim, hold to build power, release to fire. Enter ends the turn and the bottom bar switches items.",
+    "https://dos.zone/worms-armageddon/", "external", true],
+  ["age-of-empires2", "Age of Empires II", "Strategy", ["RTS", "Historical", "DOS"],
+    "Gather, build and conquer in the 1999 classic, through the DOS.zone player.",
+    "Left-click to select units and buildings, right-click to move or attack, the bottom panel to produce and advance ages.",
+    "https://dos.zone/age-of-empires2/", "external", true],
+  ["warcraft3", "Warcraft III", "Strategy", ["RTS", "Fantasy", "DOS"],
+    "Heroes, gold and the Scourge — Warcraft III through the DOS.zone player.",
+    "Left-click to select, right-click to order, the command card for abilities and buildings. Send your hero to the tavern first.",
+    "https://dos.zone/warcraft-iii/", "external", true],
+  ["red-alert", "Command & Conquer: Red Alert", "Strategy", ["RTS", "Classic", "DOS"],
+    "The Soviet and Allied campaigns of the 1996 classic, in the browser.",
+    "Left-click to select, right-click to move, the right-hand sidebar to build units and structures. Keep an eye on the minimap.",
+    "https://dos.zone/command-conquer-red-alert/", "external", true],
+  ["homm2", "Heroes of Might and Magic II", "Strategy", ["Turn Based", "Fantasy", "DOS"],
+    "Build your castle, recruit heroes and take the adventure map one town at a time.",
+    "Left-click to move your hero and pick town options, right-click to inspect a tile, the bottom bar for army and gold.",
+    "https://dos.zone/heroes-of-might-and-magic-ii/", "external", true],
+  ["prince-dos", "Prince of Persia (DOS)", "Platformer", ["Classic", "DOS"],
+    "The original 1990 DOS release through the DOS.zone player — sixty minutes to rescue the princess.",
+    "Arrows to run and jump, Shift to stand and climb, Ctrl to stab. Guards take two hits; the spikes take one.",
+    "https://dos.zone/prince-of-persia-1990/", "external", true],
+  ["nfs-dos", "Need for Speed (DOS)", "Racing", ["Racing", "Classic", "DOS"],
+    "The 1995 original through the DOS.zone player — supercars, police chases and the Ferraris of the era.",
+    "Up to accelerate, Down to brake, Left and Right to steer, Enter for the menu. Pick your car before the light turns green.",
+    "https://dos.zone/the-need-for-speed-sep-1995/", "external", true],
+  ["gta-vc-dos", "GTA Vice City (DOS)", "Action", ["Open World", "Driving", "DOS"],
+    "Vice City through the open-source DOS engine build — neon, bikes and bad decisions.",
+    "Arrows to walk and drive, Enter to get in and out of cars, Ctrl to fire. The whole city is open from the first mission.",
+    "https://dos.zone/grand-theft-auto-vice-city/", "external", true, IMG + "gta-vice-city.webp"],
+  ["doom", "Doom", "Shooter", ["FPS", "Classic", "DOS"],
+    "1993's Doom through the DOS.zone player — E1M1 and the rest of the show.",
+    "W A S D or the arrows to move, Ctrl to fire, Space to use doors, Shift to run, 1-7 to switch weapons.",
+    "https://dos.zone/doom-dec-1993/", "external", true, IMG + "doom.webp"],
+  ["doom2", "Doom II", "Shooter", ["FPS", "Classic", "DOS"],
+    "Hell on Earth — Doom II through the DOS.zone player.",
+    "W A S D to move, Ctrl to fire, Space to use, Shift to run, Tab for the map. The super shotgun is one key away.",
+    "https://dos.zone/doom-ii-oct-10-1994/", "external", true, IMG + "doom.webp"],
+  ["quake-dos", "Quake (DOS)", "Shooter", ["FPS", "Classic", "DOS"],
+    "The 1996 original through the DOS.zone player — before the ports, at the source.",
+    "W A S D to move, mouse to turn, Ctrl to fire, Space to jump, Enter to use. Click the frame first so it takes the keys.",
+    "https://dos.zone/quake-1996/", "external", true, IMG + "quake-art.webp"],
+  ["wolfenstein3d", "Wolfenstein 3D", "Shooter", ["FPS", "Classic", "DOS"],
+    "BJ's first escape from Castle Wolfenstein, straight in the browser.",
+    "Arrows to move and turn, Ctrl to fire, Alt to open doors and use, Shift to run, Space to open secret walls.",
+    "https://dos.zone/wolfenstein-3d-may-05-1992/", "external", true],
+  ["duke-nukem-3d", "Duke Nukem 3D", "Shooter", ["FPS", "Action", "DOS"],
+    "Groovy — Duke Nukem 3D through the DOS.zone player.",
+    "W A S D to move, Ctrl to fire, Space to kick and use, Enter to open, Alt to aim. Kick everything that moves.",
+    "https://dos.zone/duke-nukem-3d-1996/", "external", true],
 ];
 
 // Titles that carry more than one mirror. They stay a single card in the library;
@@ -601,9 +743,130 @@ const serverGames: Game[] = [
       { id: "arcade", label: "Server 2 — wasmarcade", url: "https://wasmarcade.com/gta3", external: true, note: "The arcade host blocks embedding, so this one opens in your own tab." },
     ],
   },
+  {
+    id: "world-at-war-zombies",
+    title: "World at War Zombies",
+    category: "Shooter",
+    tags: ["FPS", "Zombies", "Co-op", "Browser Ready"],
+    description: "The four original Call of Duty: World at War maps — Nacht der Untoten, Verrückt, Shi No Numa and Der Riese — with a second community build alongside.",
+    controls: "W A S D to move, mouse to aim, click to shoot, R to reload, F to buy doors and weapons. Hold the windows and watch the points.",
+    thumbnail: IMG + "cod-waw-zombies-art.webp",
+    sourceUrl: "https://waw.fun/",
+    type: "iframe",
+    heavy: true,
+    isNew: true,
+    servers: [
+      { id: "wawfun", label: "Server 1 — waw.fun", url: "https://waw.fun/", external: true, note: "The four original WaW maps — this host blocks embedding, so it opens in your own tab." },
+      { id: "concentric", label: "Server 2 — concentric", url: "https://zombies.concentric.live/", external: true, note: "The community build with Nacht, Verrückt and Kino der Toten, solo or with friends. It opens in your own tab too." },
+    ],
+  },
 ];
 
-export const games: Game[] = handOverPremium([
+// Cover art and extra mirrors handed over with the latest batch of titles.
+// `servers` append to whatever the card already carries and the whole row gets
+// renumbered; a mirror that refuses framing is marked `external`, so it hands
+// over its link instead of trying to load in this frame.
+type ServerAdd = { name: string; url: string; external?: boolean; lead?: boolean };
+type LibraryPatch = { thumbnail?: string; servers?: ServerAdd[] };
+
+const LIBRARY_PATCH: Record<string, LibraryPatch> = {
+  "gta-vicecity": { thumbnail: IMG + "gta-vice-city.webp", servers: [{ name: "Rabisco", url: "https://gta.rabisco.net/" }] },
+  gta3: { thumbnail: IMG + "gta-3.webp" },
+  "web-gta-chinatown": { thumbnail: IMG + "gta-chinatown-wars.webp" },
+  "gta-v": { thumbnail: IMG + "gta-v.webp", servers: [{ name: "pages.dev", url: "https://gta5-87g.pages.dev/" }] },
+  cs16: { thumbnail: IMG + "counter-strike.webp" },
+  "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
+  "proxy-tf2": { thumbnail: IMG + "team-fortress-2.webp" },
+  "halo-ce": { thumbnail: IMG + "halo-ce.webp" },
+  "halo-ce-mobile": { thumbnail: IMG + "halo-ce-mobile.webp" },
+  "web-halo-community": { thumbnail: IMG + "halo-ce.webp" },
+  // vel.gg/bo1z answers 451 (Unavailable For Legal Reasons) from some regions,
+  // so the healthy bsz mirror leads the row; bo1z stays selectable as Server 2.
+  "bo1-zombies": { thumbnail: IMG + "bo1-zombies.webp", servers: [{ name: "bsz", url: "https://vel.gg/bsz", lead: true }] },
+  "proxy-mw2": { thumbnail: IMG + "modern-warfare-2.webp", servers: [{ name: "iw4browse", url: "https://iw4browse.iw4b.workers.dev/" }] },
+  "proxy-doom2": { thumbnail: IMG + "doom.webp" },
+  "quake-episode-1": { thumbnail: IMG + "quake-art.webp", servers: [{ name: "pages.dev", url: "https://quake-srp.pages.dev/" }] },
+  "quake-3": { thumbnail: IMG + "quake-3.webp" },
+  "quake-2": { thumbnail: IMG + "quake-2.webp" },
+  "quake-1": { thumbnail: IMG + "quakeworld.webp" },
+  rtcw: { thumbnail: IMG + "rtcw.webp" },
+  "unreal-tournament": { thumbnail: IMG + "urban-terror.webp" },
+  "simpsons-hit-run": { thumbnail: IMG + "simpsons-hit-and-run.webp" },
+  diablo: { thumbnail: IMG + "diablo.webp" },
+  "proxy-minecraft": { thumbnail: IMG + "minecraft.webp" },
+  "skate-3": { thumbnail: IMG + "skate-3.webp" },
+  "cs-surf": { thumbnail: IMG + "surfd.webp" },
+  "pes-6": { thumbnail: IMG + "pes-6.webp" },
+  "pes-2011": { thumbnail: IMG + "pes-2011-art.webp", servers: [{ name: "optijuegos", url: "https://pes11.optijuegos.net/" }] },
+  "pes-2014": { thumbnail: IMG + "pes-2014-art.webp", servers: [{ name: "pes14.online", url: "https://pes14.online/", external: true }] },
+  "fifa-14": { thumbnail: IMG + "fifa-14-art.webp", servers: [{ name: "fifa14.online", url: "https://fifa14.online/", external: true }] },
+  "cricket-07": { thumbnail: IMG + "cricket-07-art.webp", servers: [{ name: "dhaiwat", url: "https://cricket07.dhaiwat.com/" }] },
+  "wwe-smackdown-raw-2011": { thumbnail: IMG + "wwe-svr-2011-art.webp" },
+  "tekken-5-dark-resurrection": { thumbnail: IMG + "tekken-5-dark-resurrection-art.webp", servers: [{ name: "tekkendr.live", url: "https://tekkendr.live/", external: true }] },
+  "nfs-most-wanted": { thumbnail: IMG + "nfs-most-wanted-art.webp", servers: [{ name: "lauta.site", url: "https://nfsmwested.lauta.site/" }] },
+  "nfs-underground-2": { thumbnail: IMG + "need-for-speed-underground-2-art.webp", servers: [{ name: "nfsunderground2.site", url: "https://nfsunderground2.site/", external: true }] },
+  "midnight-club-3-dub": { thumbnail: IMG + "midnight-club-3-art.webp", servers: [{ name: "midnighhtclub3.online", url: "https://midnighhtclub3.online/", external: true }] },
+  "web-dragonball-bt3": { thumbnail: IMG + "dragon-ball-bt3.webp" },
+  "super-monkey-ball": { thumbnail: IMG + "super-monkey-ball-art.webp" },
+  "proxy-flashgames": { thumbnail: IMG + "flash-games.webp" },
+  "proxy-arcadeclassics": { thumbnail: IMG + "arcade-classics.webp" },
+  "majesty-gold-hd": { thumbnail: IMG + "majesty-gold-hd-art.webp", servers: [{ name: "boland.co", url: "https://majesty.boland.co/" }] },
+  crimsonland: { thumbnail: IMG + "crimsonland-art.webp" },
+  "web-lego-island": { thumbnail: IMG + "lego-island.webp" },
+  "web-pokemon-redstone": { thumbnail: IMG + "pokemon-redstone.webp" },
+  "pokemon-games": { thumbnail: IMG + "pokemon-red-to-black-art.webp", servers: [{ name: "pokeweb", url: "https://pokeweb.morisoba.moe/", external: true }] },
+  "web-park-baron": { thumbnail: IMG + "park-baron.webp" },
+  "web-seedbed": { thumbnail: IMG + "seedbed.webp" },
+  portal: { thumbnail: IMG + "portal-art.webp" },
+  "snail-mail": { thumbnail: IMG + "snail-mail-art.webp" },
+  morrowind: { thumbnail: IMG + "morrowind-art.webp", servers: [{ name: "morrowind.app", url: "https://morrowind.app/", external: true }] },
+  "web-super-mario-zombies": { thumbnail: IMG + "super-mario-zombies.webp" },
+  "web-tweetcraft": { thumbnail: IMG + "tweetcraft.webp" },
+  "web-binding-isaac": { thumbnail: IMG + "binding-of-isaac.webp" },
+  "proxy-runescapeclassic": { thumbnail: IMG + "runescape-classic.webp" },
+};
+
+function hostLabel(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "main";
+  }
+}
+
+/** Folds LIBRARY_PATCH into a copy of the library: covers swap in, mirrors append and get renumbered. */
+function applyLibraryPatch(list: Game[]): Game[] {
+  return list.map((game) => {
+    const patch = LIBRARY_PATCH[game.id];
+    if (!patch) return game;
+
+    let servers = game.servers;
+    if (!servers && patch.servers) {
+      servers = [{ id: "main", label: `Server 1 — ${hostLabel(game.sourceUrl)}`, url: game.sourceUrl, external: Boolean(game.openInNewTab) }];
+    }
+    if (servers && patch.servers) {
+      const known = new Set(servers.map((server) => server.url));
+      let mirror = 0;
+      const marked = patch.servers
+        .filter((entry) => !known.has(entry.url))
+        .map((entry) => ({ id: `mirror-${++mirror}`, label: entry.name, url: entry.url, external: entry.external, lead: entry.lead }));
+      const leading = marked.filter((entry) => entry.lead).map(({ lead: _lead, ...entry }) => entry);
+      const trailing = marked.filter((entry) => !entry.lead).map(({ lead: _lead, ...entry }) => entry);
+      servers = [...leading, ...servers, ...trailing].map((server, index) => {
+        const name = server.label.split("—").slice(1).join("—").trim() || server.label;
+        return { ...server, label: `Server ${index + 1} — ${name}` };
+      });
+    }
+
+    return {
+      ...game,
+      ...(patch.thumbnail ? { thumbnail: patch.thumbnail } : {}),
+      ...(servers ? { servers } : {}),
+    };
+  });
+}
+
+export const games: Game[] = handOverPremium(applyLibraryPatch([
   {
     id: "gta-v",
     title: "Grand Theft Auto V",
@@ -904,7 +1167,7 @@ export const games: Game[] = handOverPremium([
     id: "moon-zombies",
     title: "Moon — Zombies",
     category: "Shooter",
-    tags: ["FPS", "Zombies", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Zombies", "Browser Ready"],
     description: "Fighting zombies on the Moon in a browser port of the fan favourite.",
     controls: "WASD to move, mouse to look, click to fire, R to reload. Mind the low gravity.",
     thumbnail: cover(62),
@@ -916,7 +1179,7 @@ export const games: Game[] = handOverPremium([
     id: "kino-der-toten",
     title: "Kino der Toten",
     category: "Shooter",
-    tags: ["FPS", "Zombies", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Zombies", "Browser Ready"],
     description: "The classic theatre map, playable straight in this frame.",
     controls: "WASD to move, mouse to aim, click to shoot, R to reload, F to buy doors off the wall.",
     thumbnail: cover(63),
@@ -928,7 +1191,7 @@ export const games: Game[] = handOverPremium([
     id: "bo3-cheese-cube",
     title: "BO3 Cheese Cube",
     category: "Shooter",
-    tags: ["FPS", "Arena", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Arena", "Browser Ready"],
     description: "A tight Black Ops 3 arena built around one cheese cube objective.",
     controls: "WASD to move, mouse to aim, click to shoot, Shift to sprint, R to reload.",
     thumbnail: cover(64),
@@ -940,7 +1203,7 @@ export const games: Game[] = handOverPremium([
     id: "black-ops-2",
     title: "Black Ops 2",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "Black Ops 2 running as a browser port. Drop in and start the campaign.",
     controls: "WASD to move, mouse to aim, click to shoot, R to reload, Space to vault.",
     thumbnail: cover(65),
@@ -952,7 +1215,7 @@ export const games: Game[] = handOverPremium([
     id: "skate-3",
     title: "Skate 3",
     category: "Sports",
-    tags: ["Skateboarding", "Open World", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["Skateboarding", "Open World", "Browser Ready"],
     description: "Kickflip, grind and bail your way across Skate 3 in a browser port.",
     controls: "Arrow keys or WASD to push and steer, use the trick keys to ollie and grind.",
     thumbnail: cover(66),
@@ -964,7 +1227,7 @@ export const games: Game[] = handOverPremium([
     id: "cs-surf",
     title: "Counter-Strike Surf",
     category: "Shooter",
-    tags: ["FPS", "Surf", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Surf", "Browser Ready"],
     description: "Surf the angled ramps and race the clock in this browser CS build.",
     controls: "WASD to move, mouse to steer, hold Strafe into the ramp. Scroll to switch weapons.",
     thumbnail: cover(67),
@@ -976,7 +1239,7 @@ export const games: Game[] = handOverPremium([
     id: "halo-ce",
     title: "Halo — Combat Evolved",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "The original Halo campaign, ported to the browser.",
     controls: "WASD to move, mouse to look, click to fire, R to reload, F for melee and grenades.",
     thumbnail: cover(68),
@@ -988,7 +1251,7 @@ export const games: Game[] = handOverPremium([
     id: "halo-ce-mobile",
     title: "Halo CE — Mobile Edition",
     category: "Shooter",
-    tags: ["FPS", "Touch", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Touch", "Browser Ready"],
     description: "Halo Combat Evolved built for touch controls and smaller screens.",
     controls: "Left thumb to move, right thumb to look. Tap to fire and use the on-screen buttons.",
     thumbnail: cover(69),
@@ -1000,7 +1263,7 @@ export const games: Game[] = handOverPremium([
     id: "pes-6",
     title: "Pro Evolution Soccer 6",
     category: "Sports",
-    tags: ["Football", "Classic", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["Football", "Classic", "Browser Ready"],
     description: "PES 6 in the browser. The classic that still plays.",
     controls: "Arrow keys to move and pass, A to shoot, D to through ball, S to sprint.",
     thumbnail: cover(70),
@@ -1028,7 +1291,7 @@ export const games: Game[] = handOverPremium([
     id: "quake-1",
     title: "Quake",
     category: "Shooter",
-    tags: ["FPS", "Classic", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Classic", "Browser Ready"],
     description: "The original 1996 Quake, running in this frame.",
     controls: "WASD to move, mouse to aim, click to shoot, Space to jump, E to use.",
     thumbnail: cover(72),
@@ -1040,7 +1303,7 @@ export const games: Game[] = handOverPremium([
     id: "quake-2",
     title: "Quake 2",
     category: "Shooter",
-    tags: ["FPS", "Classic", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Classic", "Browser Ready"],
     description: "Quake 2 brought to the browser with the same brutal pacing.",
     controls: "WASD to move, mouse to aim, click to fire, Space to jump, F to enter machines.",
     thumbnail: cover(73),
@@ -1068,7 +1331,7 @@ export const games: Game[] = handOverPremium([
     id: "rtcw",
     title: "Return to Castle Wolfenstein",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "B.J. Blazkowicz breaks out again, in a browser build of RTCW.",
     controls: "WASD to move, mouse to aim, click to shoot, R to reload, F for levers and doors.",
     thumbnail: cover(75),
@@ -1078,11 +1341,11 @@ export const games: Game[] = handOverPremium([
   },
   {
     id: "unreal-tournament",
-    title: "Unreal Tournament",
+    title: "Urban Terror",
     category: "Shooter",
-    tags: ["FPS", "Arena", "Browser Ready", "ZZZZ_REMOVE"],
-    description: "The 1999 arena classic, online bots and all, in this frame.",
-    controls: "WASD to move, mouse to aim, click to fire, Space to jump, Q and E to switch weapons.",
+    tags: ["FPS", "Team Shooter", "Browser Ready"],
+    description: "The free Quake-engine shooter — urban maps, a full weapon set and team games, running in this frame.",
+    controls: "WASD to move, mouse to aim, click to fire, Space to jump, R to reload. Click the frame first so it takes the keys.",
     thumbnail: cover(76),
     sourceUrl: "https://ut.pieter.com",
     type: "iframe",
@@ -1092,7 +1355,7 @@ export const games: Game[] = handOverPremium([
     id: "half-life",
     title: "Half-Life",
     category: "Shooter",
-    tags: ["FPS", "Campaign", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["FPS", "Campaign", "Browser Ready"],
     description: "Gordon Freeman's shift at Black Mesa, ported to the browser.",
     controls: "WASD to move, mouse to look, click to use objects and fire, R to reload, 1-6 for weapons.",
     thumbnail: cover(77),
@@ -1104,7 +1367,7 @@ export const games: Game[] = handOverPremium([
     id: "diablo",
     title: "Diablo",
     category: "Action",
-    tags: ["RPG", "Hack and Slash", "Browser Ready", "ZZZZ_REMOVE"],
+    tags: ["RPG", "Hack and Slash", "Browser Ready"],
     description: "Descend into the cathedral and clear the dungeons in a browser port.",
     controls: "Click to move and attack, number keys for skills. Loot everything you find.",
     thumbnail: cover(79),
@@ -1128,7 +1391,7 @@ export const games: Game[] = handOverPremium([
     // Hosts that refuse framing hand the player the link instead.
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
   })),    ...serverGames,
-    ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy], index): Game => ({
+    ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy, image], index): Game => ({
     id,
     title,
     category,
@@ -1136,19 +1399,19 @@ export const games: Game[] = handOverPremium([
     description,
     controls,
     sourceUrl,
-    thumbnail: cover(500 + index),
+    thumbnail: image ?? cover(500 + index),
     type,
     heavy,
     isNew: true,
     // Hosts that refuse framing hand their link over instead of loading here.
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
   })),
-]);
+]));
 
 
 export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
 
-export const allGames: Game[] = handOverPremium([
+export const allGames: Game[] = handOverPremium(applyLibraryPatch([
   ...games,
   ...localGames.map(([title, category, tags, description, controls], index): Game => {
     const id = localSlugs[index];
@@ -1165,5 +1428,5 @@ export const allGames: Game[] = handOverPremium([
       htmlGame: true,
       isNew: id === "51-starfighter-si-01",    };
   }),
-]);
+]));
 
