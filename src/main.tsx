@@ -8,6 +8,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RequireAuth } from "./components/RequireAuth";
+import { initTheme, THEME_CHANGE_EVENT } from "./lib/themes";
 import Dashboard from "./pages/Dashboard";
 import "./index.css";
 
@@ -48,6 +49,29 @@ const STAR_AREA_PER_STAR = 110000;
 const FRAME_MS = 32; // ~30fps ceiling, plenty for a parallax starfield
 const IDLE_MS = 1600; // the loop stops completely once the user stops moving
 
+/** Reads the active palette's star colours off the CSS tokens, so the field
+ *  follows whichever theme is selected instead of staying pink and blue. */
+function readStarTints() {
+  const styles = getComputedStyle(document.documentElement);
+  const toRgb = (token: string, fallback: string) => {
+    const value = styles.getPropertyValue(token).trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(value)) return fallback;
+    const hex = Number.parseInt(value.slice(1), 16);
+    return `${(hex >> 16) & 255}, ${(hex >> 8) & 255}, ${hex & 255}`;
+  };
+  return {
+    hot: toRgb("--si-star-hot", "255, 111, 145"),
+    cool: toRgb("--si-star-cool", "107, 177, 255"),
+  };
+}
+
+/** Every 9th star pops, every 5th cools, the rest stay pale. */
+function starTint(index: number, tints: ReturnType<typeof readStarTints>): string {
+  if (index % 9 === 0) return tints.hot;
+  if (index % 5 === 0) return tints.cool;
+  return "210, 220, 255";
+}
+
 /** One canvas + one pooled trail, one rAF loop, and it only runs while you interact. */
 function Backdrop() {
   const location = useLocation();
@@ -66,14 +90,23 @@ function Backdrop() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const canTrail = !reducedMotion && window.matchMedia("(pointer: fine)").matches;
     const starCount = Math.round(Math.min(140, Math.max(40, (window.innerWidth * window.innerHeight) / STAR_AREA_PER_STAR)));
+    const initialTints = readStarTints();
     const stars = Array.from({ length: starCount }, (_, index) => ({
       x: Math.random() * 2.4 - 1.2,
       y: Math.random() * 2.4 - 1.2,
       z: 0.18 + Math.random() * 1.35,
       depth: 0.25 + Math.random() * 1.15,
       size: 0.7 + Math.random() * 2.4,
-      tint: index % 9 === 0 ? "255, 111, 145" : index % 5 === 0 ? "107, 177, 255" : "210, 220, 255",
+      tint: starTint(index, initialTints),
     }));
+
+    /** Re-tint the field when the player switches palette. */
+    const handleThemeChange = () => {
+      const next = readStarTints();
+      stars.forEach((star, index) => {
+        star.tint = starTint(index, next);
+      });
+    };
 
     const dots = canTrail && trail
       ? Array.from({ length: TRAIL_LENGTH }, () => {
@@ -232,6 +265,7 @@ function Backdrop() {
 
     resize();
     draw(performance.now());
+    window.addEventListener(THEME_CHANGE_EVENT, handleThemeChange);
     if (!reducedMotion) {
       window.addEventListener("resize", resize);
       window.addEventListener("pointermove", handlePointer, { passive: true });
@@ -244,6 +278,7 @@ function Backdrop() {
 
     return () => {
       window.cancelAnimationFrame(frame);
+      window.removeEventListener(THEME_CHANGE_EVENT, handleThemeChange);
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", handlePointer);
       window.removeEventListener("scroll", handleScroll);
@@ -412,6 +447,9 @@ function AppBootstrap() {
     </ConvexAuthProvider>
   );
 }
+
+// Stamp the saved colour palette on <html> before the first paint.
+initTheme();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

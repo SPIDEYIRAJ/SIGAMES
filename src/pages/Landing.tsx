@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router";
 import { categories, games, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
+import ThemePicker from "@/components/ThemePicker";
 
 const PAGE_SIZE = 18;
 const SORTS = [
@@ -77,8 +78,8 @@ export default function Landing() {
   const [category, setCategory] = useState("All Games");
   const [sortBy, setSortBy] = useState<SortValue>("featured");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [recent, setRecent] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<string[]>(() => readStoredGames("si-games-favorites"));
+  const [recent, setRecent] = useState<string[]>(() => readStoredGames("si-games-recent"));
   const [toast, setToast] = useState("");
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -86,9 +87,19 @@ export default function Landing() {
   const htmlCount = useMemo(() => games.filter((game) => game.htmlGame).length, []);
   const heavyCount = useMemo(() => games.filter((game) => game.heavy).length, []);
 
-  useEffect(() => {
-    setFavorites(readStoredGames("si-games-favorites"));
-    setRecent(readStoredGames("si-games-recent"));
+  /** Every filter change starts the grid over at the first page — reset here,
+   * next to the setter, instead of watching the filters from an effect. */
+  const applyQuery = useCallback((value: string) => {
+    setQuery(value);
+    setVisibleCount(PAGE_SIZE);
+  }, []);
+  const applyCategory = useCallback((value: string) => {
+    setCategory(value);
+    setVisibleCount(PAGE_SIZE);
+  }, []);
+  const applySortBy = useCallback((value: SortValue) => {
+    setSortBy(value);
+    setVisibleCount(PAGE_SIZE);
   }, []);
 
   useEffect(() => {
@@ -96,10 +107,6 @@ export default function Landing() {
     const timeout = window.setTimeout(() => setToast(""), 2200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
-
-  useEffect(() => {
-    setVisibleCount(PAGE_SIZE);
-  }, [query, category, sortBy]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -110,13 +117,13 @@ export default function Landing() {
         searchInputRef.current?.focus();
       }
       if (event.key === "Escape" && document.activeElement === searchInputRef.current) {
-        setQuery("");
+        applyQuery("");
         searchInputRef.current?.blur();
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [applyQuery]);
 
   useEffect(() => {
     let frame = 0;
@@ -210,14 +217,19 @@ export default function Landing() {
         </div>
       </div>
       <header className="site-header">
-        <a className="brand" href="#top" aria-label="SI GAMES home"><BrandMark /><span>SI GAMES</span></a>
-        <nav className="desktop-nav" aria-label="Main navigation">
-          <a href="#library">Library</a>
-          <a href="#favorites">Favorites</a>
-          <a href="#about">About</a>
-          <a href="/developers">Developers</a>
-        </nav>
-        <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
+        {/* The wrapper the header CSS has always targeted: it centres the row
+            on desktop and keeps brand, nav, status and theme picker inline. */}
+        <div className="header-inner">
+          <a className="brand" href="#top" aria-label="SI GAMES home"><BrandMark /><span>SI GAMES</span></a>
+          <nav className="desktop-nav" aria-label="Main navigation">
+            <a href="#library">Library</a>
+            <a href="#favorites">Favorites</a>
+            <a href="#about">About</a>
+            <a href="/developers">Developers</a>
+          </nav>
+          <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
+          <ThemePicker />
+        </div>
       </header>
 
       <main id="top">
@@ -269,12 +281,12 @@ export default function Landing() {
           </div>
           <div className="library-toolbar">
             <div className="toolbar-row">
-              <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
-              <label className="sort-box" htmlFor="game-sort"><span>Sort</span><select id="game-sort" value={sortBy} onChange={(event) => setSortBy(event.target.value as SortValue)}>{SORTS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+              <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => applyQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button type="button" onClick={() => applyQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
+              <label className="sort-box" htmlFor="game-sort"><span>Sort</span><select id="game-sort" value={sortBy} onChange={(event) => applySortBy(event.target.value as SortValue)}>{SORTS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
             </div>
-            <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button type="button" role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)}>{item}</button>)}</div>
+            <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button type="button" role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => applyCategory(item)}>{item}</button>)}</div>
           </div>
-          {visibleGames.length > 0 ? <div className="game-grid">{visibleGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { setQuery(""); setCategory("All Games"); }}>Reset library</button></div>}
+          {visibleGames.length > 0 ? <div className="game-grid">{visibleGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { applyQuery(""); applyCategory("All Games"); }}>Reset library</button></div>}
           {remainingCount > 0 && <div className="load-more"><button type="button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>Load {Math.min(PAGE_SIZE, remainingCount)} more <ArrowRight size={15} /></button><span>{remainingCount} still in the hangar</span></div>}
         </section>
 

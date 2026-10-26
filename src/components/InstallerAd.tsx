@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArrowRight, X, Zap } from "lucide-react";
 
 const INSTALLER_URL = "https://spideyirajinstaller.freebuff.app/";
@@ -9,15 +9,14 @@ const STORAGE_KEY = "si-installer-ad-dismissed";
  * zero blur — it is meant to hit like a system alert, not melt into the page.
  */
 export default function InstallerAd() {
-  const [dismissed, setDismissed] = useState(true);
-
-  useEffect(() => {
+  // Read the dismissal flag once at mount — no state sync needed in an effect.
+  const [dismissed, setDismissed] = useState(() => {
     try {
-      setDismissed(localStorage.getItem(STORAGE_KEY) === "1");
+      return localStorage.getItem(STORAGE_KEY) === "1";
     } catch {
-      setDismissed(false);
+      return false;
     }
-  }, []);
+  });
 
   if (dismissed) return null;
 

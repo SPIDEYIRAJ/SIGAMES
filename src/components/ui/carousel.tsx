@@ -88,17 +88,34 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api || !setApi) return
-    setApi(api)
+    // Hand the embla handle over after the effect settles rather than from its
+    // body: the parent only needs the instance to drive the carousel, and a
+    // synchronous state update here would cascade an extra render pass.
+    let cancelled = false
+    queueMicrotask(() => {
+      if (!cancelled) setApi(api)
+    })
+    return () => {
+      cancelled = true
+    }
   }, [api, setApi])
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
     api.on("reInit", onSelect)
     api.on("select", onSelect)
+    // Read the current scroll flags once the effect settles: the listeners
+    // above already cover every later change, and a synchronous state update
+    // in the body would cascade a render pass.
+    let cancelled = false
+    queueMicrotask(() => {
+      if (!cancelled) onSelect(api)
+    })
 
     return () => {
-      api?.off("select", onSelect)
+      cancelled = true
+      api.off("select", onSelect)
+      api.off("reInit", onSelect)
     }
   }, [api, onSelect])
 

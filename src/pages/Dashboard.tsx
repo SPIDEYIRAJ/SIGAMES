@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { Navigate, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { LayoutDashboard, LogOut } from "lucide-react";
 import { useEffect } from "react";
 

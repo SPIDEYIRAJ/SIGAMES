@@ -302,18 +302,24 @@ function ReportDialog({ gameId, gameTitle, onClose }: { gameId: string; gameTitl
 
 export default function GamePlayer() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   /** Standalone routes carry the game id in the path itself (/gta-v, /gta-vicecity). */
   const pathSegment = decodeURIComponent(pathname.replace(/^\/+/, "").split("/")[0] ?? "");
   const resolvedId = id ?? (games.some((item) => item.id === pathSegment) ? pathSegment : STANDALONE_DEFAULT);
+  // Keyed by title: switching games remounts the player, so every title starts
+  // from a clean slate instead of resetting state inside an effect.
+  return <GamePlayerView key={resolvedId} resolvedId={resolvedId} />;
+}
+
+function GamePlayerView({ resolvedId }: { resolvedId: string }) {
+  const navigate = useNavigate();
   const game = useMemo(() => games.find((item) => item.id === resolvedId), [resolvedId]);
-  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<string[]>(readFavorites);
   const [loading, setLoading] = useState(true);
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
   const [isImmersive, setIsImmersive] = useState(false);
   const [isNativeFullscreen, setIsNativeFullscreen] = useState(false);
-  const [showFsPrompt, setShowFsPrompt] = useState(false);
+  const [showFsPrompt, setShowFsPrompt] = useState(() => (game ? !game.standalone : false));
   const [showReport, setShowReport] = useState(false);
   // For titles with a server picker: the URL chosen at the entrance.
   const [playUrl, setPlayUrl] = useState<string | null>(null);
@@ -367,10 +373,6 @@ export default function GamePlayer() {
   }, []);
 
   useEffect(() => {
-    setFavorites(readFavorites());
-  }, []);
-
-  useEffect(() => {
     const handleFullscreenChange = () => {
       setIsNativeFullscreen(Boolean(document.fullscreenElement));
       if (!document.fullscreenElement) setIsImmersive(false);
@@ -390,16 +392,8 @@ export default function GamePlayer() {
     }
     const next = [game.id, ...previous.filter((item) => item !== game.id)].slice(0, 6);
     localStorage.setItem("si-games-recent", JSON.stringify(next));
-    setLoading(true);
-    // Pressing PLAY always offers fullscreen first — it is the option, never a forced jump.
-    setShowFsPrompt(!game.standalone);
-    setShowExtension(Boolean(game.extensionNotice));
-    // A game that offers several servers, or hands over a link, opens at the
-    // entrance so the player can choose; everything else loads straight in.
-    setLaunched(!game.standalone && !game.openInNewTab && game.type !== "external" && !hasServerChoice(game));
-    setPlayUrl(null);
-    setServerId(null);
-    setModeId(null);
+    // The launch state itself (loading, fullscreen offer, server, mode) is all
+    // initialised in useState above — this only records the visit.
   }, [game]);
 
   /** Standalone pages describe the title first, then either load the frame or hand over. */

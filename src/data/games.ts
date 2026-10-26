@@ -700,6 +700,31 @@ const linkedGames: LinkedGame[] = [
     "Groovy — Duke Nukem 3D through the DOS.zone player.",
     "W A S D to move, Ctrl to fire, Space to kick and use, Enter to open, Alt to aim. Kick everything that moves.",
     "https://dos.zone/duke-nukem-3d-1996/", "external", true],
+  // ── Latest additions: six titles that load straight into this frame ──────
+  ["slither-io", "Slither.io", "Arcade", [".io", "Multiplayer", "Snake"],
+    "Eat the glowing orbs, coil around the stragglers and grow the longest snake on the server.",
+    "Steer with the mouse or your finger — the snake follows it wherever you go. Hold click (or Space) to burn mass for a burst of speed; use it to cut someone off, not to cruise.",
+    "https://slither.io/", "iframe", false],
+  ["shellshock-io", "Shell Shockers", "Shooter", ["FPS", "Multiplayer", "Eggs"],
+    "First-person egg warfare: crack the other team before anyone cracks you.",
+    "W A S D to move, mouse to aim, click to fire, R to reload, 1-4 to swap weapons. Pick your class from the lobby before you spawn.",
+    "https://shellshock.io/", "iframe", true],
+  ["surviv-io", "Surviv.io", "Shooter", ["Battle Royale", "Top Down", "Multiplayer"],
+    "A top-down battle royale: loot the buildings, out-shoot the room and be the last player standing.",
+    "W A S D to move, mouse to aim, click to fire, R to reload, E to pick up gear, Tab for the full map. Loot fast — the storm closes in.",
+    "https://surviv.io/", "iframe", true],
+  ["sandspiel", "Sandspiel", "Sandbox", ["Physics", "Creative", "Falling Sand"],
+    "A falling-sand toybox: pour water, grow plants, set fires and watch the elements argue with each other.",
+    "Pick an element from the bar (or the number keys), then click and drag on the grid to pour it. Right-click erases, and the bottom row holds the sand you have already dropped.",
+    "https://sandspiel.club/", "iframe", false],
+  ["hextris", "Hextris", "Puzzle", ["Stacking", "Reflex", "Rhythm"],
+    "Rotate the hexagon and slot incoming blocks onto its sides — the stack speeds up the longer you last.",
+    "Left and Right arrows (or A and D) rotate the hexagon. Line up three of the same colour on one side to clear them.",
+    "https://hextris.github.io/", "iframe", false],
+  ["skribbl-io", "Skribbl.io", "Party", ["Drawing", "Guessing", "Multiplayer"],
+    "One player draws, the whole lobby races to guess it — word chaos in a room of strangers or friends.",
+    "Draw with the mouse in the canvas, type guesses into the chat box and press Enter. Room codes let you bring your own lobby along.",
+    "https://skribbl.io/", "iframe", false],
 ];
 
 // Titles that carry more than one mirror. They stay a single card in the library;
@@ -853,8 +878,10 @@ function applyLibraryPatch(list: Game[]): Game[] {
       const marked = patch.servers
         .filter((entry) => !known.has(entry.url))
         .map((entry) => ({ id: `mirror-${++mirror}`, label: entry.name, url: entry.url, external: entry.external, lead: entry.lead }));
-      const leading = marked.filter((entry) => entry.lead).map(({ lead: _lead, ...entry }) => entry);
-      const trailing = marked.filter((entry) => !entry.lead).map(({ lead: _lead, ...entry }) => entry);
+      // `lead` is only a marker for this reordering step, so it is dropped here.
+      const toServer = ({ id, label, url, external }: { id: string; label: string; url: string; external?: boolean; lead?: boolean }): GameServer => ({ id, label, url, external });
+      const leading = marked.filter((entry) => entry.lead).map(toServer);
+      const trailing = marked.filter((entry) => !entry.lead).map(toServer);
       servers = [...leading, ...servers, ...trailing].map((server, index) => {
         const name = server.label.split("—").slice(1).join("—").trim() || server.label;
         return { ...server, label: `Server ${index + 1} — ${name}` };

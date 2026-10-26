@@ -1,0 +1,119 @@
+SI GAMES — changes.log
+======================
+Newest entry first. Markers: FIX = something broken, ADD = new thing,
+CHG = behaviour changed, DEL = removed.
+
+2026-10-26 — code health, colour themes, six new titles
+-------------------------------------------------------
+
+ADD  Colour themes (6 palettes, header switcher)
+     The whole shell now paints from CSS custom properties instead of
+     hardcoded hex: --si-accent*, --si-glow*, --si-bg, --si-panel* etc.
+     A theme is only a re-declaration of those tokens on
+     :root[data-theme="…"], so one rule set recolours cards, buttons,
+     borders, the player, the boot screen and the launch pages.
+       · Nebula  — neon blue / violet (the original palette, unchanged)
+       · Plasma  — violet / hot pink
+       · Crimson — red / amber
+       · Tidal   — azure / aqua
+       · Toxic   — green / lime
+       · Solar   — orange / gold
+     Switcher: src/components/ThemePicker.tsx (header, next to the status
+     line). Logic: src/lib/themes.ts. Selection persists in localStorage
+     under "si-games-theme" and is applied before first paint from
+     main.tsx, so there is no flash of the wrong palette. The browser
+     chrome (theme-color meta) follows the active theme, and the landing
+     starfield re-tints itself too (--si-star-hot / --si-star-cool, plus a
+     "si-theme-change" window event from applyTheme()).
+
+ADD  Six new titles to the library (all verified reachable and served
+     without X-Frame-Options / frame-ancestors, so they load in-frame):
+       · Slither.io      — slither.io        (Arcade, .io)
+       · Shell Shockers  — shellshock.io     (Shooter, FPS)
+       · Surviv.io       — surviv.io         (Shooter, Battle Royale)
+       · Sandspiel       — sandspiel.club    (Sandbox, falling sand)
+       · Hextris         — hextris.github.io (Puzzle, stacking)
+       · Skribbl.io      — skribbl.io        (Party, drawing)
+     Each carries a description, a real control map and a generated star
+     cover (no new remote image dependencies).
+
+FIX  Header layout — the stylesheet has always targeted a
+     `.site-header .header-inner` wrapper (the mobile breakpoint sets its
+     width) but no such element existed, so brand, nav and status rendered
+     as full-width blocks stacked flush against the viewport edge. The
+     wrapper is back in Landing.tsx, laid out as a centred flex row on
+     desktop (min(1120px, 100% - 40px), matching the main column) and
+     keeping the existing mobile width rule working.
+
+FIX  Lint went from 12 errors to 0 (`bun run lint` now exits clean; the
+     remaining 21 warnings are the pre-existing react-refresh notices on
+     template/vendor files):
+       · Dashboard.tsx      — dropped unused CardDescription + Navigate
+                              imports.
+       · games.ts           — applyLibraryPatch destructured a `lead`
+                              marker it never used (x2); replaced with an
+                              explicit id/label/url/external projection.
+       · Landing.tsx        — favorites/recent were read from localStorage
+                              in a mount effect (setState-in-effect); they
+                              are now lazy useState initialisers. The
+                              "reset pagination when filters change"
+                              effect became applyQuery / applyCategory /
+                              applySortBy callbacks, so paging resets
+                              exactly where the filter changes.
+       · GamePlayer.tsx     — the [game] effect synchronised six pieces of
+                              state on every title change. The player is
+                              now keyed by resolvedId, so switching games
+                              remounts it: all of that state is initial
+                              state again, and the effect only records the
+                              visit in "si-games-recent". Favorites also
+                              moved to a lazy initialiser.
+       · InstallerAd.tsx    — dismissal flag read from localStorage in an
+                              effect → lazy initialiser; useEffect import
+                              removed.
+       · use-mobile.ts      — window.matchMedia + setState-in-effect →
+                              useSyncExternalStore (subscribes properly,
+                              no state sync in the body).
+       · ui/carousel.tsx    — setApi and the first scroll-flag read were
+                              synchronous setState in effect bodies; both
+                              now hand over after the effect settles. The
+                              "reInit" listener was registered but never
+                              removed — cleanup now offs it too.
+       · ui/sidebar.tsx     — SidebarMenuSkeleton called Math.random()
+                              inside a useMemo during render; the width is
+                              now picked once per instance in a lazy
+                              useState initialiser.
+
+CHG  src/index.css and src/player-prompt.css: every accent, glow, panel and
+     surface hex (5608f8, 3efeff, 4320e0, 0d1527, 060e22, 131e36, 182645,
+     1a2b55, 0a142e, 101a35, 1e2d55, 7ff9ff …) now resolves through a
+     token, including the translucent variants (--si-accent-18 … -88,
+     --si-glow-12 … -40). Neutral values (text greys, the yellow SI
+     Installer block, dark overlays) were deliberately left alone.
+
+
+Earlier sessions (recorded here after the fact)
+-----------------------------------------------
+
+· GTA V — the mode picker was removed from the main card; the title now
+  carries two servers on one page:
+      Server 1 — SI Premium    https://sigamespremiumrp.spideyiraj1925.workers.dev/
+      Server 2 — GTA V V2      https://v1-game.playgta5.pro/
+  Server 2 offers the mode presets Story Mode (?mode=story), Sandbox
+  (?mode=sandbox), GTA VI Map (?mode=sandbox&map=env_test), Chromebook
+  (?mode=chromebook&play=story) and the plain title screen (?mode=).
+  The cdn.playgta5.pro address is no longer referenced anywhere.
+
+· Every sigamespremiumrp.spideyiraj1925.workers.dev URL (the GTA V servers
+  included) is handed over as a link and opens in the player's own tab
+  instead of the in-page frame — enforced centrally in handOverPremium(),
+  so a new entry on that host is covered automatically.
+
+· Sports / racing trio added, each pointing at its own host:
+      Cricket 07          https://cricket.playgta5.pro
+      NFS: Most Wanted    https://nfs.playgta5.pro
+      Road Rash           https://roadrash.playgta5.pro/play.html
+  Road Rash controls are recorded on its card: accelerate = up arrow,
+  steer = left/right, punch = Space, kick = K, pause = Esc.
+
+· Eaglercraft keeps its extension notice, shown only for that title and
+  always skippable (Esc or "Continue without extension").
