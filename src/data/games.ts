@@ -914,8 +914,11 @@ function redactText(text: string): string {
   return text.replace(URL_IN_TEXT, REDACTED);
 }
 
-/** Server cards keep their friendly name; a bare hostname behind the dash is dropped. */
+/** Server cards read as `Server 1`, `Server 2` and nothing else: the friendly
+ * suffix behind the dash (host name, build name) never reaches the interface. */
 function redactLabel(label: string): string {
+  const numbered = label.match(/^server\s+\d+/i);
+  if (numbered) return `Server ${numbered[0].match(/\d+/)![0]}`;
   return redactText(label).replace(/\s*[—–-]\s*•+\s*$/, "").trim() || "Server";
 }
 
@@ -961,7 +964,7 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     openInNewTab: true,
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
     servers: [
-      { id: "playgta5", label: "Server 1 — SI Premium", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The main GTA V build, served through the SI premium proxy." },
+      { id: "playgta5", label: "Server 1", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The main GTA V build." },
       {
         id: "gta5v2",
         label: "Server 2 — GTA V V2",
