@@ -773,7 +773,10 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   "gta-vicecity": { thumbnail: IMG + "gta-vice-city.webp", servers: [{ name: "Rabisco", url: "https://gta.rabisco.net/" }] },
   gta3: { thumbnail: IMG + "gta-3.webp" },
   "web-gta-chinatown": { thumbnail: IMG + "gta-chinatown-wars.webp" },
-  "gta-v": { thumbnail: IMG + "gta-v.webp", servers: [{ name: "pages.dev", url: "https://gta5-87g.pages.dev/" }] },
+  "gta-v": {
+    thumbnail: IMG + "gta-v.webp",
+    servers: [{ name: "pages.dev", url: "https://gta5-87g.pages.dev/", external: true }],
+  },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
   "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
   "proxy-tf2": { thumbnail: IMG + "team-fortress-2.webp" },
