@@ -92,11 +92,9 @@ Creator and developer of SI GAMES.
 
 ⸻
 
-📜 License
+📜 Sources:
+50 HTML games : https://github.com/he-is-talha/html-css-javascript-games
 
-A license has not been specified yet. Add a LICENSE file to define how this project’s source code may be used, modified, and distributed.
-
-Third-party games, trademarks, and assets may be subject to their own licenses and terms.
 
 ⸻
 
