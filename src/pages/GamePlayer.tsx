@@ -151,9 +151,6 @@ const REPORT_INBOX = "spideyiraj1925@gmail.com";
  * input shows that modified link, and the copy button hands it to the
  * clipboard.
  */
-/** Seconds the player waits after copying before the new tab opens with the copied link. */
-const OPEN_COUNTDOWN_SECONDS = 3;
-
 /** Every title resolves to a server list; single-host games just wrap their own URL. */
 function serversFor(game: Game): GameServer[] {
   if (game.servers?.length) return game.servers;
@@ -355,40 +352,19 @@ export default function GamePlayer() {
     setFrameKey((key) => key + 1);
   }, []);
 
-  /** After a copy: count down, then open the copied URL (never about:blank) in a new tab. */
-  const [pendingOpen, setPendingOpen] = useState<{ link: string; seconds: number } | null>(null);
-  const [openBlocked, setOpenBlocked] = useState(false);
-
+  /** Copies the link only — no tab ever opens on its own, so the player decides
+   * when to open a new tab and paste the link there. */
   const copyLink = useCallback(async (link: string) => {
-    setOpenBlocked(false);
     try {
       await navigator.clipboard.writeText(link);
       setLinkCopied(true);
-      window.setTimeout(() => setLinkCopied(false), 2500);
-      setPendingOpen({ link, seconds: OPEN_COUNTDOWN_SECONDS });
+      window.setTimeout(() => setLinkCopied(false), 4000);
     } catch {
       // Clipboard can be blocked (permission or non-secure context) — select
       // the field so the player can copy it manually.
       linkInputRef.current?.select();
     }
   }, []);
-
-  /** Ticks the countdown once a second; opens the copied link when it reaches zero. */
-  useEffect(() => {
-    if (!pendingOpen) return;
-    const finishing = pendingOpen.seconds <= 1;
-    const delay = pendingOpen.seconds <= 0 ? 0 : 1000;
-    const timer = window.setTimeout(() => {
-      if (!finishing) {
-        setPendingOpen((current) => (current ? { ...current, seconds: current.seconds - 1 } : current));
-        return;
-      }
-      const opened = window.open(pendingOpen.link, "_blank");
-      if (!opened) setOpenBlocked(true);
-      setPendingOpen(null);
-    }, delay);
-    return () => window.clearTimeout(timer);
-  }, [pendingOpen]);
 
   useEffect(() => {
     setFavorites(readFavorites());
@@ -667,16 +643,9 @@ export default function GamePlayer() {
             <div className="launch-actions">
               <div className="copy-link">
                 <span className="copy-link-label"><Save size={13} /> Your link</span>
-                {pendingOpen && (
-                  <span className="copy-open-countdown" role="status">
-                    Opening the copied link in a new tab in {pendingOpen.seconds}…
-                  </span>
-                )}
-                {openBlocked && (
-                  <span className="copy-open-blocked" role="alert">
-                    Your browser blocked the new tab — paste the copied link manually.
-                  </span>
-                )}
+                <span className="copy-open-hint" role="status">
+                  Nothing opens by itself — copy the link, open a new tab (Ctrl / ⌘ + T), then paste it there.
+                </span>
                 <div className="copy-link-row">
                   <input
                     ref={linkInputRef}
@@ -691,10 +660,10 @@ export default function GamePlayer() {
                     className="launch-play copy-link-btn"
                     onClick={() => copyLink(launchLink)}
                   >
-                    {linkCopied || pendingOpen ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {pendingOpen ? `Opening in ${pendingOpen.seconds}s…` : linkCopied ? "Copied!" : "Copy & open new tab"}
+                    {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied — paste in a new tab" : "Copy link"}
                   </button>
                 </div>
-                <span className="launch-note">Copies the link{activeMode ? <> (with <code>{activeMode.query}</code> for {activeMode.label})</> : null}, then opens it in a new tab after a {OPEN_COUNTDOWN_SECONDS}-second countdown — no blank tab, no Edge, no ad-blocker needed. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                <span className="launch-note">Copies the link{activeMode ? <> (with <code>{activeMode.query}</code> for {activeMode.label})</> : null}. Paste it into a new tab yourself — no tab opens automatically. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
               </div>
             </div>
           ) : (
@@ -710,7 +679,7 @@ export default function GamePlayer() {
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
           {game.media && <GameMediaPanel media={game.media} title={game.title} />}
-          {game.type === "external" && !handsLink ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : handsLink ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link, then opens it for you. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+          {game.type === "external" && !handsLink ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : handsLink ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link — open a new tab and paste it there to play. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
         {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       </div>
