@@ -1,3 +1,112 @@
+🎮 SI GAMES
+
+Your Gaming Universe. One Platform.
+
+SI GAMES is a gaming platform built to bring browser-based games together in one convenient place. Explore games, launch your favourites, and enjoy a gaming-focused experience through a modern, user-friendly interface.
+
+Created by ////SPIDEY_IRAJ////
+
+⸻
+
+✨ Features
+
+* 🎮 Game Library — Access a collection of browser-based games.
+* 🚀 Quick Game Launch — Open supported games directly from the platform.
+* 🖥️ Fullscreen Gaming — Enjoy compatible games in fullscreen mode.
+* 🌐 Browser-Based — Play supported games without installing a dedicated game client.
+* 🔗 Game Embedding — Embed games from compatible external sources using iframes.
+* 📱 Responsive Design — Designed for a convenient experience across supported devices.
+* 🔄 Reload & Recovery — Reload games or open the original game page when embedding is unavailable.
+* 🎯 Gaming-Focused Interface — A dedicated space for discovering and launching games.
+
+Features depend on the current implementation, browser compatibility, and the individual game’s hosting restrictions.
+
+⸻
+
+🌐 Project Links
+
+* Main Platform hosted on freebuff : https://sigames.frebuff.app
+⸻
+
+🛠️ Technologies
+
+Depending on the version of the project, SI GAMES may use:
+
+* HTML5 — Page structure
+* CSS3 — Styling and responsive layouts
+* JavaScript — Interactions and game-launching functionality
+* iframes — Embedding compatible external games
+* Fullscreen API — Fullscreen support in compatible browsers
+
+⸻
+
+🚀 Getting Started
+
+Run locally
+
+1. Clone this repository:
+
+git clone YOUR_REPOSITORY_URL
+
+2. Open the project folder:
+
+cd YOUR_REPOSITORY_FOLDER
+
+3. Open index.html in a browser, or run a local development server if your project requires one.
+
+Deploy
+
+You can deploy the project using a static hosting service that supports your application’s requirements, such as GitHub Pages, Cloudflare Pages, or another compatible hosting provider.
+
+⸻
+
+🎮 How to Play
+
+1. Open SI GAMES.
+2. Browse the available games.
+3. Select a game to launch it.
+4. Use fullscreen mode if supported.
+5. If a game cannot load inside the platform, use its original-page option when available.
+
+⸻
+
+⚠️ Important Notes
+
+* Some games may block iframe embedding or require opening their original website.
+* Game availability depends on the external hosting provider.
+* Certain games may require an internet connection.
+* Keyboard controls, fullscreen functionality, and mobile compatibility vary by game.
+* Third-party games and their assets remain the property of their respective owners.
+
+SI GAMES does not claim ownership of third-party games unless explicitly stated.
+
+⸻
+
+👨‍💻 Creator
+
+SPIDEY_IRAJ
+
+Creator and developer of SI GAMES.
+
+* GitHub: @SPIDEY_IRAJ
+
+⸻
+
+📜 License
+
+A license has not been specified yet. Add a LICENSE file to define how this project’s source code may be used, modified, and distributed.
+
+Third-party games, trademarks, and assets may be subject to their own licenses and terms.
+
+⸻
+
+Made with passion for gaming.
+
+SI GAMES — Play. Explore. Repeat.
+
+© SPIDEY_IRAJ. All rights reserved to their respective owners.
+
+
 ## Overview
 
 This project uses the following tech stack:
