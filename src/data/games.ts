@@ -883,8 +883,14 @@ function applyLibraryPatch(list: Game[]): Game[] {
       const leading = marked.filter((entry) => entry.lead).map(toServer);
       const trailing = marked.filter((entry) => !entry.lead).map(toServer);
       servers = [...leading, ...servers, ...trailing].map((server, index) => {
-        const name = server.label.split("—").slice(1).join("—").trim() || server.label;
-        return { ...server, label: `Server ${index + 1} — ${name}` };
+        const parts = server.label.split("—");
+        const suffix = parts.slice(1).join("—").trim();
+        // A label with no suffix is either a raw host name (number it) or an
+        // already numbered `Server N` left by a previous pass (keep it as is),
+        // so re-running the patch never produces "Server 2 — Server 2".
+        const alreadyNumbered = /^server\s+\d+$/i.test(server.label.trim());
+        const name = suffix || (alreadyNumbered ? "" : server.label.trim());
+        return { ...server, label: name ? `Server ${index + 1} — ${name}` : `Server ${index + 1}` };
       });
     }
 
@@ -896,7 +902,52 @@ function applyLibraryPatch(list: Game[]): Game[] {
   });
 }
 
-export const games: Game[] = handOverPremium(applyLibraryPatch([
+/** Redaction mark shown wherever a destination used to be spelled out. */
+const REDACTED = "••••••";
+
+/** A full link, a query string, or a bare hostname (lowercase, known TLD).
+ * Deliberately case-sensitive so prose like "U.S. government" survives it. */
+const URL_IN_TEXT = /https?:\/\/[^\s)"]+|\?[A-Za-z0-9_=&%./+-]+|\b(?:[a-z0-9-]+\.)+(?:com|net|org|io|dev|app|site|online|live|pro|xyz|fun|lol|rs|co|top|gg|me|tv|cc|fm|ru|uk|us|de|fr|jp|in|info|biz|cloud|page|sh|rip|wtf|link|zone|tech|store|club|work|works|team|play|game|games|world)\b(?:\/[^\s]*)?/g;
+
+/** Strips anything URL-shaped out of a sentence of copy. */
+function redactText(text: string): string {
+  return text.replace(URL_IN_TEXT, REDACTED);
+}
+
+/** Server cards keep their friendly name; a bare hostname behind the dash is dropped. */
+function redactLabel(label: string): string {
+  return redactText(label).replace(/\s*[—–-]\s*•+\s*$/, "").trim() || "Server";
+}
+
+/** One pass over the library: descriptions, controls and every server/mode label
+ * and note lose their links. `sourceUrl`, thumbnails and media are left alone —
+ * the launcher still needs them, they are just never rendered as text. */
+function redactLibrary<T extends Game>(list: T[]): T[] {
+  return list.map((game) => {
+    const servers = game.servers?.map((server) => ({
+      ...server,
+      label: redactLabel(server.label),
+      ...(server.note ? { note: redactText(server.note) } : {}),
+      ...(server.modes
+        ? {
+            modes: server.modes.map((mode) => ({
+              ...mode,
+              label: redactText(mode.label),
+              ...(mode.note ? { note: redactText(mode.note) } : {}),
+            })),
+          }
+        : {}),
+    }));
+    return {
+      ...game,
+      description: redactText(game.description),
+      controls: redactText(game.controls),
+      ...(servers ? { servers } : {}),
+    };
+  });
+}
+
+export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
   {
     id: "gta-v",
     title: "Grand Theft Auto V",
@@ -916,7 +967,7 @@ export const games: Game[] = handOverPremium(applyLibraryPatch([
         label: "Server 2 — GTA V V2",
         url: "https://v1-game.playgta5.pro/",
         external: true,
-        note: "Second build on the v1-game host. Pick a mode below — the link opens in your own tab with that mode appended.",
+        note: "Second build on the alternate host. Pick a mode below — the launch stays hidden and opens in your own tab.",
         // This host reads ?mode=story | sandbox | chromebook, ?map=env_test and ?play=.
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
@@ -1436,12 +1487,12 @@ export const games: Game[] = handOverPremium(applyLibraryPatch([
     // Hosts that refuse framing hand their link over instead of loading here.
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
   })),
-]));
+])));
 
 
 export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
 
-export const allGames: Game[] = handOverPremium(applyLibraryPatch([
+export const allGames: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
   ...games,
   ...localGames.map(([title, category, tags, description, controls], index): Game => {
     const id = localSlugs[index];
@@ -1458,5 +1509,5 @@ export const allGames: Game[] = handOverPremium(applyLibraryPatch([
       htmlGame: true,
       isNew: id === "51-starfighter-si-01",    };
   }),
-]));
+])));
 

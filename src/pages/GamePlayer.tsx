@@ -147,9 +147,8 @@ const REPORT_INBOX = "spideyiraj1925@gmail.com";
 /** The five ways into the hosted build, offered at the entrance as 3D cards.
  *
  * Each card owns an accent colour and maps to one `?mode=` query value.
- * Picking a card rewrites the page link (`sourceUrl?mode=<id>`), the readonly
- * input shows that modified link, and the copy button hands it to the
- * clipboard.
+ * Picking a card rewrites the link the copy button hands to the clipboard —
+ * the address itself is never rendered anywhere on the page.
  */
 /** Every title resolves to a server list; single-host games just wrap their own URL. */
 function serversFor(game: Game): GameServer[] {
@@ -339,7 +338,9 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
     : activeServer?.url ?? game?.sourceUrl ?? "";
   /** Hosts that refuse framing hand the player a link instead of loading here. */
   const handsLink = Boolean(activeServer?.external);
-  const linkInputRef = useRef<HTMLInputElement>(null);
+  /** Off-screen fallback field: the link lands here only if the clipboard API is
+   * refused, so it can still be copied by hand without ever being shown. */
+  const linkInputRef = useRef<HTMLTextAreaElement>(null);
   const extensionModalRef = useRef<HTMLDivElement>(null);
   const [launched, setLaunched] = useState(() => {
     const target = games.find((item) => item.id === resolvedId);
@@ -636,19 +637,11 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
           {handsLink ? (
             <div className="launch-actions">
               <div className="copy-link">
-                <span className="copy-link-label"><Save size={13} /> Your link</span>
+                <span className="copy-link-label"><Save size={13} /> Launch link</span>
                 <span className="copy-open-hint" role="status">
                   Nothing opens by itself — copy the link, open a new tab (Ctrl / ⌘ + T), then paste it there.
                 </span>
                 <div className="copy-link-row">
-                  <input
-                    ref={linkInputRef}
-                    className="copy-link-url"
-                    readOnly
-                    value={launchLink}
-                    aria-label={`${game.title} link`}
-                    onFocus={(event) => event.currentTarget.select()}
-                  />
                   <button
                     type="button"
                     className="launch-play copy-link-btn"
@@ -657,7 +650,8 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                     {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied — paste in a new tab" : "Copy link"}
                   </button>
                 </div>
-                <span className="launch-note">Copies the link{activeMode ? <> (with <code>{activeMode.query}</code> for {activeMode.label})</> : null}. Paste it into a new tab yourself — no tab opens automatically. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                <textarea ref={linkInputRef} className="copy-link-hidden" readOnly value={launchLink} aria-hidden="true" tabIndex={-1} />
+                <span className="launch-note">Copies the{activeMode ? ` ${activeMode.label}` : ""} link straight to your clipboard — the address is never shown here. Paste it into a new tab yourself; no tab opens automatically. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
               </div>
             </div>
           ) : (
