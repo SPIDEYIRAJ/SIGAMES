@@ -456,6 +456,7 @@ const remoteGames: RemoteGame[] = [
  * Each entry was probed: the cross-origin iframe is refused, so its card hands over a link. */
 const NON_FRAMABLE_HOSTS = [
   "wasmarcade.com",
+  "wasm.rip",
   "spawn.co",
   "playgta5.pro",
   "dos.zone",
