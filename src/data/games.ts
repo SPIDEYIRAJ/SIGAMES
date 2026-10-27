@@ -1260,18 +1260,6 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     heavy: true,
   },
   {
-    id: "kino-der-toten",
-    title: "Kino der Toten",
-    category: "Shooter",
-    tags: ["FPS", "Zombies", "Browser Ready"],
-    description: "The classic theatre map, playable straight in this frame.",
-    controls: "WASD to move, mouse to aim, click to shoot, R to reload, F to buy doors off the wall.",
-    thumbnail: cover(63),
-    sourceUrl: "https://kino-der-toten.pages.dev",
-    type: "iframe",
-    heavy: true,
-  },
-  {
     id: "bo3-cheese-cube",
     title: "BO3 Cheese Cube",
     category: "Shooter",
