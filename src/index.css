@@ -477,3 +477,114 @@
   .theme-menu { min-width: 200px; }
 }
 
+/* ——— Community submissions: a game link plus a note, handed to the player's
+        own mail app as a written-out draft. Sits under the about notes. ——— */
+.submit-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 14px;
+  padding: 22px;
+  background: var(--si-panel);
+  border: 1px solid var(--si-accent-20);
+  border-radius: 12px;
+}
+
+.submit-copy h3 {
+  color: #f2f6ff;
+  letter-spacing: -.02em;
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 950;
+}
+
+.submit-copy p {
+  color: #9fb0d6;
+  margin-top: 9px;
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.submit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.submit-form label {
+  color: #7485ad;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.submit-form input,
+.submit-form textarea {
+  width: 100%;
+  color: #eef2ff;
+  background: var(--si-panel-raised);
+  border: 1px solid #ffffff1f;
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.55;
+  resize: vertical;
+}
+
+.submit-form input:focus,
+.submit-form textarea:focus {
+  outline: none;
+  border-color: var(--si-glow-40);
+}
+
+.submit-form input::placeholder,
+.submit-form textarea::placeholder { color: #6f7ea3; }
+
+.submit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.submit-send:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.submit-hint {
+  color: #7485ad;
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.submit-sent h4 {
+  color: #f2f6ff;
+  letter-spacing: .04em;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 950;
+  display: inline-flex;
+}
+
+.submit-sent h4 svg { color: var(--si-glow); }
+
+.submit-sent p {
+  color: #9fb0d6;
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.submit-sent .submit-actions { margin-top: 16px; }
+
+@media (max-width: 900px) {
+  .submit-card { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
+}
+
