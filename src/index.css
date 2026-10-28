@@ -289,10 +289,27 @@
 .footer-mark,
 .category-pill,
 .new-pill,
+.html-pill,
 .player-category,
 .header-status {
   border-radius: 0;
   clip-path: var(--si-bevel-xs);
+}
+
+/* ——— The HTML flag printed in front of a local build's title, on the card
+        and on the player heading. Same bevel as the other pills above. ——— */
+.html-pill {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-right: 7px;
+  padding: 3px 6px;
+  line-height: 1;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  color: var(--si-bg);
+  background: var(--si-glow);
 }
 
 /* ——— Hover life: cards lift on their new sharp geometry; buttons stay

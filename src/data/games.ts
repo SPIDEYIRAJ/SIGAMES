@@ -1443,13 +1443,10 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     // Hosts that refuse framing hand their link over instead of loading here.
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),
   })),
-])));
 
-
-export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
-
-export const allGames: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
-  ...games,
+  // The local HTML builds that ship with the site (public/games/<slug>/index.html).
+  // Plain HTML/CSS/JS, no framework — they carry `htmlGame` so the card and the
+  // player can flag them as rough, self-contained browser titles.
   ...localGames.map(([title, category, tags, description, controls], index): Game => {
     const id = localSlugs[index];
     return {
@@ -1463,7 +1460,15 @@ export const allGames: Game[] = redactLibrary(handOverPremium(applyLibraryPatch(
       sourceUrl: `/games/${id}/index.html`,
       type: "iframe",
       htmlGame: true,
-      isNew: id === "51-starfighter-si-01",    };
+      isNew: id === "51-starfighter-si-01",
+    };
   }),
 ])));
+
+
+export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
+
+/** The full library, local HTML builds included — `games` already carries both,
+ * so this stays as the plain alias for anything that wants the whole shelf. */
+export const allGames: Game[] = games;
 

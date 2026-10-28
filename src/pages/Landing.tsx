@@ -22,6 +22,7 @@ const SORTS = [
   { value: "featured", label: "Featured" },
   { value: "az", label: "A to Z" },
   { value: "za", label: "Z to A" },
+  { value: "html", label: "HTML games only" },
 ] as const;
 
 type SortValue = (typeof SORTS)[number]["value"];
@@ -60,7 +61,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         </div>
       </div>
       <div className="game-card-body">          <div>
-          <h3>{game.title}</h3>
+          <h3>{game.htmlGame && <span className="html-pill">HTML</span>}{game.title}</h3>
           <p>{game.description}</p>
           {game.htmlGame ? <p className="game-card-note game-card-note--html">HTML game · gameplay may be rough, buggy, or unfinished.</p> : game.heavy && <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>}
         </div>
@@ -149,8 +150,11 @@ export default function Landing() {
     const normalized = query.trim().toLowerCase();
     const matches = games.filter((game) => {
       const matchesCategory = category === "All Games" || game.category === category || game.tags.includes(category);
+      // "HTML games only" is a view, not an ordering: it narrows the shelf down
+      // to the local HTML builds before the sort below is applied.
+      const matchesHtmlOnly = sortBy !== "html" || Boolean(game.htmlGame);
       const searchable = [game.title, game.category, game.description, ...game.tags].join(" ").toLowerCase();
-      return matchesCategory && (!normalized || searchable.includes(normalized));
+      return matchesCategory && matchesHtmlOnly && (!normalized || searchable.includes(normalized));
     });
     if (sortBy === "az") return [...matches].sort((a, b) => a.title.localeCompare(b.title));
     if (sortBy === "za") return [...matches].sort((a, b) => b.title.localeCompare(a.title));
