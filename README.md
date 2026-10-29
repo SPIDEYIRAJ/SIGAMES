@@ -25,7 +25,7 @@ Features depend on the current implementation, browser compatibility, and the in
 
 🌐 Project Links
 
-* Main Platform hosted on freebuff : https://sigames.frebuff.app
+* Main Platform hosted on freebuff : https://sigames.freebuff.app
 ⸻
 
 🛠️ Technologies
