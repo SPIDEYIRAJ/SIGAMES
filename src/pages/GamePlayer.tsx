@@ -2,6 +2,7 @@ import { createElement, useCallback, useEffect, useMemo, useRef, useState, type 
 import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
+import VirtualGamepad from "@/components/VirtualGamepad";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -863,6 +864,10 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
               </div>
             )}
             <GameFrame key={frameKey} src={playUrl ?? launchLink} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            {/* Optional on-screen controller (hidden settings toggle); only for titles that actually run in the frame. */}
+            {game.type !== "external" && !handsLink && (
+              <VirtualGamepad src={playUrl ?? launchLink} gameTitle={game.title} gameCategory={game.category} />
+            )}
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>

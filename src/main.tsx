@@ -8,6 +8,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RequireAuth } from "./components/RequireAuth";
+import HiddenSettings from "./components/HiddenSettings";
 import { initTheme, THEME_CHANGE_EVENT } from "./lib/themes";
 import Dashboard from "./pages/Dashboard";
 import "./index.css";
@@ -441,6 +442,7 @@ function AppBootstrap() {
       <BrowserRouter>
         <RouteSyncer />
         <Backdrop />
+        <HiddenSettings />
         {isLoading ? <LoadingScreen /> : <AnimatedRoutes />}
       </BrowserRouter>
       <Toaster />

@@ -588,3 +588,105 @@
   .submit-card { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
 }
 
+/* ——— Virtual controller overlay (OmniPad): the container itself passes
+        touches straight through; OmniPad's own widgets handle pointers ——— */
+.virtual-gamepad {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Tame the CDN's default widget skin slightly so it floats over any game
+   frame without hiding the action underneath. */
+.virtual-gamepad button,
+.virtual-gamepad [class*="omnipad"],
+.virtual-gamepad [class*="target-zone"] {
+  opacity: .72;
+}
+.virtual-gamepad [class*="target-zone"] {
+  background: transparent !important;
+}
+
+/* Hidden settings: opened only by the 5-tap secret on a `data-si-secret`
+   mark — the rest of the app never links here, so it stays a hidden menu. */
+.hidden-settings-backdrop {
+  z-index: 80;
+  background: rgba(8, 7, 16, .88);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  position: fixed;
+  inset: 0;
+}
+.hidden-settings-modal {
+  text-align: center;
+  background: var(--si-panel);
+  border: 1px solid var(--si-accent-28);
+  border-radius: 14px;
+  width: min(440px, 100%);
+  padding: 30px;
+  position: relative;
+}
+.hidden-settings-modal h2 {
+  color: #f2f6ff;
+  font-size: 16px;
+  font-weight: 950;
+}
+.hidden-settings-modal > p {
+  color: #9fb0d6;
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.65;
+}
+.hidden-settings-row {
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 18px;
+  display: flex;
+}
+.hidden-settings-toggle {
+  cursor: pointer;
+  background: var(--si-panel-raised);
+  border: 1px solid var(--si-accent-28);
+  border-radius: 999px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px 7px 8px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 950;
+  display: inline-flex;
+}
+.hidden-settings-knob {
+  background: #ffffff26;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  transition: background .16s ease, box-shadow .16s ease;
+}
+.hidden-settings-toggle.is-on .hidden-settings-knob {
+  background: var(--si-glow);
+  box-shadow: 0 0 10px var(--si-glow-40);
+}
+.hidden-settings-state {
+  color: #c9d6f4;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-size: 9px;
+}
+.hidden-settings-toggle.is-on .hidden-settings-state { color: #f2f6ff; }
+.hidden-settings-note {
+  color: #7485ad;
+  max-width: 210px;
+  font-size: 9px;
+  line-height: 1.6;
+}
+@media (max-width: 720px) {
+  .hidden-settings-modal { padding: 26px 20px; border-radius: 12px; }
+  .hidden-settings-row { flex-direction: column; gap: 10px; }
+}
+
