@@ -1116,7 +1116,7 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     description: "Escape the house before Granny hears you. Five days, one chance at a time.",
     controls: "WASD to move, mouse to look, click to interact and hide. Stay quiet — she hears everything.",
     thumbnail: "/thumbs/granny.jpg",
-    sourceUrl: "https://1games.io/game/granny-horror/",
+    sourceUrl: "https://granny-games.com/embed/granny?pub_id=ca-pub-5636557392151555&preroll=0",
     type: "iframe",
     heavy: true,
   },
@@ -1143,10 +1143,6 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     sourceUrl: "https://stgames.top/unity/amongus/",
     type: "iframe",
     heavy: true,
-    servers: [
-      { id: "stgames", label: "Server 1 — stgames", url: "https://stgames.top/unity/amongus/" },
-      { id: "wasmrip", label: "Server 2 — wasm.rip", url: "https://wasm.rip/files/amongus/index.html" },
-    ],
   },
   {
     id: "traffic-rider",
@@ -1231,6 +1227,9 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     sourceUrl: "https://eaglercraft.com",
     type: "iframe",
     heavy: true,
+    // Minecraft hands its link over instead of loading here: the player copies it
+    // and opens it in their own tab.
+    openInNewTab: true,
     extensionNotice: true,
     extensionUrl: "https://chromewebstore.google.com/detail/jkijbninecngmcipaijcnibjhbejaoch?utm_source=item-share-cb",
   },
