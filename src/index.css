@@ -690,3 +690,60 @@
   .hidden-settings-row { flex-direction: column; gap: 10px; }
 }
 
+/* ——— Fullscreen fill fix (the "frame on half the page" bug, worst in
+        landscape). Engines that throw on element-fullscreen fall back to
+        fullscreening the whole document, so the page div gets
+        `.native-fullscreen` while the fullscreen element is <html>. That
+        state had no rules: the frame kept a windowed height (68dvh / the
+        landscape 74dvh bump) and rendered as a half-page card. ——— */
+.player-page.native-fullscreen {
+  inset: 0;
+  overflow: hidden;
+  z-index: 70;
+  background: var(--si-bg-deep);
+  position: fixed;
+  flex-direction: column;
+  display: flex;
+}
+.player-page.native-fullscreen .player-topbar,
+.player-page.native-fullscreen .player-heading,
+.player-page.native-fullscreen .player-bottom,
+.player-page.native-fullscreen .player-disclaimer,
+.player-page.native-fullscreen .watermark-layer {
+  display: none;
+}
+.player-page.native-fullscreen .player-main {
+  flex: auto;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  background: var(--si-bg-deep);
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+.player-page.native-fullscreen .game-frame-wrap {
+  border: 0;
+  border-radius: 0;
+  flex: auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--si-bg-deep);
+}
+
+/* Pin the game to the frame's edges in every fullscreen-ish state instead of
+   going through height-percentage chains: no landscape dvh/min-height media
+   rule or viewport-unit quirk can half-size the playing surface. */
+.immersive-player .game-frame-wrap iframe,
+.game-frame-wrap:fullscreen iframe,
+.game-frame-wrap:-webkit-full-screen iframe,
+.player-page.native-fullscreen .game-frame-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+
