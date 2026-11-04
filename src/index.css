@@ -712,6 +712,17 @@
 .player-page.native-fullscreen .watermark-layer {
   display: none;
 }
+/* The device note must never become a flex sibling of the frame: in the row
+   layout it used to claim everything right of the game ("frame on the left,
+   disclaimer filling the rest"). Hide it and stack the main column. */
+.immersive-player .player-device-note,
+.player-page.native-fullscreen .player-device-note {
+  display: none;
+}
+.immersive-player .player-main,
+.player-page.native-fullscreen .player-main {
+  flex-direction: column;
+}
 .player-page.native-fullscreen .player-main {
   flex: auto;
   width: 100%;
@@ -721,6 +732,7 @@
   margin: 0;
   padding: 0;
   display: flex;
+  flex-direction: column;
 }
 .player-page.native-fullscreen .game-frame-wrap {
   border: 0;
