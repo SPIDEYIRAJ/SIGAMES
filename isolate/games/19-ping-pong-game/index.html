@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+  <head$1>
+  <meta charset="utf-8">
+  <base target="_self">
+    <title>SI GAMES - Ping Pong</title>
+    <link rel="icon" href="/logo.svg" />
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha -->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- Add the Bootstrap JavaScript file -->
+
+    
+    <style>
+      canvas {
+        border: 1px solid black;
+        max-width: 100%;
+        height: auto;
+        touch-action: none;
+      }
+    </style>
+  
+  <style>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.btn {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn:hover {
+  background-color: #3e8e41;
+}
+
+.control {
+  text-align: center;
+}
+
+canvas {
+  background: #000;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 50% 0%, #131a2c 0%, #05070d 65%);
+  color: #dbe4ff;
+  font-family: "Outfit", system-ui, -apple-system, "Segoe UI", sans-serif;
+  min-height: 100vh;
+}
+
+/* Vanilla modal (no Bootstrap / jQuery needed) */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(3, 6, 14, 0.78);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.modal.show {
+  display: flex;
+}
+
+.modal-dialog {
+  width: min(420px, 100%);
+}
+
+.modal-content {
+  background: #101728;
+  border: 1px solid rgba(120, 150, 255, 0.28);
+  border-radius: 16px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+.modal-body {
+  padding: 26px 24px 8px;
+  text-align: center;
+}
+
+.modal-body h5 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.modal-footer {
+  padding: 12px 20px 20px;
+  text-align: center;
+}
+
+.btn-secondary {
+  background: #1d2942;
+}
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
+    <div class="button">
+      <button id="start-btn" class="btn">Start</button>
+      <button id="pause-btn" class="btn">Pause</button>
+      <button id="restart-btn" class="btn">Restart</button>
+      <button id="cpu-btn" class="btn">Opponent: CPU</button>
+    </div>
+    <p class="control">Control: move your paddle with the mouse, touch, W and S &nbsp;|&nbsp; first to 11 wins</p>
+    <!-- Add a modal element with an ID -->
+    <div class="modal" tabindex="-1" role="dialog" id="message-modal">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h5 id="message"></h5>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              id="message-modal-close"
+              class="btn btn-secondary"
+              data-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  
+  <script>
+// Initialize canvas
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+var startBtn = document.getElementById("start-btn");
+var pauseBtn = document.getElementById("pause-btn");
+var restartBtn = document.getElementById("restart-btn");
+var cpuBtn = document.getElementById("cpu-btn");
+var cpuMode = true;
+var aiMiss = 0;
+var animationId;
+var gameRunning = false;
+
+startBtn.addEventListener("click", function () {
+  if (!gameRunning) {
+    // only start the game if gameRunning is false
+    gameRunning = true; // set gameRunning to true when the game starts
+    loop();
+  }
+});
+
+pauseBtn.addEventListener("click", function () {
+  gameRunning = false;
+  cancelAnimationFrame(animationId);
+});
+
+restartBtn.addEventListener("click", function () {
+  document.location.reload();
+});
+
+cpuBtn.addEventListener("click", function () {
+  cpuMode = !cpuMode;
+  cpuBtn.textContent = cpuMode ? "Opponent: CPU" : "Opponent: You (↑ ↓)";
+  if (!cpuMode) {
+    aiMiss = 0;
+  }
+});
+
+// Mouse and touch control for the left paddle
+function aimLeftPaddle(clientY) {
+  var bounds = canvas.getBoundingClientRect();
+  if (!bounds.height) return;
+  var scale = canvas.height / bounds.height;
+  var target = clientY * scale - paddleHeight / 2;
+  leftPaddleY = Math.max(0, Math.min(canvas.height - paddleHeight, target));
+}
+
+canvas.addEventListener("mousemove", function (e) {
+  aimLeftPaddle(e.clientY);
+});
+
+canvas.addEventListener("touchmove", function (e) {
+  if (!e.touches.length) return;
+  e.preventDefault();
+  aimLeftPaddle(e.touches[0].clientY);
+}, { passive: false });
+
+canvas.addEventListener("touchstart", function (e) {
+  if (!e.touches.length) return;
+  e.preventDefault();
+  aimLeftPaddle(e.touches[0].clientY);
+}, { passive: false });
+
+addEventListener("load", (event) => {
+  draw();
+});
+
+// Define ball properties
+var ballRadius = 10;
+var ballX = canvas.width / 2;
+var ballY = canvas.height / 2;
+var ballSpeedX = 5;
+var ballSpeedY = 5;
+
+// Define paddle properties
+var paddleHeight = 80;
+var paddleWidth = 10;
+var leftPaddleY = canvas.height / 2 - paddleHeight / 2;
+var rightPaddleY = canvas.height / 2 - paddleHeight / 2;
+var paddleSpeed = 10;
+
+// Define score properties
+var leftPlayerScore = 0;
+var rightPlayerScore = 0;
+var maxScore = 11;
+
+// Listen for keyboard events
+document.addEventListener("keydown", keyDownHandler);
+document.addEventListener("keyup", keyUpHandler);
+
+// Handle key press
+var upPressed = false;
+var downPressed = false;
+let wPressed = false;
+let sPressed = false;
+
+function keyDownHandler(e) {
+  var key = e.key.toLowerCase();
+  if (key === "arrowup") {
+    upPressed = true;
+    e.preventDefault();
+  } else if (key === "arrowdown") {
+    downPressed = true;
+    e.preventDefault();
+  } else if (key === "w") {
+    wPressed = true;
+  } else if (key === "s") {
+    sPressed = true;
+  }
+}
+
+// Handle key release
+function keyUpHandler(e) {
+  var key = e.key.toLowerCase();
+  if (key === "arrowup") {
+    upPressed = false;
+  } else if (key === "arrowdown") {
+    downPressed = false;
+  } else if (key === "w") {
+    wPressed = false;
+  } else if (key === "s") {
+    sPressed = false;
+  }
+}
+
+// Update game state
+function update() {
+  // Move paddles
+  if (upPressed && rightPaddleY > 0) {
+    rightPaddleY -= paddleSpeed;
+  } else if (downPressed && rightPaddleY + paddleHeight < canvas.height) {
+    rightPaddleY += paddleSpeed;
+  }
+
+  // Move right paddle based on "w" and "s" keys
+  if (wPressed && leftPaddleY > 0) {
+    leftPaddleY -= paddleSpeed;
+  } else if (sPressed && leftPaddleY + paddleHeight < canvas.height) {
+    leftPaddleY += paddleSpeed;
+  }
+
+  // Right paddle: player when the arrow keys are used, CPU otherwise
+  var playerTookOver = upPressed || downPressed;
+  if (!playerTookOver) {
+    var predicted = ballY + ballSpeedY * 6;
+    var target = predicted + aiMiss;
+    if (aiMiss !== 0) {
+      aiMiss *= 0.94;
+      if (Math.abs(aiMiss) < 1) aiMiss = 0;
+    } else if (Math.random() < 0.006) {
+      aiMiss = (Math.random() * 2 - 1) * 46; // occasional human-like slip
+    }
+    var diff = target - (rightPaddleY + paddleHeight / 2);
+    if (Math.abs(diff) > 2) {
+      rightPaddleY += Math.sign(diff) * Math.min(paddleSpeed, Math.abs(diff));
+    }
+  }
+
+  // Move ball
+  ballX += ballSpeedX;
+  ballY += ballSpeedY;
+
+  // Check if ball collides with top or bottom of canvas
+  if (ballY - ballRadius < 0 || ballY + ballRadius > canvas.height) {
+    ballSpeedY = -ballSpeedY;
+  }
+
+  // Check if ball collides with left paddle
+  if (
+    ballX - ballRadius < paddleWidth &&
+    ballY > leftPaddleY &&
+    ballY < leftPaddleY + paddleHeight
+  ) {
+    ballSpeedX = -ballSpeedX;
+    ballSpeedY += (ballY - (leftPaddleY + paddleHeight / 2)) / 12; // english off the paddle
+    if (ballX < paddleWidth * 0.7) ballX = paddleWidth * 0.7 + ballRadius;
+  }
+
+  // Check if ball collides with right paddle
+  if (
+    ballX + ballRadius > canvas.width - paddleWidth &&
+    ballY > rightPaddleY &&
+    ballY < rightPaddleY + paddleHeight
+  ) {
+    ballSpeedX = -ballSpeedX;
+    ballSpeedY += (ballY - (rightPaddleY + paddleHeight / 2)) / 12;
+    if (ballX > canvas.width - paddleWidth * 0.7) {
+      ballX = canvas.width - paddleWidth * 0.7 - ballRadius;
+    }
+  }
+
+  // Keep the ball from settling into a flat, boring rally
+  if (Math.abs(ballSpeedY) < 2) {
+    ballSpeedY = 2 * (ballSpeedY === 0 ? 1 : Math.sign(ballSpeedY));
+  }
+
+  // Rally speeds up over time
+  var rally = Math.sqrt(Math.abs(ballSpeedX * ballSpeedY)) / 5;
+  ballSpeedX += Math.sign(ballSpeedX) * Math.min(0.09, rally * 0.02);
+  ballSpeedY += Math.sign(ballSpeedY) * Math.min(0.09, rally * 0.02);
+  var cap = 11;
+  ballSpeedX = Math.max(-cap, Math.min(cap, ballSpeedX));
+  ballSpeedY = Math.max(-cap, Math.min(cap, ballSpeedY));
+
+  // Check if ball goes out of bounds on left or right side of canvas
+  if (ballX < 0) {
+    rightPlayerScore++;
+    reset();
+  } else if (ballX > canvas.width) {
+    leftPlayerScore++;
+    reset();
+  }
+
+  // Check if a player has won
+  if (leftPlayerScore === maxScore) {
+    playerWin("Left player");
+  } else if (rightPlayerScore === maxScore) {
+    playerWin("Right player");
+  }
+}
+
+function playerWin(player) {
+  var message = "Congratulations! " + player + " win!";
+  document.getElementById("message").textContent = message; // Set the message text
+  document.getElementById("message-modal").classList.add("show"); // Display the message modal
+  reset();
+}
+
+// Reset ball to center of screen
+function reset() {
+  ballX = canvas.width / 2;
+  ballY = canvas.height / 2;
+  ballSpeedX = -ballSpeedX;
+  ballSpeedY = Math.random() * 10 - 5;
+}
+
+// Draw objects on canvas
+function draw() {
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#FFF";
+  ctx.font = "15px Arial";
+
+  ctx.beginPath();
+  ctx.moveTo(canvas.width / 2, 0);
+  ctx.lineTo(canvas.width / 2, canvas.height);
+  ctx.strokeStyle = "#FFF"; // Set line color to white
+  ctx.stroke();
+  ctx.closePath();
+
+  // Draw ball
+  ctx.beginPath();
+  ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.closePath();
+
+  // Draw left paddle
+  ctx.fillRect(0, leftPaddleY, paddleWidth, paddleHeight);
+
+  // Draw right paddle
+  ctx.fillRect(
+    canvas.width - paddleWidth,
+    rightPaddleY,
+    paddleWidth,
+    paddleHeight
+  );
+
+  // Draw scores
+  ctx.fillText("Score: " + leftPlayerScore, 10, 20);
+  ctx.fillText("Score: " + rightPlayerScore, canvas.width - 70, 20);
+}
+
+// Game loop
+function loop() {
+  update();
+  draw();
+  animationId = requestAnimationFrame(loop);
+}
+
+document.getElementById("message-modal-close").addEventListener("click", function () {
+  document.location.reload();
+});
+  </script>
+  </body>
+</html>
+

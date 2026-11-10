@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+  <base target="_self">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Talha - Checkers Game</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+    <!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha -->
+    <!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+    <link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+/* ===== Checkers - Mobile responsive ===== */
+:root {
+  --light-sq: #d4a574;
+  --dark-sq: #5c3d2e;
+  --board-frame: #2b1a12;
+  --accent: #e94560;
+  --red-piece: #c62828;
+  --red-piece-edge: #8e1b1b;
+  --black-piece: #1a1a1a;
+  --black-piece-edge: #0a0a0a;
+  --highlight: rgba(255, 220, 80, 0.55);
+  --move-dot: rgba(255, 255, 255, 0.85);
+  --capture-ring: #ff6b6b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+  background: linear-gradient(135deg, #1a120b 0%, #3d2914 45%, #2a1c10 100%);
+  min-height: 100vh;
+  color: #f5f0e8;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+}
+
+/* ===== Level screen ===== */
+.level-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+}
+
+.level-screen h1 {
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.level-screen > p {
+  margin: 0 0 24px;
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.level-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.level-btn {
+  padding: 16px 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font-family: inherit;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, transform 0.1s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.level-btn:hover,
+.level-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.level-btn:active {
+  transform: scale(0.98);
+}
+
+.level-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.level-desc {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin-top: 4px;
+}
+
+.level-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.level-header h1 {
+  margin: 0;
+}
+
+/* ===== Help button ===== */
+.help-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.help-btn:hover,
+.help-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== Help modal ===== */
+.help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 20px;
+}
+
+.help-overlay.hidden {
+  display: none;
+}
+
+.help-modal {
+  background: linear-gradient(145deg, #2b1a12 0%, #3d2914 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.help-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.help-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.help-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.help-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.help-body {
+  padding: 20px;
+}
+
+.help-body p {
+  margin: 0 0 12px;
+}
+
+.help-body ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.help-body li {
+  margin-bottom: 10px;
+  line-height: 1.45;
+}
+
+.help-body li:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== Game screen ===== */
+.game-screen {
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.game-screen.hidden,
+.level-screen.hidden {
+  display: none;
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.header h1 {
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  margin: 0;
+  font-weight: 700;
+}
+
+.level-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.turn-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.turn-label.ai-thinking {
+  opacity: 0.75;
+  font-style: italic;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.btn {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.btn:hover,
+.btn:focus-visible {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-large {
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+/* ===== Board ===== */
+.game-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 200px;
+  padding: 8px 0;
+}
+
+.board-wrap {
+  padding: 10px;
+  background: var(--board-frame);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  width: min(92vw, 520px);
+  height: min(92vw, 520px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.square {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  user-select: none;
+}
+
+.square.light {
+  background: var(--light-sq);
+}
+
+.square.dark {
+  background: var(--dark-sq);
+}
+
+.square.selected {
+  box-shadow: inset 0 0 0 3px var(--highlight);
+}
+
+.square.highlight::after {
+  content: "";
+  position: absolute;
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: var(--move-dot);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.square.highlight.capture::after {
+  width: 72%;
+  height: 72%;
+  background: transparent;
+  border: 3px solid var(--capture-ring);
+  opacity: 0.9;
+  box-sizing: border-box;
+}
+
+.square.can-capture {
+  box-shadow: inset 0 0 0 2px rgba(255, 200, 50, 0.7);
+}
+
+/* ===== Pieces ===== */
+.piece {
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.25);
+  transition: transform 0.12s;
+}
+
+.piece:hover {
+  transform: scale(1.06);
+}
+
+.piece.red {
+  background: radial-gradient(circle at 35% 30%, #ef5350, var(--red-piece) 55%, var(--red-piece-edge));
+  border: 2px solid var(--red-piece-edge);
+}
+
+.piece.black {
+  background: radial-gradient(circle at 35% 30%, #555, var(--black-piece) 55%, var(--black-piece-edge));
+  border: 2px solid #333;
+  cursor: default;
+}
+
+.piece.black:hover {
+  transform: none;
+}
+
+.piece.king::before {
+  content: "♛";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.7rem, 3.5vw, 1.25rem);
+  line-height: 1;
+  color: #ffd54f;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+
+.piece.disabled {
+  pointer-events: none;
+}
+
+/* Flying piece during move animation */
+.piece.flying {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  margin: 0;
+  transition: left 0.22s ease-in-out, top 0.22s ease-in-out, transform 0.22s ease-in-out;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), inset 0 2px 4px rgba(255, 255, 255, 0.25);
+  transform: scale(1.08);
+}
+
+.piece.flying.landing {
+  transform: scale(1);
+}
+
+/* Captured piece fade / shrink */
+.piece.capturing {
+  animation: capture-pop 0.28s ease-out forwards;
+  pointer-events: none;
+  z-index: 15;
+}
+
+@keyframes capture-pop {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+}
+
+.square.anim-source .piece {
+  visibility: hidden;
+}
+
+.board.animating {
+  pointer-events: none;
+}
+
+/* ===== Result overlay ===== */
+.result-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.result-overlay.hidden {
+  display: none;
+}
+
+.result-box {
+  background: linear-gradient(145deg, #2b1a12 0%, #3d2914 100%);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 32px;
+  text-align: center;
+  max-width: 360px;
+  width: 100%;
+}
+
+.result-box h2 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  color: var(--accent);
+}
+
+.result-box h2.lose {
+  color: #90caf9;
+}
+
+.result-box h2.draw {
+  color: #ffd54f;
+}
+
+.result-box p {
+  margin: 0 0 24px;
+  opacity: 0.9;
+}
+
+.result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 600px) {
+  .header {
+    max-width: 100%;
+  }
+
+  .header-actions {
+    width: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
+  }
+
+  .board {
+    width: min(96vw, 420px);
+    height: min(96vw, 420px);
+  }
+
+  .board-wrap {
+    padding: 6px;
+  }
+
+  .square.highlight::after {
+    width: 32%;
+    height: 32%;
+  }
+}
+  </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <!-- Level selection -->
+      <div id="levelScreen" class="level-screen">
+        <div class="level-header">
+          <h1>Checkers</h1>
+          <button type="button" id="helpBtnLevel" class="help-btn" title="How to play" aria-label="How to play">?</button>
+        </div>
+        <p>Choose difficulty</p>
+        <div class="level-buttons">
+          <button type="button" data-level="easy" class="level-btn">
+            <span class="level-name">Easy</span>
+            <span class="level-desc">AI picks randomly · prefers captures</span>
+          </button>
+          <button type="button" data-level="medium" class="level-btn">
+            <span class="level-name">Medium</span>
+            <span class="level-desc">Minimax · looks 2 moves ahead</span>
+          </button>
+          <button type="button" data-level="hard" class="level-btn">
+            <span class="level-name">Hard</span>
+            <span class="level-desc">Minimax · looks 4 moves ahead</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Game screen -->
+      <div id="gameScreen" class="game-screen hidden">
+        <header class="header">
+          <h1>Checkers</h1>
+          <button type="button" id="helpBtnGame" class="help-btn" title="How to play" aria-label="How to play">?</button>
+          <span class="level-badge" id="levelBadge">Easy</span>
+          <div class="header-actions">
+            <span class="turn-label" id="turnLabel">Your turn</span>
+            <button type="button" id="changeLevelBtn" class="btn btn-ghost">Change Level</button>
+            <button type="button" id="newGameBtn" class="btn">New Game</button>
+          </div>
+        </header>
+
+        <main class="game-container">
+          <div class="board-wrap">
+            <div id="board" class="board" role="grid" aria-label="Checkers board"></div>
+          </div>
+        </main>
+
+        <!-- Win / lose / draw overlay -->
+        <div id="resultOverlay" class="result-overlay hidden">
+          <div class="result-box">
+            <h2 id="resultTitle">You win!</h2>
+            <p id="resultMessage">All black pieces captured.</p>
+            <div class="result-actions">
+              <button type="button" id="playAgainBtn" class="btn btn-large">Play Again</button>
+              <button type="button" id="changeLevelFromResultBtn" class="btn btn-ghost">Change Level</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How to play modal -->
+    <div id="helpOverlay" class="help-overlay hidden" aria-hidden="true">
+      <div class="help-modal" role="dialog" aria-labelledby="helpTitle" aria-modal="true">
+        <div class="help-header">
+          <h2 id="helpTitle">How to play</h2>
+          <button type="button" id="helpClose" class="help-close" aria-label="Close">&times;</button>
+        </div>
+        <div class="help-body">
+          <p>American draughts (checkers) on an 8×8 board. You are Red; the AI is Black.</p>
+          <ul>
+            <li><strong>Move:</strong> Click a piece, then a highlighted square. Men move forward diagonally; kings move both ways.</li>
+            <li><strong>Capture:</strong> Jump an adjacent opponent onto an empty square beyond. Captures are optional — pieces that can jump are highlighted as a hint.</li>
+            <li><strong>Multi-jump:</strong> Keep jumping with the same piece when more captures are available.</li>
+            <li><strong>Kings:</strong> Reach the opposite end to crown a man. Kings can move and capture in any diagonal direction.</li>
+            <li><strong>Win:</strong> Capture all opponent pieces or leave them with no legal moves. Draw if the same position repeats three times.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    
+  
+  <script>
+/**
+ * Talha - Checkers Game
+ * American draughts: 8×8, optional captures, multi-jump.
+ * Board: 0 empty | 1 red man | 2 red king | -1 black man | -2 black king
+ * Player Red vs AI Black.
+ * Easy = random (prefer capture); Medium = minimax depth 2; Hard = depth 4.
+ */
+
+(() => {
+  "use strict";
+
+  const SIZE = 8;
+  const LEVELS = {
+    easy: { label: "Easy", depth: 0 },
+    medium: { label: "Medium", depth: 2 },
+    hard: { label: "Hard", depth: 4 },
+  };
+
+  const levelScreen = document.getElementById("levelScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const boardEl = document.getElementById("board");
+  const levelBadge = document.getElementById("levelBadge");
+  const turnLabel = document.getElementById("turnLabel");
+  const resultOverlay = document.getElementById("resultOverlay");
+  const resultTitle = document.getElementById("resultTitle");
+  const resultMessage = document.getElementById("resultMessage");
+  const helpOverlay = document.getElementById("helpOverlay");
+
+  let board = [];
+  let level = "easy";
+  let currentPlayer = 1;
+  let selected = null;
+  let legalMoves = [];
+  let allPlayerMoves = [];
+  let gameOver = false;
+  let aiThinking = false;
+  let animating = false;
+  let positionHistory = [];
+
+  // ----- Board helpers -----
+
+  function isDark(r, c) {
+    return (r + c) % 2 === 1;
+  }
+
+  function inBounds(r, c) {
+    return r >= 0 && r < SIZE && c >= 0 && c < SIZE;
+  }
+
+  function cloneBoard(b) {
+    return b.map((row) => row.slice());
+  }
+
+  function pieceOwner(v) {
+    if (v > 0) return 1;
+    if (v < 0) return -1;
+    return 0;
+  }
+
+  function isKing(v) {
+    return Math.abs(v) === 2;
+  }
+
+  function boardKey(b, player) {
+    return player + "|" + b.map((row) => row.join(",")).join(";");
+  }
+
+  function createInitialBoard() {
+    const b = Array.from({ length: SIZE }, () => Array(SIZE).fill(0));
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (!isDark(r, c)) continue;
+        if (r < 3) b[r][c] = -1;
+        else if (r > 4) b[r][c] = 1;
+      }
+    }
+    return b;
+  }
+
+  function moveDirs(piece) {
+    if (isKing(piece)) return [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+    if (piece === 1) return [[-1, -1], [-1, 1]]; // red forward (toward row 0)
+    return [[1, -1], [1, 1]]; // black forward (toward row 7)
+  }
+
+  // ----- Move generation -----
+
+  function getQuietMovesFrom(b, r, c) {
+    const piece = b[r][c];
+    const moves = [];
+    for (const [dr, dc] of moveDirs(piece)) {
+      const nr = r + dr;
+      const nc = c + dc;
+      if (inBounds(nr, nc) && isDark(nr, nc) && b[nr][nc] === 0) {
+        moves.push({
+          from: { r, c },
+          path: [{ r: nr, c: nc }],
+          captures: [],
+        });
+      }
+    }
+    return moves;
+  }
+
+  function getJumpsFrom(b, startR, startC) {
+    const results = [];
+    const startPiece = b[startR][startC];
+
+    function dfs(curB, r, c, path, captures, pieceVal) {
+      let extended = false;
+      for (const [dr, dc] of moveDirs(pieceVal)) {
+        const mr = r + dr;
+        const mc = c + dc;
+        const lr = r + 2 * dr;
+        const lc = c + 2 * dc;
+        if (!inBounds(lr, lc) || !isDark(lr, lc)) continue;
+        if (curB[lr][lc] !== 0) continue;
+        const mid = curB[mr][mc];
+        if (pieceOwner(mid) !== -pieceOwner(pieceVal)) continue;
+        if (captures.some((cap) => cap.r === mr && cap.c === mc)) continue;
+
+        extended = true;
+        const nextB = cloneBoard(curB);
+        nextB[r][c] = 0;
+        nextB[mr][mc] = 0;
+        nextB[lr][lc] = pieceVal;
+
+        dfs(
+          nextB,
+          lr,
+          lc,
+          path.concat([{ r: lr, c: lc }]),
+          captures.concat([{ r: mr, c: mc }]),
+          pieceVal
+        );
+      }
+
+      if (!extended && path.length > 0) {
+        results.push({
+          from: { r: startR, c: startC },
+          path: path.slice(),
+          captures: captures.slice(),
+        });
+      }
+    }
+
+    dfs(b, startR, startC, [], [], startPiece);
+    return results;
+  }
+
+  function getAllMoves(b, player) {
+    const moves = [];
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (pieceOwner(b[r][c]) !== player) continue;
+        moves.push(...getJumpsFrom(b, r, c));
+        moves.push(...getQuietMovesFrom(b, r, c));
+      }
+    }
+    return moves;
+  }
+
+  function applyMove(b, move) {
+    const next = cloneBoard(b);
+    const { from, path, captures } = move;
+    let piece = next[from.r][from.c];
+    next[from.r][from.c] = 0;
+    for (const cap of captures) next[cap.r][cap.c] = 0;
+    const dest = path[path.length - 1];
+    if (piece === 1 && dest.r === 0) piece = 2;
+    if (piece === -1 && dest.r === SIZE - 1) piece = -2;
+    next[dest.r][dest.c] = piece;
+    return next;
+  }
+
+  function countPieces(b, player) {
+    let n = 0;
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        if (pieceOwner(b[r][c]) === player) n++;
+      }
+    }
+    return n;
+  }
+
+  // ----- Evaluation & AI -----
+
+  function evaluate(b) {
+    let score = 0;
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        const v = b[r][c];
+        if (v === 0) continue;
+        let val = Math.abs(v) === 2 ? 175 : 100;
+        if (v === 1) val += (SIZE - 1 - r) * 3;
+        if (v === -1) val += r * 3;
+        val += (3 - Math.abs(c - 3.5)) * 2;
+        score += v > 0 ? val : -val;
+      }
+    }
+    return score;
+  }
+
+  function minimax(b, depth, maximizing, alpha, beta) {
+    const player = maximizing ? 1 : -1;
+    const moves = getAllMoves(b, player);
+
+    if (depth === 0 || moves.length === 0) {
+      if (moves.length === 0) {
+        return maximizing ? -100000 + depth : 100000 - depth;
+      }
+      return evaluate(b);
+    }
+
+    if (maximizing) {
+      let best = -Infinity;
+      for (const m of moves) {
+        const val = minimax(applyMove(b, m), depth - 1, false, alpha, beta);
+        best = Math.max(best, val);
+        alpha = Math.max(alpha, best);
+        if (beta <= alpha) break;
+      }
+      return best;
+    }
+
+    let best = Infinity;
+    for (const m of moves) {
+      const val = minimax(applyMove(b, m), depth - 1, true, alpha, beta);
+      best = Math.min(best, val);
+      beta = Math.min(beta, best);
+      if (beta <= alpha) break;
+    }
+    return best;
+  }
+
+  function pickAIMove() {
+    const moves = getAllMoves(board, -1);
+    if (!moves.length) return null;
+
+    if (level === "easy") {
+      const captures = moves.filter((m) => m.captures.length > 0);
+      const pool = captures.length ? captures : moves;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+
+    const depth = LEVELS[level].depth;
+    let bestScore = Infinity;
+    let bestMoves = [];
+
+    for (const m of moves) {
+      const score = minimax(applyMove(board, m), depth - 1, true, -Infinity, Infinity);
+      if (score < bestScore) {
+        bestScore = score;
+        bestMoves = [m];
+      } else if (score === bestScore) {
+        bestMoves.push(m);
+      }
+    }
+    return bestMoves[Math.floor(Math.random() * bestMoves.length)];
+  }
+
+  // ----- UI -----
+
+  function movesFromSquare(r, c) {
+    return allPlayerMoves.filter((m) => m.from.r === r && m.from.c === c);
+  }
+
+  function renderBoard() {
+    boardEl.innerHTML = "";
+
+    const moveTargets = new Map();
+    for (const m of legalMoves) {
+      const dest = m.path[m.path.length - 1];
+      const key = dest.r + "," + dest.c;
+      if (!moveTargets.has(key)) moveTargets.set(key, []);
+      moveTargets.get(key).push(m);
+    }
+
+    const captureOrigins = new Set();
+    for (const m of allPlayerMoves) {
+      if (m.captures.length) captureOrigins.add(m.from.r + "," + m.from.c);
+    }
+
+    for (let r = 0; r < SIZE; r++) {
+      for (let c = 0; c < SIZE; c++) {
+        const sq = document.createElement("div");
+        sq.className = "square " + (isDark(r, c) ? "dark" : "light");
+        sq.dataset.r = String(r);
+        sq.dataset.c = String(c);
+        sq.setAttribute("role", "gridcell");
+
+        if (selected && selected.r === r && selected.c === c) {
+          sq.classList.add("selected");
+        }
+
+        const tKey = r + "," + c;
+        if (moveTargets.has(tKey)) {
+          sq.classList.add("highlight");
+          if (moveTargets.get(tKey).some((m) => m.captures.length)) {
+            sq.classList.add("capture");
+          }
+        }
+
+        if (
+          currentPlayer === 1 &&
+          !aiThinking &&
+          !animating &&
+          !selected &&
+          captureOrigins.has(tKey)
+        ) {
+          sq.classList.add("can-capture");
+        }
+
+        const v = board[r][c];
+        if (v !== 0) {
+          const piece = document.createElement("div");
+          piece.className =
+            "piece " + (v > 0 ? "red" : "black") + (isKing(v) ? " king" : "");
+          if (aiThinking || animating || gameOver || currentPlayer !== 1 || v < 0) {
+            piece.classList.add("disabled");
+          }
+          sq.appendChild(piece);
+        }
+
+        sq.addEventListener("click", () => onSquareClick(r, c));
+        boardEl.appendChild(sq);
+      }
+    }
+  }
+
+  function onSquareClick(r, c) {
+    if (gameOver || aiThinking || animating || currentPlayer !== 1) return;
+
+    const destMoves = legalMoves.filter((m) => {
+      const dest = m.path[m.path.length - 1];
+      return dest.r === r && dest.c === c;
+    });
+
+    if (destMoves.length && selected) {
+      destMoves.sort((a, b) => b.captures.length - a.captures.length);
+      executePlayerMove(destMoves[0]);
+      return;
+    }
+
+    if (pieceOwner(board[r][c]) === 1) {
+      const pieceMoves = movesFromSquare(r, c);
+      if (!pieceMoves.length) {
+        selected = null;
+        legalMoves = [];
+        renderBoard();
+        return;
+      }
+      selected = { r, c };
+      legalMoves = pieceMoves;
+      renderBoard();
+      return;
+    }
+
+    selected = null;
+    legalMoves = [];
+    renderBoard();
+  }
+
+  function squareEl(r, c) {
+    return boardEl.querySelector('.square[data-r="' + r + '"][data-c="' + c + '"]');
+  }
+
+  function wait(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  function waitTransition(el) {
+    return new Promise((resolve) => {
+      const done = () => {
+        el.removeEventListener("transitionend", done);
+        resolve();
+      };
+      el.addEventListener("transitionend", done);
+      setTimeout(resolve, 280);
+    });
+  }
+
+  async function animateMove(move) {
+    animating = true;
+    boardEl.classList.add("animating");
+
+    const fromSq = squareEl(move.from.r, move.from.c);
+    const pieceEl = fromSq && fromSq.querySelector(".piece");
+    if (!fromSq || !pieceEl) {
+      board = applyMove(board, move);
+      animating = false;
+      boardEl.classList.remove("animating");
+      return;
+    }
+
+    const boardRect = boardEl.getBoundingClientRect();
+    const fromRect = fromSq.getBoundingClientRect();
+    const pieceSize = fromRect.width * 0.72;
+
+    const flying = pieceEl.cloneNode(true);
+    flying.classList.add("flying");
+    flying.classList.remove("disabled");
+    flying.style.width = pieceSize + "px";
+    flying.style.height = pieceSize + "px";
+    flying.style.left = fromRect.left - boardRect.left + (fromRect.width - pieceSize) / 2 + "px";
+    flying.style.top = fromRect.top - boardRect.top + (fromRect.height - pieceSize) / 2 + "px";
+    boardEl.appendChild(flying);
+    fromSq.classList.add("anim-source");
+
+    const steps = [{ r: move.from.r, c: move.from.c }, ...move.path];
+
+    for (let i = 1; i < steps.length; i++) {
+      const dest = steps[i];
+      const destSq = squareEl(dest.r, dest.c);
+      if (!destSq) continue;
+      const destRect = destSq.getBoundingClientRect();
+
+      // Fade captured piece between previous and this landing
+      if (move.captures[i - 1]) {
+        const cap = move.captures[i - 1];
+        const capSq = squareEl(cap.r, cap.c);
+        const capPiece = capSq && capSq.querySelector(".piece");
+        if (capPiece) {
+          capPiece.classList.add("capturing");
+        }
+      }
+
+      void flying.offsetWidth;
+      flying.style.left =
+        destRect.left - boardRect.left + (destRect.width - pieceSize) / 2 + "px";
+      flying.style.top =
+        destRect.top - boardRect.top + (destRect.height - pieceSize) / 2 + "px";
+      await waitTransition(flying);
+      await wait(40);
+    }
+
+    flying.classList.add("landing");
+    await wait(80);
+
+    board = applyMove(board, move);
+    flying.remove();
+    animating = false;
+    boardEl.classList.remove("animating");
+  }
+
+  async function executePlayerMove(move) {
+    selected = null;
+    legalMoves = [];
+    allPlayerMoves = [];
+    renderBoard();
+    await animateMove(move);
+    afterMove(1);
+  }
+
+  function afterMove(whoMoved) {
+    const nextPlayer = -whoMoved;
+    positionHistory.push(boardKey(board, nextPlayer));
+
+    if (countPieces(board, nextPlayer) === 0) {
+      endGame(
+        whoMoved === 1 ? "win" : "lose",
+        whoMoved === 1
+          ? "All black pieces captured."
+          : "All your pieces were captured."
+      );
+      return;
+    }
+
+    const nextMoves = getAllMoves(board, nextPlayer);
+    if (nextMoves.length === 0) {
+      endGame(
+        whoMoved === 1 ? "win" : "lose",
+        whoMoved === 1
+          ? "Black has no legal moves."
+          : "You have no legal moves."
+      );
+      return;
+    }
+
+    const key = boardKey(board, nextPlayer);
+    if (positionHistory.filter((h) => h === key).length >= 3) {
+      endGame("draw", "The same position repeated three times.");
+      return;
+    }
+
+    currentPlayer = nextPlayer;
+    if (currentPlayer === -1) {
+      startAITurn();
+    } else {
+      beginPlayerTurn();
+    }
+  }
+
+  function beginPlayerTurn() {
+    currentPlayer = 1;
+    aiThinking = false;
+    selected = null;
+    legalMoves = [];
+    allPlayerMoves = getAllMoves(board, 1);
+    turnLabel.textContent = "Your turn";
+    turnLabel.classList.remove("ai-thinking");
+    renderBoard();
+
+    const origins = new Set(
+      allPlayerMoves.map((m) => m.from.r + "," + m.from.c)
+    );
+    if (origins.size === 1) {
+      const [rc] = origins;
+      const [r, c] = rc.split(",").map(Number);
+      selected = { r, c };
+      legalMoves = movesFromSquare(r, c);
+      renderBoard();
+    }
+  }
+
+  function startAITurn() {
+    currentPlayer = -1;
+    aiThinking = true;
+    turnLabel.textContent = "AI thinking…";
+    turnLabel.classList.add("ai-thinking");
+    selected = null;
+    legalMoves = [];
+    allPlayerMoves = [];
+    renderBoard();
+
+    const delay = level === "hard" ? 300 : 200;
+    setTimeout(async () => {
+      if (gameOver) return;
+      const move = pickAIMove();
+      if (!move) {
+        endGame("win", "Black has no legal moves.");
+        return;
+      }
+      await animateMove(move);
+      aiThinking = false;
+      afterMove(-1);
+    }, delay);
+  }
+
+  function endGame(result, message) {
+    gameOver = true;
+    aiThinking = false;
+    turnLabel.textContent =
+      result === "win" ? "You win!" : result === "lose" ? "You lose" : "Draw";
+    turnLabel.classList.remove("ai-thinking");
+    resultTitle.textContent =
+      result === "win" ? "You win!" : result === "lose" ? "You lose" : "Draw";
+    resultTitle.className = result === "win" ? "" : result;
+    resultMessage.textContent = message;
+    resultOverlay.classList.remove("hidden");
+    renderBoard();
+  }
+
+  function startGame(selectedLevel) {
+    level = selectedLevel;
+    levelBadge.textContent = LEVELS[level].label;
+    board = createInitialBoard();
+    gameOver = false;
+    aiThinking = false;
+    selected = null;
+    legalMoves = [];
+    allPlayerMoves = [];
+    positionHistory = [boardKey(board, 1)];
+    resultOverlay.classList.add("hidden");
+    levelScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+    beginPlayerTurn();
+  }
+
+  function showLevelScreen() {
+    gameScreen.classList.add("hidden");
+    levelScreen.classList.remove("hidden");
+    resultOverlay.classList.add("hidden");
+  }
+
+  function openHelp() {
+    helpOverlay.classList.remove("hidden");
+    helpOverlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closeHelp() {
+    helpOverlay.classList.add("hidden");
+    helpOverlay.setAttribute("aria-hidden", "true");
+  }
+
+  document.querySelectorAll(".level-btn").forEach((btn) => {
+    btn.addEventListener("click", () => startGame(btn.dataset.level));
+  });
+
+  document.getElementById("newGameBtn").addEventListener("click", () => {
+    startGame(level);
+  });
+  document.getElementById("playAgainBtn").addEventListener("click", () => {
+    startGame(level);
+  });
+  document.getElementById("changeLevelBtn").addEventListener("click", showLevelScreen);
+  document
+    .getElementById("changeLevelFromResultBtn")
+    .addEventListener("click", showLevelScreen);
+
+  document.getElementById("helpBtnLevel").addEventListener("click", openHelp);
+  document.getElementById("helpBtnGame").addEventListener("click", openHelp);
+  document.getElementById("helpClose").addEventListener("click", closeHelp);
+  helpOverlay.addEventListener("click", (e) => {
+    if (e.target === helpOverlay) closeHelp();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeHelp();
+  });
+})();
+  </script>
+  </body>
+</html>
+

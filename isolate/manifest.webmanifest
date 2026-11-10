@@ -1,0 +1,20 @@
+{
+  "name": "SI GAMES",
+  "short_name": "SI GAMES",
+  "description": "A focused browser-game launcher by ////SPIDEY_IRAJ////. Play. Discover. Enjoy.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#050816",
+  "theme_color": "#050816",
+  "lang": "en",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

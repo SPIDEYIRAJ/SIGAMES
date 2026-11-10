@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base target="_self">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talha - Rock Paper & Scissor</title>
+
+    <!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+	<!-- Also uploaded the demo of this code in a gif : https://c.tenor.com/x8v1oNUOmg4AAAAd/tenor.gif-->
+	<!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+	<!-- 👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻👇🏻-->
+	<!-- More html-css-js Games Calculators Games Cards Elements Projects on https://www.github.com/he-is-talha --> 
+	<!-- 👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻👆🏻-->
+
+	<link rel="icon" href="https://i.ibb.co/M6KTWnf/pic.jpg">
+    
+
+  <style>
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body,
+.container,
+.choices,
+.both-choices,
+.points {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  background-color: black;
+  color: white;
+  height: 100vh;
+}
+
+.container {
+  flex-direction: column;
+  gap: 20px;
+}
+
+.choices {
+  gap: 20px;
+  width: 400px;
+}
+
+.choices img {
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.choices img:active {
+  transform: scale(0.95);
+}
+
+.both-choices h3:nth-child(1) {
+  margin-right: 20px;
+}
+
+.both-choices span {
+  font-weight: 500;
+  color: yellow;
+}
+
+.result {
+  font-size: 28px;
+  color: yellow;
+}
+
+.points h3:nth-child(1) {
+  margin-right: 15px;
+}
+
+.points span {
+  font-weight: 500;
+  color: yellow;
+}
+  </style>
+  </head>
+
+<body>
+
+    <div class="container">
+        <h1>Rock, Paper & Scissor Game</h1>
+        <h2>Pick your choice</h2>
+        <div class="choices">
+            <img src="images/rock.jpg" alt="rock" id="rock">
+            <img src="images/paper.jpg" alt="paper" id="paper">
+            <img src="images/scissor.jpg" alt="scissor" id="scissor">
+        </div>
+        <div class="both-choices">
+            <h3>User Choice : <span class="user-choice">NA</span></h3>
+            <h3>Computer Choice : <span class="computer-choice">NA</span></h3>
+        </div>
+        <p class="result">Results will appear here...</p>
+        <div class="points">
+            <h3>User Points : <span class="user-points">0</span></h3>
+            <h3>Computer Points : <span class="computer-points">0</span></h3>
+        </div>
+    </div>
+
+    
+
+  <script>
+const imgEls = document.querySelectorAll("img");
+const resultEl = document.querySelector(".result");
+const userChoiceEl = document.querySelector(".user-choice");
+const computerChoiceEl = document.querySelector(".computer-choice");
+const userPointsEl = document.querySelector(".user-points");
+const computerPointsEl = document.querySelector(".computer-points");
+
+let userPoints= 0;
+let computerPoints = 0;
+
+imgEls.forEach((img) => {
+  img.addEventListener("click", () => {
+    const computerTurn = computerChoice();
+    const result = gamePlay(img.id, computerTurn);
+    userChoiceEl.textContent = img.id;
+    computerChoiceEl.textContent = computerTurn;
+    resultEl.textContent = result;
+  });
+});
+
+// Computer randomly pick one choice from the given choices
+function computerChoice() {
+  const choices = ["rock", "paper", "scissor"];
+  const randomChoice = Math.floor(Math.random() * choices.length);
+  return choices[randomChoice];
+}
+
+// it return result by checking user and computer selection
+function gamePlay(userSelection, computerSelection) {
+  if (userSelection === computerSelection) {
+    return "It is a tie..!";
+  } else if (
+    (userSelection === "rock" && computerSelection === "scissor") ||
+    (userSelection === "paper" && computerSelection === "rock") ||
+    (userSelection === "scissor" && computerSelection === "paper")
+  ) {
+    userPoints++;
+    userPointsEl.textContent = userPoints;
+    return "Hurrah! You win..! " + userSelection + " beats " + computerSelection;
+  } else {
+    computerPoints++;
+    computerPointsEl.textContent = computerPoints;
+    return "Oops! You lose...! " + computerSelection + " beats " + userSelection;
+  }
+}
+  </script>
+  </body>
+
+</html>
+
