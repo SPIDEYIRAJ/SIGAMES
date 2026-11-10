@@ -480,6 +480,36 @@ const NON_FRAMABLE_HOSTS = [
 /** Cover art that ships with the latest batch of titles. */
 const IMG = "https://www.inxanitylabs.com/assets/games/";
 
+/** Confirmed page-1 covers for the community-dump batch, keyed by game id. */
+const COVERS: Record<string, string> = {
+  "starcraft-openbw": "https://ported2browser.com/storage/covers/starcraft-openbw.webp",
+  "mario-kart-64-online": "https://ported2browser.com/storage/covers/mario-kart-64-online.webp",
+  "fifa-14": "https://ported2browser.com/storage/covers/fifa-14.webp",
+  "do-not-take-this-cat-home": "https://ported2browser.com/storage/covers/do-not-take-this-cat-home.webp",
+  "dbz-budokai3": "https://ported2browser.com/storage/covers/dbz-budokai-3.webp",
+  "gran-turismo-4": "https://ported2browser.com/storage/covers/gran-turismo-4.webp",
+  "nfs-underground-2": "https://ported2browser.com/storage/covers/need-for-speed-underground-2-pc.webp",
+  "street-fighter-anniversary": "https://ported2browser.com/storage/covers/street-fighter-ac.webp",
+  "downhill-domination": "https://ported2browser.com/storage/covers/downhill-domination.webp",
+  "super-mario-galaxy": "https://ported2browser.com/storage/covers/super-mario-galaxy.webp",
+  "worms-ow2": "https://ported2browser.com/storage/covers/worms-ow-2.webp",
+  "pokemon-park-tycoon": "https://ported2browser.com/storage/covers/pokemon-park-tycoon.webp",
+  "tekken-4": "https://ported2browser.com/storage/covers/tekken-4.webp",
+  "soulcalibur-2": "https://ported2browser.com/storage/covers/soulcalibur-2.webp",
+  zeldamon: "https://ported2browser.com/storage/covers/zeldamon.webp",
+  "ssx-3": "https://ported2browser.com/storage/covers/ssx-3.webp",
+  "marvel-vs-capcom-2": "https://ported2browser.com/storage/covers/marvel-vs-capcom-2.webp",
+  "pes-2011": "https://ported2browser.com/storage/covers/pro-evolution-soccer-11.webp",
+  "dbz-budokai": "https://ported2browser.com/storage/covers/dbz-budokai.webp",
+  "resident-evil-4": "https://ported2browser.com/storage/covers/resident-evil-4.webp",
+  "formula-one-06": "https://ported2browser.com/storage/covers/formula-one-06.webp",
+  "slime-rancher": "https://ported2browser.com/storage/covers/slime-rancher.webp",
+  pokeisaac: "https://ported2browser.com/storage/covers/pokeisaac.webp",
+  "tekken-5": "https://ported2browser.com/storage/covers/tekken-5.webp",
+  "def-jam-fight-for-ny": "https://ported2browser.com/storage/covers/def-jam-fight-for-ny.webp",
+  burnout3: "https://ported2browser.com/storage/covers/burnout-3-takedown.webp",
+};
+
 /** SI premium proxy routes are always handed over as a link, never framed: every
  * title (or server) whose URL points at this host opens in the player's own tab. */
 const PREMIUM_HOST = "sigamespremiumrp.spideyiraj1925.workers.dev";
@@ -826,20 +856,20 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   "skate-3": { thumbnail: IMG + "skate-3.webp" },
   "cs-surf": { thumbnail: IMG + "surfd.webp" },
   "pes-6": { thumbnail: IMG + "pes-6.webp" },
-  "pes-2011": { thumbnail: IMG + "pes-2011-art.webp", servers: [{ name: "optijuegos", url: "https://pes11.optijuegos.net/" }] },
+  "pes-2011": { thumbnail: COVERS["pes-2011"], servers: [{ name: "optijuegos", url: "https://pes11.optijuegos.net/" }] },
   "pes-2014": { thumbnail: IMG + "pes-2014-art.webp", servers: [{ name: "pes14.online", url: "https://pes14.online/", external: true }] },
-  "fifa-14": { thumbnail: IMG + "fifa-14-art.webp", servers: [{ name: "fifa14.online", url: "https://fifa14.online/", external: true }, { name: "GamingRetro", url: "https://fifa14.gamingretro.online/", external: true }] },
+  "fifa-14": { thumbnail: COVERS["fifa-14"], servers: [{ name: "fifa14.online", url: "https://fifa14.online/", external: true }, { name: "GamingRetro", url: "https://fifa14.gamingretro.online/", external: true }] },
   "cricket-07": { thumbnail: IMG + "cricket-07-art.webp", servers: [{ name: "dhaiwat", url: "https://cricket07.dhaiwat.com/" }] },
   "wwe-smackdown-raw-2011": { thumbnail: IMG + "wwe-svr-2011-art.webp" },
   "tekken-5-dark-resurrection": { thumbnail: IMG + "tekken-5-dark-resurrection-art.webp", servers: [{ name: "tekkendr.live", url: "https://tekkendr.live/", external: true }, { name: "Recomp", url: "https://tkdr-recomp.pages.dev/" }] },
   "nfs-most-wanted": { thumbnail: IMG + "nfs-most-wanted-art.webp", servers: [{ name: "lauta.site", url: "https://nfsmwested.lauta.site/" }] },
   // Fresh mirrors handed over with the community dump. Hosts that answer with
   // X-Frame-Options stay `external`, so the picker hands the link over.
-  burnout3: { servers: [{ name: "GamingRetro", url: "https://burnout3.gamingretro.online/", external: true }] },
+  burnout3: { thumbnail: COVERS.burnout3, servers: [{ name: "GamingRetro", url: "https://burnout3.gamingretro.online/", external: true }] },
   "mk-shaolin-monks": { servers: [{ name: "GamingRetro", url: "https://mortalkombatsm.gamingretro.online/", external: true }] },
   wwepain: { servers: [{ name: "GamingRetro", url: "https://wwepain.gamingretro.online/", external: true }] },
   gh3: { servers: [{ name: "diary", url: "https://gh3.thediaryofchris.net/index.html" }] },
-  "nfs-underground-2": { thumbnail: IMG + "need-for-speed-underground-2-art.webp", servers: [{ name: "nfsunderground2.site", url: "https://nfsunderground2.site/", external: true }] },
+  "nfs-underground-2": { thumbnail: COVERS["nfs-underground-2"], servers: [{ name: "nfsunderground2.site", url: "https://nfsunderground2.site/", external: true }] },
   "midnight-club-3-dub": { thumbnail: IMG + "midnight-club-3-art.webp", servers: [{ name: "midnighhtclub3.online", url: "https://midnighhtclub3.online/", external: true }] },
   "web-dragonball-bt3": { thumbnail: IMG + "dragon-ball-bt3.webp" },
   "super-monkey-ball": { thumbnail: IMG + "super-monkey-ball-art.webp" },
@@ -1367,7 +1397,7 @@ const featuredNewGames: Game[] = [
     tags: ["Kart", "Retro", "Multiplayer"],
     description: "Mario Kart 64 running in the browser with online rooms for up to four racers.",
     controls: "Arrow keys to steer and accelerate, Z to drift, A to use an item. Click the frame first so it takes the keyboard.",
-    thumbnail: cover(1301),
+    thumbnail: COVERS["mario-kart-64-online"],
     sourceUrl: "https://olivers.tools/kart/",
     type: "iframe",
     heavy: true,
@@ -1388,7 +1418,7 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   description,
   controls,
   sourceUrl,
-  thumbnail: cover(1400 + index),
+  thumbnail: COVERS[id] ?? cover(1400 + index),
   type: "iframe",
   heavy: true,
   ...(external ? { openInNewTab: true } : {}),
