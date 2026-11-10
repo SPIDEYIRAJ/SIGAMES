@@ -7,6 +7,7 @@ import {
   Gamepad2,
   Check,
   Heart,
+  History,
   Search,
   Send,
   Sparkles,
@@ -14,8 +15,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import { useNavigate } from "react-router";
-import { categories, games, type Game } from "@/data/games";
+import { Link, useNavigate } from "react-router";
+import { categories, games, newGames, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
 import ThemePicker from "@/components/ThemePicker";
 
@@ -261,6 +262,8 @@ export default function Landing() {
           <a className="brand" href="#top" aria-label="SI GAMES home"><BrandMark /><span>SI GAMES</span></a>
           <nav className="desktop-nav" aria-label="Main navigation">
             <a href="#library">Library</a>
+            <Link className="nav-extra" to="/new">New games</Link>
+            <Link className="nav-extra" to="/changelog">Change list</Link>
             <a href="#favorites">Favorites</a>
             <a href="#about">About</a>
             <a href="/developers">Developers</a>
@@ -312,6 +315,20 @@ export default function Landing() {
           <div className="section-heading">
             <div><span className="section-kicker"><Gamepad2 size={14} /> YOUR LITTLE ARCADE</span><h2>Find your next favorite.</h2><p>{games.length} ways to pause the world and play.</p></div>
             <span className="section-count" aria-live="polite">{filteredGames.length.toString().padStart(2, "0")} titles</span>
+          </div>
+          {/* The two extra shelves. Kept here as well as in the header because
+              the header nav is hidden on phones. */}
+          <div className="shelf-shortcuts">
+            <Link className="shelf-shortcut" to="/new">
+              <span className="shelf-shortcut-icon"><Sparkles size={16} /></span>
+              <span><b>New games</b><small>{newGames.length} latest additions</small></span>
+              <ArrowRight size={16} />
+            </Link>
+            <Link className="shelf-shortcut" to="/changelog">
+              <span className="shelf-shortcut-icon"><History size={16} /></span>
+              <span><b>Change list</b><small>What changed, release by release</small></span>
+              <ArrowRight size={16} />
+            </Link>
           </div>
           <div className="truth-band">
             <AlertTriangle size={18} />

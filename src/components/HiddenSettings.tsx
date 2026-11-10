@@ -53,14 +53,15 @@ export function HiddenSettings() {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useSecretTaps(() => {
+    // Read the saved setting as the panel opens — doing it in an effect would
+    // write state on mount for no reason (and trip the cascading-render lint).
+    setControllers(isControllersEnabled());
     setOpen(true);
     window.dispatchEvent(new Event(STORAGE_EVENT));
   });
 
-  // Keep the toggle in sync when the setting flips anywhere else.
   useEffect(() => {
     if (!open) return;
-    setControllers(isControllersEnabled());
 
     const activationTarget = modalRef.current?.querySelector<HTMLElement>(".hidden-settings-close");
     activationTarget?.focus({ preventScroll: true });

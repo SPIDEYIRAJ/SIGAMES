@@ -1424,6 +1424,9 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
+/** The newest drop, newest first — what the New games shelf lists. */
+export const newGames: Game[] = [...featuredNewGames, ...importedGameEntries];
+
 export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
   {
     id: "gta-v",

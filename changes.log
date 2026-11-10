@@ -3,6 +3,37 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-10 — library drop, cover art, change list and new-games pages
+----------------------------------------------------------------------
+
+ADD  94 new titles, all checked against the shelf first so no existing game
+     gets a duplicate card. Headline pair: SMASHLINE and CHOMPOCALYPSE
+     (RetroGems arcade racers, embedded in the frame). Behind them: StarCraft
+     (OpenBW), Mario Kart 64 Online, Super Mario Galaxy, the Budokai line,
+     Tekken 4/5, SSX 3, Soulcalibur II, Daggerfall, wipEout, PSO Reborn and
+     the romhack compendiums. Data block: `featuredNewGames`, `importedGames`
+     and `importedGameEntries` in src/data/games.ts.
+
+ADD  Real cover art for the first 26 arrivals, from the confirmed page-one
+     covers (COVERS map in games.ts). FIFA 14, NFS Underground 2, PES 2011 and
+     Burnout 3 traded their old art for the confirmed files too.
+
+CHG  Extra links for titles already on the shelf became server mirrors on the
+     existing card instead of second cards (FIFA 14, Burnout 3, MK: Shaolin
+     Monks, WWE HCTP, Tekken 5 DR, Guitar Hero 3, Halo CE, Mario Kart 64).
+     Hosts that answer with X-Frame-Options / frame-ancestors carry
+     `openInNewTab` and hand the link over; everything else runs in-frame.
+
+ADD  Two paged shelves: /new lists the latest drop and /changelog lists these
+     release notes. Both use the shared `Pager` component and keep the page
+     number in the query string, so a page can be linked or reloaded. Linked
+     from the header nav and from two shortcut cards under the library
+     heading, since the header nav is hidden on phones.
+
+FIX  HiddenSettings wrote state from an effect on every open, which the lint
+     rule flags as a cascading render. The saved setting is now read in the
+     open handler, so `bun run lint` is back to 0 errors.
+
 2026-10-26 — code health, colour themes, six new titles
 -------------------------------------------------------
 

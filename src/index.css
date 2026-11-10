@@ -759,3 +759,439 @@
   max-height: none;
 }
 
+/* ═════════════════════════════════════════════════════════════════════
+   SI SHELVES — the New games and Change list pages, and the page
+   navigator they share. Same panels, bevels and accent tokens as the
+   library, so a new page never looks bolted on.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.shelf-page {
+  min-height: 100dvh;
+  background: var(--si-bg);
+}
+
+.shelf-main {
+  width: min(1120px, 100% - 40px);
+  margin: 0 auto;
+  padding: 34px 0 62px;
+  padding-bottom: calc(62px + env(safe-area-inset-bottom));
+}
+
+.shelf-title {
+  margin-top: 10px;
+  color: #f2f6ff;
+  font-size: clamp(28px, 4.4vw, 44px);
+  font-weight: 950;
+  letter-spacing: -.045em;
+  line-height: 1.04;
+}
+
+.shelf-lead {
+  max-width: 700px;
+  margin-top: 10px;
+  color: #9fb0d6;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* ——— The two shortcut cards on the library landing. ——— */
+.shelf-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 14px;
+}
+
+.shelf-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  color: #cfdaf6;
+  background: var(--si-panel);
+  border: 1px solid var(--si-accent-22);
+  clip-path: var(--si-bevel-l);
+  text-decoration: none;
+  transition: background .16s ease, border-color .16s ease, color .16s ease;
+}
+
+.shelf-shortcut:hover {
+  color: #fff;
+  background: var(--si-panel-raised);
+  border-color: var(--si-glow-40);
+}
+
+.shelf-shortcut > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+
+.shelf-shortcut b {
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.shelf-shortcut small {
+  color: #8796bb;
+  font-size: 10px;
+  letter-spacing: .04em;
+}
+
+.shelf-shortcut-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  color: var(--si-glow);
+  background: var(--si-accent-18);
+  border: 1px solid var(--si-accent-28);
+}
+
+.shelf-shortcut > svg {
+  flex: none;
+  color: var(--si-glow);
+}
+
+/* ——— New games grid. ——— */
+.shelf-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 26px;
+}
+
+.shelf-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  color: inherit;
+  background: var(--si-panel);
+  border: 1px solid var(--si-accent-22);
+  clip-path: var(--si-bevel-l);
+  text-decoration: none;
+  transition: transform .18s cubic-bezier(.16, 1, .3, 1), border-color .18s ease;
+}
+
+.shelf-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--si-accent-60);
+}
+
+.shelf-art {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--si-bg-deep);
+}
+
+.shelf-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shelf-number {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 7px;
+  color: #cfe3ff;
+  background: #0d162de0;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  clip-path: var(--si-bevel-xs);
+}
+
+.shelf-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 11px 12px 13px;
+}
+
+.shelf-body h2 {
+  color: #f2f6ff;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: -.01em;
+  line-height: 1.25;
+}
+
+.shelf-body p {
+  color: #8796bb;
+  font-size: 9px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.shelf-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+  color: var(--si-glow);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.shelf-footnote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 18px;
+  color: #7485ad;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.shelf-footnote a {
+  color: #c6d4f2;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.shelf-footnote a:hover {
+  color: #fff;
+}
+
+/* ——— Change list releases. ——— */
+.release {
+  margin-top: 26px;
+  padding: 18px 18px 6px;
+  background: var(--si-panel);
+  border: 1px solid var(--si-accent-22);
+  clip-path: var(--si-bevel-l);
+}
+
+.release-head {
+  display: flex;
+  align-items: start;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--si-accent-18);
+}
+
+.release-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.release-date {
+  flex: none;
+  padding: 5px 8px;
+  color: var(--si-glow);
+  background: var(--si-accent-18);
+  border: 1px solid var(--si-accent-28);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  clip-path: var(--si-bevel-xs);
+}
+
+.release-head h2 {
+  color: #f2f6ff;
+  font-size: 17px;
+  font-weight: 950;
+  letter-spacing: -.02em;
+}
+
+.release-head p {
+  max-width: 640px;
+  margin-top: 5px;
+  color: #93a4c9;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.release-count {
+  flex: none;
+  color: #667299;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.change-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.change-item {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--si-accent-18);
+}
+
+.change-item:last-child {
+  border-bottom: 0;
+}
+
+.change-kind {
+  flex: none;
+  width: 64px;
+  padding: 4px 0;
+  color: #0a1020;
+  background: var(--si-glow);
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-align: center;
+  text-transform: uppercase;
+  clip-path: var(--si-bevel-xs);
+}
+
+.change-item--fix .change-kind {
+  background: #7fe0a8;
+}
+
+.change-item--chg .change-kind {
+  background: #ffcf6b;
+}
+
+.change-item--del .change-kind {
+  background: #ff8f9f;
+}
+
+.change-copy h3 {
+  color: #e8eefc;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.change-copy p {
+  margin-top: 4px;
+  color: #93a4c9;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+/* ——— The shared page navigator. ——— */
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 26px;
+  padding-top: 16px;
+  border-top: 1px solid var(--si-accent-18);
+}
+
+.pager-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 12px;
+  color: #c3cfec;
+  background: var(--si-panel-raised);
+  border: 1px solid var(--si-accent-22);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: var(--si-bevel-s);
+}
+
+.pager-step:hover:not(:disabled) {
+  color: #fff;
+  background: var(--si-glow-14);
+  border-color: var(--si-glow-40);
+}
+
+.pager-step:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.pager-numbers {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.pager-number {
+  min-width: 36px;
+  height: 34px;
+  color: #aebbd8;
+  background: var(--si-panel);
+  border: 1px solid var(--si-accent-18);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  cursor: pointer;
+  clip-path: var(--si-bevel-s);
+}
+
+.pager-number:hover {
+  color: #fff;
+  border-color: var(--si-glow-40);
+}
+
+.pager-number.is-current {
+  color: var(--si-bg);
+  background: var(--si-glow);
+  border-color: var(--si-glow);
+}
+
+.pager-gap {
+  padding: 0 2px;
+  color: #667299;
+  font-size: 11px;
+}
+
+.pager-caption {
+  margin-left: auto;
+  color: #7485ad;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* The two extra nav entries are the first to go when the header row gets
+   tight — the shortcut cards under the library heading still lead there. */
+@media (max-width: 1080px) {
+  .desktop-nav .nav-extra { display: none; }
+}
+
+@media (max-width: 900px) {
+  .shelf-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+  .shelf-main { width: min(100% - 28px, 640px); padding-top: 24px; }
+  .shelf-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .shelf-shortcuts { grid-template-columns: 1fr; }
+  .release { padding: 15px 14px 4px; }
+  .release-head { flex-wrap: wrap; gap: 8px; }
+  .release-head h2 { font-size: 15px; }
+  .change-item { flex-direction: column; gap: 7px; }
+  .change-kind { width: auto; padding: 4px 9px; }
+  .pager-step,
+  .pager-number { min-height: 44px; }
+  .pager-caption { width: 100%; margin-left: 0; text-align: center; }
+}
+
+@media (max-width: 420px) {
+  .shelf-grid { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shelf-card,
+  .shelf-card:hover { transform: none; }
+}
+
