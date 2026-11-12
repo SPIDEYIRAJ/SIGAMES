@@ -19,6 +19,7 @@ const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NewGames = lazy(() => import("./pages/NewGames.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
+const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -33,17 +34,28 @@ function RouteLoading() {
 
 function LoadingScreen() {
   return (
-    <div className="boot-screen" role="status" aria-live="polite">
+    <motion.div
+      className="boot-screen"
+      role="status"
+      aria-live="polite"
+      exit={{ opacity: 0, filter: "blur(8px)", scale: 1.02 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div className="boot-glow" />
+      <span className="boot-horizon" aria-hidden="true" />
+      <span className="boot-crosshair" aria-hidden="true"><i /><i /></span>
       <div className="boot-content">
         <div className="boot-logo">SI</div>
         <p className="boot-brand">SI GAMES</p>
         <p className="boot-tagline">PLAY. DISCOVER. ENJOY.</p>
         <div className="boot-loader"><span /></div>
         <p className="boot-status">WAKING UP THE ARCADE<span>...</span></p>
+        <div className="boot-steps" aria-hidden="true"><span>INSERT</span><span>POWER</span><span>PLAY</span></div>
       </div>
+      <span className="boot-chip boot-chip--tl">ARCADE OS</span>
+      <span className="boot-chip boot-chip--br">SIGNAL READY</span>
       <p className="boot-watermark">////SPIDEY_IRAJ////</p>
-    </div>
+    </motion.div>
   );
 }
 
@@ -394,26 +406,40 @@ function AnimatedRoutes() {
   const location = useLocation();
   const reduceMotion = useReducedMotion();
 
+  /** Every route starts at the top, so a card clicked deep in the shelf does
+   *  not open the player halfway down the page. */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={location.pathname}
         className="route-motion"
-        initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 26 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -18 }}
-        transition={{
-          duration: 0.26,
-          ease: [0.16, 1, 0.3, 1],
-          opacity: { duration: 0.18 },
-        }}
+        /* Opacity only: a transform here would become the containing block for
+           the boot console's fixed layers. The veil does the spatial motion. */
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: reduceMotion ? 0.1 : 0.3, ease: [0.22, 1, 0.36, 1] }}
       >
+        {!reduceMotion && (
+          <motion.span
+            className="route-veil"
+            aria-hidden="true"
+            initial={{ scaleY: 1 }}
+            animate={{ scaleY: 0 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          />
+        )}
         <Suspense fallback={<RouteLoading />}>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/new" element={<NewGames />} />
             <Route path="/changelog" element={<Changelog />} />
+            <Route path="/sheet" element={<DataSheet />} />
             <Route path="/gta-v" element={<GamePlayer />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
             <Route path="/play/:id" element={<GamePlayer />} />
@@ -447,7 +473,9 @@ function AppBootstrap() {
         <RouteSyncer />
         <Backdrop />
         <HiddenSettings />
-        {isLoading ? <LoadingScreen /> : <AnimatedRoutes />}
+        {/* The boot screen fades itself out while the shelf mounts underneath. */}
+        <AnimatePresence>{isLoading && <LoadingScreen key="boot" />}</AnimatePresence>
+        {!isLoading && <AnimatedRoutes />}
       </BrowserRouter>
       <Toaster />
     </ConvexAuthProvider>

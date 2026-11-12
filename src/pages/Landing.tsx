@@ -11,6 +11,7 @@ import {
   Search,
   Send,
   Sparkles,
+  Star,
   Trophy,
   X,
   Zap,
@@ -19,6 +20,9 @@ import { Link, useNavigate } from "react-router";
 import { categories, games, newGames, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
 import ThemePicker from "@/components/ThemePicker";
+import { captureLaunchSource } from "@/lib/launch";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const PAGE_SIZE = 18;
 /** The inbox every submission from the shelf below is written out to. */
@@ -49,7 +53,9 @@ function BrandMark() {
   );
 }
 
-function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite: boolean; onFavorite: () => void; onPlay: () => void }) {
+type GameSignal = { average: number; likes: number; ratingCount: number; commentCount: number };
+
+function GameCard({ game, favorite, onFavorite, onPlay, signal }: { game: Game; favorite: boolean; onFavorite: () => void; onPlay: (card: Element | null) => void; signal?: GameSignal }) {
   return (
     <article className="game-card">
       <div className="game-art">
@@ -62,6 +68,11 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
         </button>
         <div className="art-bottomline">
           <span className="game-index">{String(games.indexOf(game) + 1).padStart(2, "0")}</span>
+          {signal && signal.ratingCount > 0 && (
+            <span className="art-signal" title={`${signal.likes} likes · ${signal.commentCount} comments`}>
+              <Star size={10} fill="currentColor" /> {signal.average.toFixed(1)}
+            </span>
+          )}
           <span className="art-type">{game.htmlGame ? "HTML browser game" : game.type === "iframe" ? "Browser ready" : "External game"}</span>
         </div>
       </div>
@@ -70,7 +81,7 @@ function GameCard({ game, favorite, onFavorite, onPlay }: { game: Game; favorite
           <p>{game.description}</p>
           {game.htmlGame ? <p className="game-card-note game-card-note--html">HTML game · gameplay may be rough, buggy, or unfinished.</p> : game.heavy && <p className="game-card-note">Ship heavy: movements and sounds may lag.</p>}
         </div>
-        <button type="button" className="play-button" onClick={onPlay}>
+        <button type="button" className="play-button" onClick={(event) => onPlay(event.currentTarget.closest(".game-card"))}>
           Play now <ArrowRight size={16} />
         </button>
       </div>
@@ -95,6 +106,8 @@ export default function Landing() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
+  /** Ratings/comments across the whole shelf, one live subscription. */
+  const signals = useQuery(api.feedback.overview);
   const htmlCount = useMemo(() => games.filter((game) => game.htmlGame).length, []);
   const heavyCount = useMemo(() => games.filter((game) => game.heavy).length, []);
 
@@ -207,10 +220,12 @@ export default function Landing() {
     setToast(next.includes(game.id) ? "Saved to your favorites" : "Removed from favorites");
   };
 
-  const playGame = (game: Game) => {
+  const playGame = (game: Game, card: Element | null = null) => {
     const next = [game.id, ...recent.filter((id) => id !== game.id)].slice(0, 6);
     setRecent(next);
     localStorage.setItem("si-games-recent", JSON.stringify(next));
+    // The player page picks this up to fly the same card into the console.
+    captureLaunchSource(game.id, game.thumbnail, card);
     navigate(game.standalone ? `/${game.id}` : `/play/${game.id}`);
   };
 
@@ -307,7 +322,7 @@ export default function Landing() {
         {recentGames.length > 0 && (
           <section className="continue-section content-section" id="continue">
             <div className="section-heading compact"><div><span className="section-kicker"><Clock3 size={14} /> PICK UP WHERE YOU LEFT OFF</span><h2>Continue playing</h2></div><span className="section-count">{recentGames.length} recent</span></div>
-            <div className="continue-grid">{recentGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div>
+            <div className="continue-grid">{recentGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={(card) => playGame(game, card)} signal={signals?.[game.id]} />)}</div>
           </section>
         )}
 
@@ -341,13 +356,13 @@ export default function Landing() {
             </div>
             <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button type="button" role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => applyCategory(item)}>{item}</button>)}</div>
           </div>
-          {visibleGames.length > 0 ? <div className="game-grid">{visibleGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={() => playGame(game)} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { applyQuery(""); applyCategory("All Games"); }}>Reset library</button></div>}
+          {visibleGames.length > 0 ? <div className="game-grid">{visibleGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={(card) => playGame(game, card)} signal={signals?.[game.id]} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { applyQuery(""); applyCategory("All Games"); }}>Reset library</button></div>}
           {remainingCount > 0 && <div className="load-more"><button type="button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>Load {Math.min(PAGE_SIZE, remainingCount)} more <ArrowRight size={15} /></button><span>{remainingCount} still in the hangar</span></div>}
         </section>
 
         <section className="favorites-section content-section" id="favorites">
           <div className="section-heading compact"><div><span className="section-kicker"><Heart size={14} /> YOUR SHORTLIST</span><h2>Favorites <sup>{favoriteGames.length}</sup></h2></div></div>
-          {favoriteGames.length > 0 ? <div className="favorite-strip">{favoriteGames.map((game) => <button type="button" className="favorite-item" key={game.id} onClick={() => playGame(game)} aria-label={`Play ${game.title}`}><img src={game.thumbnail} alt="" /><span><b>{game.title}</b><small>{game.category}</small></span><ArrowRight size={16} /></button>)}</div> : <div className="favorites-empty"><Heart size={17} /> Tap the heart on any game to keep it close.</div>}
+          {favoriteGames.length > 0 ? <div className="favorite-strip">{favoriteGames.map((game) => <button type="button" className="favorite-item" key={game.id} onClick={(event) => playGame(game, event.currentTarget)} aria-label={`Play ${game.title}`}><img src={game.thumbnail} alt="" /><span><b>{game.title}</b><small>{game.category}</small></span><ArrowRight size={16} /></button>)}</div> : <div className="favorites-empty"><Heart size={17} /> Tap the heart on any game to keep it close.</div>}
         </section>
 
         <section className="about-section content-section" id="about">

@@ -1,8 +1,11 @@
-import { createElement, useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
+import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import VirtualGamepad from "@/components/VirtualGamepad";
+import GameFeedback from "@/components/GameFeedback";
+import BootConsole, { measureBootBox, type BootBox } from "@/components/BootConsole";
+import { peekLaunchSource, takeLaunchSource, type LaunchSource } from "@/lib/launch";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -373,6 +376,67 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   const playerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLElement>(null);
 
+  /** Titles with a real in-frame build get the console boot; hand-over and
+   *  external titles have nothing to show in the TV, and reduced-motion
+   *  players go straight to the frame. */
+  const reduceMotion = useMemo(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
+  const canBoot = Boolean(game && game.type !== "external" && !handsLink && !reduceMotion);
+  const [bootSource] = useState<LaunchSource | null>(() => peekLaunchSource(resolvedId));
+  const [bootBox, setBootBox] = useState<BootBox | null>(() => (launched && canBoot ? measureBootBox() : null));
+  const [booting, setBooting] = useState(() => launched && canBoot);
+  const firstFrameRect = useRef<DOMRect | null>(null);
+
+  /** Arrives at the top of the player page, never halfway down the library. */
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  const finishBoot = useCallback(() => {
+    firstFrameRect.current = frameRef.current?.getBoundingClientRect() ?? null;
+    setBooting(false);
+  }, []);
+
+  /** Card → console → TV → the page: the frame is already laid out at its
+   *  final size, so this is a pure transform zoom (the iframe never reloads). */
+  useLayoutEffect(() => {
+    if (booting) return;
+    const node = frameRef.current;
+    const first = firstFrameRect.current;
+    if (!node || !first) return;
+    firstFrameRect.current = null;
+    const last = node.getBoundingClientRect();
+    if (!last.width || !last.height) return;
+
+    node.style.transformOrigin = "top left";
+    node.style.transition = "none";
+    node.style.transform = `translate(${first.left - last.left}px, ${first.top - last.top}px) scale(${(first.width / last.width).toFixed(4)}, ${(first.height / last.height).toFixed(4)})`;
+
+    const start = window.requestAnimationFrame(() => {
+      node.style.transition = "transform 640ms cubic-bezier(.19, .9, .22, 1)";
+      node.style.transform = "translate(0px, 0px) scale(1, 1)";
+    });
+    const settle = window.setTimeout(() => {
+      node.style.transition = "";
+      node.style.transform = "";
+      node.style.transformOrigin = "";
+    }, 720);
+    return () => {
+      window.cancelAnimationFrame(start);
+      window.clearTimeout(settle);
+    };
+  }, [booting]);
+
+  /** The Play button on the entrance starts the same theatre. */
+  const beginBoot = useCallback(() => {
+    if (!canBoot) return;
+    // The frame lands back at the top of the page after the zoom, so start the
+    // theatre from the top even if the entrance was scrolled down to Play.
+    window.scrollTo(0, 0);
+    takeLaunchSource(resolvedId);
+    setBootBox(measureBootBox());
+    setBooting(true);
+  }, [canBoot, resolvedId]);
+
   const reload = useCallback(() => {
     setLoading(true);
     setFrameKey((key) => key + 1);
@@ -508,7 +572,8 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
     setLaunched(true);
     setLoading(true);
     setShowFsPrompt(true);
-  }, [game, launchLink, servers.length, activeMode]);
+    beginBoot();
+  }, [game, launchLink, servers.length, activeMode, beginBoot]);
 
   // Auto-retire the fullscreen nudge so it never blocks the game for long.
   useEffect(() => {
@@ -783,6 +848,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
             </button>
           </div>
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
+          <GameFeedback gameId={game.id} gameTitle={game.title} />
           {game.media && <GameMediaPanel media={game.media} title={game.title} />}
           {game.type === "external" && !handsLink ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : handsLink ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link — open a new tab and paste it there to play. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
@@ -829,7 +895,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
         <div className="player-heading"><div><span className="section-kicker"><MonitorUp size={14} /> NOW PLAYING</span><h1>{game.htmlGame && <span className="html-pill">HTML</span>}{game.title}</h1><p>{game.description}</p></div><span className="player-category">{game.category}</span></div>
-        <section ref={frameRef} className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""}`} onContextMenu={(event) => event.preventDefault()}>
+        <section
+          ref={frameRef}
+          className={`game-frame-wrap ${isImmersive ? "is-immersive" : ""} ${booting ? "is-booting" : ""}`}
+          style={booting && bootBox ? { left: bootBox.left, top: bootBox.top, width: bootBox.width, height: bootBox.height } : undefined}
+          onContextMenu={(event) => event.preventDefault()}
+        >
             {loading && <div className="frame-loading"><Loader2 size={24} className="spin" /><span>Warming up the arcade...</span></div>}
             {showFsPrompt && !showExtension && !isNativeFullscreen && !isImmersive && <div className="fs-prompt" role="group" aria-label="Fullscreen option"><button className="fs-prompt-close" onClick={() => setShowFsPrompt(false)} aria-label="Dismiss fullscreen option"><X size={14} /></button><span className="fs-prompt-tag">FULLSCREEN OPTION</span><p>Run {game.title} edge to edge with the browser chrome out of the way.</p><div className="fs-prompt-actions"><button type="button" className="fs-prompt-go" onClick={toggleFullscreen}><Maximize2 size={14} /> Enter fullscreen</button><button type="button" className="fs-prompt-skip" onClick={() => setShowFsPrompt(false)}>Keep windowed <kbd>F</kbd></button></div></div>}
             {inFullscreen && (
@@ -876,7 +947,18 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
           : game.htmlGame ? <p className="player-disclaimer player-disclaimer--html">HTML browser game — gameplay may be rough, buggy, or unfinished. It is not a fully tested release. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
           : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
           <p className="player-device-note">This page is built for laptops and PCs. It is not made for phones or every browser tab — if the game area looks cramped or the frame does not load, try this on a computer with a bigger screen and a modern browser. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
+        <GameFeedback gameId={game.id} gameTitle={game.title} />
       </main>
+      {booting && bootBox && (
+        <BootConsole
+          title={game.title}
+          image={game.thumbnail}
+          box={bootBox}
+          source={bootSource}
+          ready={!loading}
+          onFinish={finishBoot}
+        />
+      )}
       {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       {showExtension && <div className="extension-backdrop" onClick={() => setShowExtension(false)}><div ref={extensionModalRef} className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">The Eaglercraft browser extension unlocks the full experience for this title. You can skip it and still try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div><p className="extension-skip-hint">Press <kbd>Esc</kbd> to skip</p></div></div>}
     </div>

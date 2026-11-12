@@ -3,6 +3,37 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-12 — launch theatre, player signal, private sheet
+---------------------------------------------------------
+
+ADD  Launch theatre. Clicking Play hands the card's on-screen position to the
+     player page (src/lib/launch.ts). The card flies into the console's
+     cartridge slot, the CRT wakes around the real iframe (loading the whole
+     time), the loaded game sits in the tube for 0.5s, then a FLIP zoom grows
+     that same frame into the player layout — no reload, because the iframe is
+     never moved, only transformed. Skipped for hand-over titles, external
+     links and reduced-motion players (src/components/BootConsole.tsx).
+
+ADD  Player signal under every game: 1-5 stars, a like, and one comment per
+     player per game, with live counts on the library cards. Backed by Convex
+     (`gameRatings` / `gameComments`) so the limit is enforced by the
+     (gameId, userId) unique row, not just the UI. Guests can sign in with one
+     anonymous tap; COMMENTS_PER_GAME_PER_PLAYER in src/lib/feedback.ts is the
+     public limit constant.
+
+ADD  Private data sheet at /sheet — unlisted, noindex, no nav link. Searchable
+     table of every title with its cover/art URL, source link, mirrors, tags
+     and type, plus CSV/JSON export and per-link copy/open buttons.
+
+DEL  GTA V's pages.dev mirror (Server 3) — it stopped serving the game. The
+     remaining two builds are untouched.
+
+CHG  Crisper throughout: card hover lift and art zoom, staged grid entrance,
+     focus-visible rings, sticky header shadow, floating hero console, a
+     rebuilt boot screen (scanlines, horizon, INSERT/POWER/PLAY steps) and a
+     route wipe between pages. Route motion is opacity-only so the boot
+     console's fixed layers keep the viewport as their frame of reference.
+
 2026-11-10 — library drop, cover art, change list and new-games pages
 ----------------------------------------------------------------------
 

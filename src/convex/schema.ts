@@ -32,6 +32,29 @@ const schema = defineSchema(
       role: v.optional(roleValidator), // role of the user. do not remove
     }).index("email", ["email"]), // index for the email. do not remove or modify
 
+    // One star rating + like per player per game. The (gameId, userId) index is
+    // what makes "one rating per person" true in the database, not just in the UI.
+    gameRatings: defineTable({
+      gameId: v.string(),
+      userId: v.string(),
+      stars: v.number(),
+      liked: v.boolean(),
+      updatedAt: v.number(),
+    })
+      .index("by_game", ["gameId"])
+      .index("by_game_user", ["gameId", "userId"]),
+
+    // Community comments. The same index is the one-comment-per-game limit.
+    gameComments: defineTable({
+      gameId: v.string(),
+      userId: v.string(),
+      authorName: v.string(),
+      text: v.string(),
+      createdAt: v.number(),
+    })
+      .index("by_game", ["gameId"])
+      .index("by_game_user", ["gameId", "userId"]),
+
     // Player-submitted problem reports, one row per submission from a game page.
     reports: defineTable({
       gameId: v.string(),

@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Link, useSearchParams } from "react-router";
+import { captureLaunchSource } from "@/lib/launch";
 import { ArrowRight, CornerDownRight, Gamepad2, Sparkles } from "lucide-react";
 import { newGames } from "@/data/games";
 import Pager from "@/components/Pager";
@@ -46,6 +47,7 @@ export default function NewGames() {
               key={game.id}
               to={game.standalone ? `/${game.id}` : `/play/${game.id}`}
               className="shelf-card"
+              onClick={(event) => captureLaunchSource(game.id, game.thumbnail, event.currentTarget)}
             >
               <div className="shelf-art">
                 <img src={game.thumbnail} alt="" loading="lazy" />
