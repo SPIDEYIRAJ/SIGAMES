@@ -829,9 +829,13 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   "gta-vicecity": { thumbnail: IMG + "gta-vice-city.webp", servers: [{ name: "Rabisco", url: "https://gta.rabisco.net/" }] },
   gta3: { thumbnail: IMG + "gta-3.webp" },
   "web-gta-chinatown": { thumbnail: IMG + "gta-chinatown-wars.webp" },
-  // GTA V keeps only the two builds that answer: the pages.dev mirror was
-  // dropped after it stopped serving the game.
-  "gta-v": { thumbnail: IMG + "gta-v.webp" },
+  // GTA V mirrors. The old pages.dev build stopped answering and was replaced
+  // by playgta5.com, which serves the browser build (checked 200, no framing
+  // headers, but it is offered as a hand-over link like the other two).
+  "gta-v": {
+    thumbnail: IMG + "gta-v.webp",
+    servers: [{ name: "playgta5.com", url: "https://playgta5.com/", external: true }],
+  },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
   "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
   "proxy-tf2": { thumbnail: IMG + "team-fortress-2.webp" },

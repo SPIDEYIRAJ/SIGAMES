@@ -25,8 +25,9 @@ ADD  Private data sheet at /sheet — unlisted, noindex, no nav link. Searchable
      table of every title with its cover/art URL, source link, mirrors, tags
      and type, plus CSV/JSON export and per-link copy/open buttons.
 
-DEL  GTA V's pages.dev mirror (Server 3) — it stopped serving the game. The
-     remaining two builds are untouched.
+CHG  GTA V mirrors: the dead pages.dev build is gone and playgta5.com takes its
+     place as Server 3. It answers with the browser build and is offered as a
+     hand-over link (copy it, open your own tab) like Servers 1 and 2.
 
 CHG  Crisper throughout: card hover lift and art zoom, staged grid entrance,
      focus-visible rings, sticky header shadow, floating hero console, a
