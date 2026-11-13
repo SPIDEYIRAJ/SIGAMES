@@ -3,6 +3,31 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-13 — intent search, open comments, four new palettes
+------------------------------------------------------------
+
+ADD  AI search on the shelf: the query is read as intent instead of a
+     substring. Concept groups (horror, racing, shooter, multiplayer...),
+     synonyms, typo-tolerant title matching, "like Pac-Man" similarity search
+     and a strip that shows how the sentence was understood, plus example
+     prompts under an empty box. Runs on-device — no key, no network, no
+     latency. src/lib/search.ts.
+
+CHG  Comments need no account at all now: a display name and an email are
+     typed next to the comment. The email is stored for the one-per-person
+     rule and never returned to any client. The (gameId, authorEmail) index is
+     the actual guard; the browser also remembers its own comment locally.
+     Ratings and likes still use the one-tap guest pass.
+
+DEL  Extreme Driving Simulator — pulled from the library.
+
+ADD  Four more palettes: Ember (magenta/ember), Aurora (emerald/ice), Royal
+     (indigo/gold) and Steel (graphite/ice). Ten themes total; the picker
+     scrolls when the menu is taller than the viewport.
+
+ADD  The Uiverse rainbow ring spinner (mrhyddenn) on the boot screen and the
+     route fallback, with position:relative added so the inner ring centres.
+
 2026-11-12 — launch theatre, player signal, private sheet
 ---------------------------------------------------------
 

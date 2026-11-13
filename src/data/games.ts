@@ -1600,18 +1600,6 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     heavy: true,
   },
   {
-    id: "extreme-driving-simulator",
-    title: "Extreme Driving Simulator",
-    category: "Racing",
-    tags: ["Driving", "Open World", "Simulation"],
-    description: "Free-roam driving sandbox — drift the streets, test stunts, and push the car to its limits.",
-    controls: "WASD or arrow keys to drive, Space for the handbrake, C to change camera. Explore and set your own challenges.",
-    thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUk1AYdwGmBmlSbndc9n0BlceDlfhHyjDrvD6kKKAxTtyjravsBSHeVaIjYrY3ryee29P6oRKbMTCOyAZJI7rpsHxDnkVU0S7yIJcj_lDbaA&s=10",
-    sourceUrl: "https://ubg365.github.io/extreme-car-driving-simulator/play.html",
-    type: "iframe",
-    heavy: true,
-  },
-  {
     id: "among-us",
     title: "Among Us",
     category: "Party",

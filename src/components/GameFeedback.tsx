@@ -12,10 +12,42 @@ import {
 } from "@/lib/feedback";
 
 const STARS = [1, 2, 3, 4, 5] as const;
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/** Convex wraps thrown messages, so map the two the player can act on. */
+/** Last name + email typed for a comment, kept for the next game. */
+const IDENTITY_KEY = "si-games-commenter";
+type CommentIdentity = { name: string; email: string };
+
+function readIdentity(): CommentIdentity {
+  try {
+    const raw = JSON.parse(localStorage.getItem(IDENTITY_KEY) ?? "null") as Partial<CommentIdentity> | null;
+    return {
+      name: typeof raw?.name === "string" ? raw.name : "",
+      email: typeof raw?.email === "string" ? raw.email : "",
+    };
+  } catch {
+    return { name: "", email: "" };
+  }
+}
+
+/** Remembers that this browser already spent its one comment on a game. */
+function readPosted(gameId: string): CommentIdentity | null {
+  try {
+    const raw = JSON.parse(localStorage.getItem(`si-games-comment:${gameId}`) ?? "null") as Partial<CommentIdentity> | null;
+    return raw && typeof raw.name === "string" && typeof raw.email === "string"
+      ? { name: raw.name, email: raw.email }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Convex wraps thrown messages, so map the ones the player can act on. */
 function friendlyError(cause: unknown, fallback: string): string {
   const message = cause instanceof Error ? cause.message : "";
+  if (/already commented/i.test(message)) return "That email already left a comment on this game — one per person.";
+  if (/valid email/i.test(message)) return "That email does not look right — check it and try again.";
+  if (/add a name/i.test(message)) return "Add a name (at least 2 characters).";
   if (/one comment per game/i.test(message)) return "You have already used your one comment on this game.";
   if (/sign in/i.test(message)) return "Continue as a guest first — one tap, no email.";
   return message || fallback;
@@ -37,6 +69,9 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
 
   const [hoverStar, setHoverStar] = useState(0);
   const [draft, setDraft] = useState("");
+  const [name, setName] = useState(() => readIdentity().name);
+  const [email, setEmail] = useState(() => readIdentity().email);
+  const [posted, setPosted] = useState<CommentIdentity | null>(() => readPosted(gameId));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
@@ -46,9 +81,11 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
   const likes = summary?.likes ?? 0;
   const ratingCount = summary?.ratingCount ?? 0;
   const comments = thread?.comments ?? [];
-  const commented = thread?.commented ?? false;
   const limit = thread?.limit ?? COMMENTS_PER_GAME_PER_PLAYER;
   const signedOut = !authLoading && !isAuthenticated;
+  /** Either this browser posted already, or this signed-in account did. */
+  const commented = Boolean(posted) || comments.some((comment) => comment.mine);
+  const canPost = name.trim().length >= 2 && EMAIL_PATTERN.test(email.trim()) && Boolean(draft.trim()) && !busy;
 
   const requireAccount = (message: string) => {
     setError(null);
@@ -90,20 +127,30 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
     }
   };
 
+  /** No account, no sign-in: name + email are typed right here. */
   const postComment = async () => {
-    if (!isAuthenticated) {
-      requireAccount("Continue as a guest (one tap, no email) to comment.");
+    const text = draft.trim();
+    const cleanName = name.trim();
+    const cleanEmail = email.trim();
+    if (!text || !cleanName || !EMAIL_PATTERN.test(cleanEmail)) {
+      setError("Add a name (2+ characters), a valid email and your comment.");
       return;
     }
-    const text = draft.trim();
-    if (!text) return;
     setError(null);
     setNotice(null);
     setBusy(true);
     try {
-      await addComment({ gameId, text });
+      await addComment({ gameId, name: cleanName, email: cleanEmail, text });
+      const identity = { name: cleanName, email: cleanEmail };
+      try {
+        localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity));
+        localStorage.setItem(`si-games-comment:${gameId}`, JSON.stringify(identity));
+      } catch {
+        // Private mode: the comment still posts, it just is not remembered here.
+      }
+      setPosted(identity);
       setDraft("");
-      setNotice("Posted — that is your one comment on this game.");
+      setNotice(`Posted as ${cleanName} — that is your one comment on ${gameTitle}.`);
     } catch (cause) {
       setError(friendlyError(cause, "That comment did not post. Try again."));
     } finally {
@@ -149,6 +196,13 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
       </div>
 
       <div className="feedback-body">
+        {(error || notice) && (
+          <div className="feedback-status" aria-live="polite">
+            {error && <p className="feedback-error" role="alert">{error}</p>}
+            {notice && <p className="feedback-notice" role="status">{notice}</p>}
+          </div>
+        )}
+
         <div className="feedback-rate">
           <div className="feedback-stars" role="radiogroup" aria-label={`Rate ${gameTitle} from 1 to 5 stars`}>
             {STARS.map((star) => {
@@ -193,8 +247,8 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
           {signedOut && (
             <div className="feedback-guest">
               <p>
-                <b>Sign in to rate and comment.</b> A guest pass is one tap — no email, no password. Only your
-                display name and this game leave your browser.
+                <b>Sign in to rate and like.</b> A guest pass is one tap — no email, no password. Comments below
+                need no account at all: just a name and an email.
               </p>
               <div className="feedback-guest-actions">
                 <button type="button" className="primary-button" onClick={() => void startGuest()}>
@@ -208,8 +262,6 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
           )}
 
           {authLoading && <p className="feedback-muted"><Loader2 size={13} className="spin" /> Checking your session…</p>}
-          {error && <p className="feedback-error" role="alert">{error}</p>}
-          {notice && <p className="feedback-notice" role="status">{notice}</p>}
         </div>
 
         <div className="feedback-comments">
@@ -246,10 +298,44 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
 
           {commented ? (
             <p className="feedback-notice comment-limit">
-              You have used your one comment on {gameTitle}. {limit === 1 ? "Your note is in the list above." : ""}
+              You have used your one comment on {gameTitle}{posted ? ` as ${posted.name}` : ""}.
+              {limit === 1 ? " Your note is in the list above." : ""}
             </p>
           ) : (
             <div className="comment-form">
+              <div className="comment-identity">
+                <label htmlFor={`comment-name-${gameId}`}>
+                  <span>Name</span>
+                  <input
+                    id={`comment-name-${gameId}`}
+                    value={name}
+                    maxLength={40}
+                    autoComplete="name"
+                    placeholder="Your display name"
+                    onChange={(event) => setName(event.target.value)}
+                    disabled={busy}
+                  />
+                </label>
+                <label htmlFor={`comment-email-${gameId}`}>
+                  <span>Email</span>
+                  <input
+                    id={`comment-email-${gameId}`}
+                    type="email"
+                    inputMode="email"
+                    value={email}
+                    maxLength={160}
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    onChange={(event) => setEmail(event.target.value)}
+                    disabled={busy}
+                  />
+                </label>
+              </div>
+              <p className="comment-email-note">
+                No account needed. The email stays private — it is only used to keep it one comment per game, per
+                person.
+              </p>
+
               <label htmlFor={`comment-${gameId}`} className="comment-form-label">
                 Your comment <span>{draft.trim().length}/600 · one per game, per person</span>
               </label>
@@ -258,7 +344,7 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
                 rows={3}
                 maxLength={600}
                 value={draft}
-                placeholder={isAuthenticated ? `What did ${gameTitle} feel like to play?` : "Continue as a guest, then write your one comment."}
+                placeholder={`What did ${gameTitle} feel like to play?`}
                 onChange={(event) => setDraft(event.target.value)}
                 disabled={busy}
               />
@@ -267,11 +353,11 @@ export default function GameFeedback({ gameId, gameTitle }: { gameId: string; ga
                   type="button"
                   className="primary-button"
                   onClick={() => void postComment()}
-                  disabled={busy || !draft.trim()}
+                  disabled={!canPost}
                 >
                   {busy ? <Loader2 size={15} className="spin" /> : <MessageSquare size={15} />} Post comment
                 </button>
-                <span className="comment-form-hint">{limit} comment max · 600 characters</span>
+                <span className="comment-form-hint">Name + email required · email never shown · {limit} max</span>
               </div>
             </div>
           )}

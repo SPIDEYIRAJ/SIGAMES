@@ -26,7 +26,7 @@ const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 function RouteLoading() {
   return (
     <div className="route-loading" role="status" aria-live="polite">
-      <div className="route-loading-orbit" aria-hidden="true" />
+      <div className="spinner" aria-hidden="true"><div className="spinnerin" /></div>
       <span>CALIBRATING THE NEXT SECTOR</span>
     </div>
   );
@@ -48,7 +48,7 @@ function LoadingScreen() {
         <div className="boot-logo">SI</div>
         <p className="boot-brand">SI GAMES</p>
         <p className="boot-tagline">PLAY. DISCOVER. ENJOY.</p>
-        <div className="boot-loader"><span /></div>
+        <div className="spinner" aria-hidden="true"><div className="spinnerin" /></div>
         <p className="boot-status">WAKING UP THE ARCADE<span>...</span></p>
         <div className="boot-steps" aria-hidden="true"><span>INSERT</span><span>POWER</span><span>PLAY</span></div>
       </div>

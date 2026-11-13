@@ -205,6 +205,132 @@
   --si-star-cool: #ff8f3d;
 }
 
+/* ——— Four later palettes: same tokens, different mood. ——— */
+
+:root[data-theme="ember"] {
+  --si-accent: #ff2d75;
+  --si-accent-18: #ff2d752e;
+  --si-accent-20: #ff2d7533;
+  --si-accent-22: #ff2d7538;
+  --si-accent-24: #ff2d753d;
+  --si-accent-28: #ff2d7547;
+  --si-accent-30: #ff2d754d;
+  --si-accent-60: #ff2d7599;
+  --si-accent-88: #ff2d75e0;
+  --si-accent-hover: #e03063;
+  --si-accent-active: #c92356;
+  --si-glow: #ff9e3d;
+  --si-glow-12: #ff9e3d1f;
+  --si-glow-14: #ff9e3d24;
+  --si-glow-16: #ff9e3d29;
+  --si-glow-25: #ff9e3d40;
+  --si-glow-28: #ff9e3d47;
+  --si-glow-40: #ff9e3d66;
+  --si-glow-bright: #ffc98a;
+  --si-bg: #210814;
+  --si-bg-deep: #1a050f;
+  --si-frame: #260a17;
+  --si-kbd: #300d1c;
+  --si-panel: #2a0c19;
+  --si-panel-raised: #381020;
+  --si-panel-strong: #481427;
+  --si-star-hot: #ff6f91;
+  --si-star-cool: #ffb46b;
+}
+
+:root[data-theme="aurora"] {
+  --si-accent: #00b37e;
+  --si-accent-18: #00b37e2e;
+  --si-accent-20: #00b37e33;
+  --si-accent-22: #00b37e38;
+  --si-accent-24: #00b37e3d;
+  --si-accent-28: #00b37e47;
+  --si-accent-30: #00b37e4d;
+  --si-accent-60: #00b37e99;
+  --si-accent-88: #00b37ee0;
+  --si-accent-hover: #00996b;
+  --si-accent-active: #008a60;
+  --si-glow: #7cf7d2;
+  --si-glow-12: #7cf7d21f;
+  --si-glow-14: #7cf7d224;
+  --si-glow-16: #7cf7d229;
+  --si-glow-25: #7cf7d240;
+  --si-glow-28: #7cf7d247;
+  --si-glow-40: #7cf7d266;
+  --si-glow-bright: #b0ffe6;
+  --si-bg: #071b18;
+  --si-bg-deep: #041310;
+  --si-frame: #081f1b;
+  --si-kbd: #0c2a24;
+  --si-panel: #0a231d;
+  --si-panel-raised: #0d2f27;
+  --si-panel-strong: #114034;
+  --si-star-hot: #5affc0;
+  --si-star-cool: #7fd4ff;
+}
+
+:root[data-theme="royal"] {
+  --si-accent: #6d4aff;
+  --si-accent-18: #6d4aff2e;
+  --si-accent-20: #6d4aff33;
+  --si-accent-22: #6d4aff38;
+  --si-accent-24: #6d4aff3d;
+  --si-accent-28: #6d4aff47;
+  --si-accent-30: #6d4aff4d;
+  --si-accent-60: #6d4aff99;
+  --si-accent-88: #6d4affe0;
+  --si-accent-hover: #5a3bdd;
+  --si-accent-active: #4e32c6;
+  --si-glow: #ffd76a;
+  --si-glow-12: #ffd76a1f;
+  --si-glow-14: #ffd76a24;
+  --si-glow-16: #ffd76a29;
+  --si-glow-25: #ffd76a40;
+  --si-glow-28: #ffd76a47;
+  --si-glow-40: #ffd76a66;
+  --si-glow-bright: #ffe9a6;
+  --si-bg: #120f26;
+  --si-bg-deep: #0b0919;
+  --si-frame: #15112c;
+  --si-kbd: #1d1738;
+  --si-panel: #181330;
+  --si-panel-raised: #211a40;
+  --si-panel-strong: #2b2252;
+  --si-star-hot: #ffd76a;
+  --si-star-cool: #9b8cff;
+}
+
+:root[data-theme="steel"] {
+  --si-accent: #5b6b8c;
+  --si-accent-18: #5b6b8c2e;
+  --si-accent-20: #5b6b8c33;
+  --si-accent-22: #5b6b8c38;
+  --si-accent-24: #5b6b8c3d;
+  --si-accent-28: #5b6b8c47;
+  --si-accent-30: #5b6b8c4d;
+  --si-accent-60: #5b6b8c99;
+  --si-accent-88: #5b6b8ce0;
+  --si-accent-hover: #4c5b7a;
+  --si-accent-active: #435069;
+  --si-glow: #b7d4ff;
+  --si-glow-12: #b7d4ff1f;
+  --si-glow-14: #b7d4ff24;
+  --si-glow-16: #b7d4ff29;
+  --si-glow-25: #b7d4ff40;
+  --si-glow-28: #b7d4ff47;
+  --si-glow-40: #b7d4ff66;
+  --si-glow-bright: #d9e8ff;
+  --si-bg: #10151d;
+  --si-bg-deep: #0a0e14;
+  --si-frame: #121821;
+  --si-kbd: #18202c;
+  --si-panel: #151c26;
+  --si-panel-raised: #1c2531;
+  --si-panel-strong: #253040;
+  --si-star-hot: #ff9aa8;
+  --si-star-cool: #b7d4ff;
+}
+
 :root {
   --si-cut-l: 14px;
   --si-cut-m: 10px;
@@ -407,11 +533,15 @@
   right: 0;
   z-index: 80;
   min-width: 218px;
+  max-height: min(72vh, 560px);
+  overflow-y: auto;
   padding: 8px;
   background: var(--si-panel-raised);
   border: 1px solid var(--si-accent-28);
   clip-path: var(--si-bevel-l);
   box-shadow: 0 18px 44px rgb(3 6 18 / 55%);
+  scrollbar-width: thin;
+  scrollbar-color: var(--si-accent-30) transparent;
 }
 
 .theme-menu-title {
@@ -1829,6 +1959,61 @@
 
 .comment-limit { color: #8fa0c0; }
 
+.feedback-status {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.comment-identity {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.comment-identity label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.comment-identity label > span {
+  color: #c6d3ec;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.comment-identity input {
+  min-height: 38px;
+  width: 100%;
+  padding: 0 10px;
+  color: #e8f1ff;
+  background: #0a1120;
+  border: 1px solid var(--si-accent-24);
+  font-family: inherit;
+  font-size: 11px;
+  outline: none;
+}
+
+.comment-identity input:focus {
+  border-color: var(--si-glow-40);
+  box-shadow: 0 0 0 3px var(--si-glow-12);
+}
+
+.comment-identity input::placeholder { color: #66759a; }
+
+.comment-email-note {
+  margin: 0 0 10px;
+  color: #67779c;
+  font-size: 9px;
+  line-height: 1.6;
+}
+
 .comment-form { margin-top: 12px; }
 
 .comment-form-label {
@@ -1884,6 +2069,7 @@
   .feedback-head { flex-direction: column; }
   .feedback-head-stats { width: 100%; }
   .comment-list { max-height: 360px; }
+  .comment-identity { grid-template-columns: 1fr; }
 }
 
 /* —————————————————————————————————————————————
@@ -2208,6 +2394,98 @@
    SHARPER EVERYDAY DETAILS — hover lift, focus rings, route veil.
    ————————————————————————————————————————————— */
 
+/* ——— AI search: how the shelf read your sentence. ——— */
+.ai-search-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -2px 0 14px;
+}
+
+.ai-search-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 9px;
+  color: #061018;
+  background: linear-gradient(120deg, var(--si-glow), #6bb1ff);
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  clip-path: var(--si-bevel-xs);
+}
+
+.ai-search-chip {
+  padding: 5px 9px;
+  color: #dffcff;
+  background: var(--si-glow-12);
+  border: 1px solid var(--si-glow-28);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .03em;
+  clip-path: var(--si-bevel-xs);
+}
+
+.ai-search-count {
+  margin-left: auto;
+  color: #7485ad;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.ai-search-reset {
+  padding: 5px 9px;
+  color: #93a3c4;
+  background: transparent;
+  border: 1px solid var(--si-accent-24);
+  font-family: inherit;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: var(--si-bevel-xs);
+}
+
+.ai-search-reset:hover { color: #fff; border-color: var(--si-glow-40); }
+
+.search-ideas {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -2px 0 14px;
+  color: #6d7fa6;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.search-ideas button {
+  padding: 5px 9px;
+  color: #aab8d6;
+  background: #0b1424;
+  border: 1px solid var(--si-accent-22);
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  text-transform: none;
+  cursor: pointer;
+  clip-path: var(--si-bevel-xs);
+  transition: color .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.search-ideas button:hover {
+  color: #fff;
+  background: var(--si-glow-12);
+  border-color: var(--si-glow-40);
+}
+
 .art-signal {
   display: inline-flex;
   align-items: center;
@@ -2277,6 +2555,40 @@
   .boot-card,
   .boot-room-grid,
   .boot-scanlines { transition: none; animation: none; }
+}
+
+/* ——— Loading spinner (Uiverse.io by mrhyddenn). position:relative is the
+        only addition — it gives the inner ring something to centre against. ——— */
+.spinner {
+  position: relative;
+  width: 3em;
+  height: 3em;
+  cursor: not-allowed;
+  border-radius: 50%;
+  border: 2px solid #444;
+  box-shadow: -10px -10px 10px #6359f8, 0px -10px 10px 0px #9c32e2, 10px -10px 10px #f36896, 10px 0 10px #ff0b0b, 10px 10px 10px 0px #ff5500, 0 10px 10px 0px #ff9500, -10px 10px 10px 0px #ffb700;
+  animation: rot55 0.7s linear infinite;
+}
+
+.spinnerin {
+  border: 2px solid #444;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes rot55 {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
 }
 
 /* ——— Boot screen: a small arcade waking up, not a spinner. ——— */

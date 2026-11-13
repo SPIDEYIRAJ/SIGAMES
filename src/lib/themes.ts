@@ -7,7 +7,17 @@
  * the choice in localStorage.
  */
 
-export type ThemeId = "nebula" | "plasma" | "crimson" | "tidal" | "toxic" | "solar";
+export type ThemeId =
+  | "nebula"
+  | "plasma"
+  | "crimson"
+  | "tidal"
+  | "toxic"
+  | "solar"
+  | "ember"
+  | "aurora"
+  | "royal"
+  | "steel";
 
 export type Theme = {
   id: ThemeId;
@@ -28,6 +38,10 @@ export const THEMES: Theme[] = [
   { id: "tidal", label: "Tidal", note: "Azure · aqua", chrome: "#021422", accent: "#0099ff", glow: "#47ffff" },
   { id: "toxic", label: "Toxic", note: "Green · lime", chrome: "#052014", accent: "#0edd7c", glow: "#c2ff33" },
   { id: "solar", label: "Solar", note: "Orange · gold", chrome: "#251304", accent: "#ff740a", glow: "#ffda47" },
+  { id: "ember", label: "Ember", note: "Magenta · ember", chrome: "#210814", accent: "#ff2d75", glow: "#ff9e3d" },
+  { id: "aurora", label: "Aurora", note: "Emerald · ice", chrome: "#071b18", accent: "#00b37e", glow: "#7cf7d2" },
+  { id: "royal", label: "Royal", note: "Indigo · gold", chrome: "#120f26", accent: "#6d4aff", glow: "#ffd76a" },
+  { id: "steel", label: "Steel", note: "Graphite · ice", chrome: "#10151d", accent: "#5b6b8c", glow: "#b7d4ff" },
 ];
 
 const STORAGE_KEY = "si-games-theme";

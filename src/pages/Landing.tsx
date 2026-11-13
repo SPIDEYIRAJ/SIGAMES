@@ -21,6 +21,7 @@ import { categories, games, newGames, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
 import ThemePicker from "@/components/ThemePicker";
 import { captureLaunchSource } from "@/lib/launch";
+import { SEARCH_IDEAS, searchGames } from "@/lib/search";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
@@ -169,20 +170,21 @@ export default function Landing() {
     };
   }, []);
 
+  /** The query is read as intent, not as a substring — see src/lib/search.ts. */
+  const searchOutcome = useMemo(() => searchGames(games, query), [query]);
+
   const filteredGames = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    const matches = games.filter((game) => {
+    const matches = searchOutcome.games.filter((game) => {
       const matchesCategory = category === "All Games" || game.category === category || game.tags.includes(category);
       // "HTML games only" is a view, not an ordering: it narrows the shelf down
       // to the local HTML builds before the sort below is applied.
       const matchesHtmlOnly = sortBy !== "html" || Boolean(game.htmlGame);
-      const searchable = [game.title, game.category, game.description, ...game.tags].join(" ").toLowerCase();
-      return matchesCategory && matchesHtmlOnly && (!normalized || searchable.includes(normalized));
+      return matchesCategory && matchesHtmlOnly;
     });
     if (sortBy === "az") return [...matches].sort((a, b) => a.title.localeCompare(b.title));
     if (sortBy === "za") return [...matches].sort((a, b) => b.title.localeCompare(a.title));
     return matches;
-  }, [category, query, sortBy]);
+  }, [category, searchOutcome, sortBy]);
 
   const visibleGames = filteredGames.slice(0, visibleCount);
   const remainingCount = filteredGames.length - visibleGames.length;
@@ -351,11 +353,24 @@ export default function Landing() {
           </div>
           <div className="library-toolbar">
             <div className="toolbar-row">
-              <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => applyQuery(event.target.value)} placeholder="Search games, categories..." aria-label="Search games" />{query && <button type="button" onClick={() => applyQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
+              <label className="search-box" htmlFor="game-search"><Search size={18} /><input ref={searchInputRef} id="game-search" value={query} onChange={(event) => applyQuery(event.target.value)} placeholder="Describe the game you want — scary, 2 player racing, like Pac-Man..." aria-label="Search games" />{query && <button type="button" onClick={() => applyQuery("")} aria-label="Clear search"><X size={15} /></button>}<kbd className="search-shortcut" aria-hidden="true">/</kbd></label>
               <label className="sort-box" htmlFor="game-sort"><span>Sort</span><select id="game-sort" value={sortBy} onChange={(event) => applySortBy(event.target.value as SortValue)}>{SORTS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
             </div>
             <div className="category-row" role="tablist" aria-label="Game categories">{categories.map((item) => <button type="button" role="tab" aria-selected={category === item} key={item} className={category === item ? "active" : ""} onClick={() => applyCategory(item)}>{item}</button>)}</div>
           </div>
+          {query.trim() ? (
+            <div className="ai-search-strip" role="status" aria-live="polite">
+              <span className="ai-search-tag"><Sparkles size={13} /> AI SEARCH</span>
+              {searchOutcome.labels.map((label) => <span className="ai-search-chip" key={label}>{label}</span>)}
+              <span className="ai-search-count">{filteredGames.length} matches</span>
+              <button type="button" className="ai-search-reset" onClick={() => applyQuery("")}>Start over</button>
+            </div>
+          ) : (
+            <div className="search-ideas" aria-label="Search ideas">
+              <span>Ask the shelf:</span>
+              {SEARCH_IDEAS.map((idea) => <button type="button" key={idea} onClick={() => applyQuery(idea)}>{idea}</button>)}
+            </div>
+          )}
           {visibleGames.length > 0 ? <div className="game-grid">{visibleGames.map((game) => <GameCard key={game.id} game={game} favorite={favorites.includes(game.id)} onFavorite={() => toggleFavorite(game)} onPlay={(card) => playGame(game, card)} signal={signals?.[game.id]} />)}</div> : <div className="empty-state"><div className="empty-icon"><Search size={22} /></div><h3>No games found</h3><p>Try a different search or browse every category.</p><button onClick={() => { applyQuery(""); applyCategory("All Games"); }}>Reset library</button></div>}
           {remainingCount > 0 && <div className="load-more"><button type="button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>Load {Math.min(PAGE_SIZE, remainingCount)} more <ArrowRight size={15} /></button><span>{remainingCount} still in the hangar</span></div>}
         </section>

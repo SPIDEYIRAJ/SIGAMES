@@ -54,7 +54,7 @@ export const summary = query({
   },
 });
 
-/** The newest comments on one title, plus whether this player already wrote theirs. */
+/** The newest comments on one title. Emails are stored, never returned. */
 export const commentsForGame = query({
   args: { gameId: v.string() },
   handler: async (ctx, { gameId }) => {
@@ -70,9 +70,8 @@ export const commentsForGame = query({
         authorName: row.authorName,
         text: row.text,
         createdAt: row.createdAt,
-        mine: row.userId === userId,
+        mine: Boolean(userId && row.userId === userId),
       })),
-      commented: userId ? rows.some((row) => row.userId === userId) : false,
       limit: COMMENTS_PER_GAME_PER_PLAYER,
     };
   },
@@ -164,41 +163,53 @@ export const setLike = mutation({
   },
 });
 
-/** Posts this player's one comment on a game. */
+/** An email address only, so a name and a comment can be posted with no account. */
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const MAX_NAME_LENGTH = 40;
+
+/**
+ * Posts a comment with no login at all: the visitor types a display name and an
+ * email. The email is stored to keep the one-comment rule honest and is never
+ * sent back to any client.
+ */
 export const addComment = mutation({
   args: {
     gameId: v.string(),
+    name: v.string(),
+    email: v.string(),
     text: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (userId === null) throw new Error("Sign in to comment.");
-
     const gameId = args.gameId.trim();
+    const name = args.name.trim().replace(/\s+/g, " ").slice(0, MAX_NAME_LENGTH);
+    const email = args.email.trim().toLowerCase();
     const text = args.text.trim().slice(0, MAX_COMMENT_LENGTH);
-    if (!gameId || !text) throw new Error("Write something before posting.");
+
+    if (!gameId) throw new Error("A comment needs a game.");
+    if (name.length < 2) throw new Error("Add a name (at least 2 characters).");
+    if (!EMAIL_PATTERN.test(email)) {
+      throw new Error("Add a valid email — it is never shown, it only keeps comments one per person.");
+    }
+    if (!text) throw new Error("Write something before posting.");
 
     const existing = await ctx.db
       .query("gameComments")
-      .withIndex("by_game_user", (q) => q.eq("gameId", gameId).eq("userId", userId))
+      .withIndex("by_game_email", (q) => q.eq("gameId", gameId).eq("authorEmail", email))
       .take(COMMENTS_PER_GAME_PER_PLAYER);
 
     if (existing.length >= COMMENTS_PER_GAME_PER_PLAYER) {
-      throw new Error("One comment per game per person — you already posted yours.");
+      throw new Error("One comment per game per person — this email already commented on this game.");
     }
 
-    const user = await ctx.db.get(userId);
-    const accountName = user?.name?.trim() ?? "";
-    const emailHandle = user?.email?.split("@")[0] ?? "";
-    const authorName = accountName || emailHandle || `Guest ${userId.slice(-4)}`;
-
+    const userId = await getAuthUserId(ctx);
     await ctx.db.insert("gameComments", {
       gameId,
-      userId,
-      authorName,
+      userId: userId ?? undefined,
+      authorName: name,
+      authorEmail: email,
       text,
       createdAt: Date.now(),
     });
-    return { ok: true } as const;
+    return { ok: true, authorName: name } as const;
   },
 });

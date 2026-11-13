@@ -44,16 +44,19 @@ const schema = defineSchema(
       .index("by_game", ["gameId"])
       .index("by_game_user", ["gameId", "userId"]),
 
-    // Community comments. The same index is the one-comment-per-game limit.
+    // Community comments, no account needed: name + email are typed on the
+    // form. The (gameId, authorEmail) index is the one-comment-per-game limit.
     gameComments: defineTable({
       gameId: v.string(),
-      userId: v.string(),
+      userId: v.optional(v.string()),
       authorName: v.string(),
+      authorEmail: v.optional(v.string()),
       text: v.string(),
       createdAt: v.number(),
     })
       .index("by_game", ["gameId"])
-      .index("by_game_user", ["gameId", "userId"]),
+      .index("by_game_user", ["gameId", "userId"])
+      .index("by_game_email", ["gameId", "authorEmail"]),
 
     // Player-submitted problem reports, one row per submission from a game page.
     reports: defineTable({
