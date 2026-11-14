@@ -1482,9 +1482,10 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       {
         id: "playgta5",
         label: "Server 1 — v2",
-        // Proxied so the v2 build runs inside the frame too.
-        url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://sigamespremiumrp.spideyiraj1925.workers.dev/",
-        note: "The v2 build, proxied so it runs inside SI GAMES.",
+        // The v2 build is handed over raw: it does not allow in-page play.
+        url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
+        external: true,
+        note: "The v2 build. Opens in a new tab — this host does not allow in-page play.",
       },
       {
         id: "gta5v2",
