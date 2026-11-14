@@ -514,11 +514,21 @@ const COVERS: Record<string, string> = {
  * title (or server) whose URL points at this host opens in the player's own tab. */
 const PREMIUM_HOST = "sigamespremiumrp.spideyiraj1925.workers.dev";
 
+/** True only when the URL itself lives on the premium host — a proxy URL that
+ *  carries it inside `?url=` is a different host and can be framed. */
+function isPremiumUrl(url: string): boolean {
+  try {
+    return new URL(url).hostname === PREMIUM_HOST;
+  } catch {
+    return url.includes(PREMIUM_HOST);
+  }
+}
+
 function handOverPremium<T extends Game>(list: T[]): T[] {
   return list.map((game) => {
-    const onPremium = game.sourceUrl.includes(PREMIUM_HOST);
+    const onPremium = isPremiumUrl(game.sourceUrl);
     const servers = game.servers?.map((server) =>
-      server.url.includes(PREMIUM_HOST) && !server.external ? { ...server, external: true } : server,
+      isPremiumUrl(server.url) && !server.external ? { ...server, external: true } : server,
     );
     if (!onPremium && !servers) return game;
     return { ...game, ...(servers ? { servers } : {}), ...(onPremium ? { openInNewTab: true } : {}) };
@@ -834,13 +844,13 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   // headers, but it is offered as a hand-over link like the other two).
   "gta-v": {
     thumbnail: IMG + "gta-v.webp",
-    // Server 3 is the same proxied build without a mode preset, so the game's
-    // own title screen asks (multiplayer sits at the top of it). No framing
-    // restriction on this host, so it stays inside the site.
-    servers: [{
-      name: "multiplayer v1",
-      url: "https://playgta5-pro-p.webfuse.com/pro/playgta5/v1-game/ST/m31bzCYRpeDTpuxgoLFbE8Uw//////////?SURFLY_INITIATOR_ORIGIN=none?SURFLY_TOP_FRAME_DEPTH=1?SURFLY_TAB_PREFIX=_surfly_tab1000",
-    }],
+    // Server 3 is the proxied build without a mode preset, so the game's own
+    // title screen asks (multiplayer sits at the top of it).
+    // A fourth server is appended by the same patch below.
+    servers: [
+      { name: "multiplayer v1", url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://playgta5.com" },
+      { name: "v2 pages", url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://gta5-87g.pages.dev/" },
+    ],
   },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
   "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
@@ -968,7 +978,7 @@ function redactLabel(label: string): string {
   const numbered = label.match(/^server\s+(\d+)/i);
   if (numbered) {
     const suffix = label.split(/[—–-]/).slice(1).join("-").trim();
-    const safeTag = /^(?:multiplayer\s+)?v\d+$/i.test(suffix);
+    const safeTag = /^(?:multiplayer\s+)?v\d+(?:\s+pages)?$/i.test(suffix);
     return safeTag ? `Server ${numbered[1]} — ${suffix}` : `Server ${numbered[1]}`;
   }
   return redactText(label).replace(/\s*[—–-]\s*•+\s*$/, "").trim() || "Server";
@@ -1378,6 +1388,19 @@ const importedGames: ImportedGame[] = [
 /** The two RetroGems arcade racers plus the kart racer that carries two hosts. */
 const featuredNewGames: Game[] = [
   {
+    id: "gta-iv",
+    title: "Grand Theft Auto IV",
+    category: "Action",
+    tags: ["Open World", "Action", "Driving", "Crime", "GTA"],
+    description: "Liberty City and Niko Bellic's story, running in the browser. A full open-world crime sandbox: take jobs, drive the city and stay ahead of the police.",
+    controls: "W A S D to move, mouse to look and aim, click to shoot or interact, Space to jump, Shift to sprint, number keys to switch weapons. Click the frame first so it takes the keyboard.",
+    thumbnail: "https://legacy.playtab.fun/cover.php?id=1028&v=3b0bc4e6",
+    sourceUrl: "https://ps2.playtab.fun/gtfor/",
+    type: "iframe",
+    heavy: true,
+    isNew: true,
+  },
+  {
     id: "smashline",
     title: "SMASHLINE",
     category: "Racing",
@@ -1456,14 +1479,20 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     openInNewTab: true,
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
     servers: [
-      { id: "playgta5", label: "Server 1 — v2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The v2 build. Copy-link host — it does not allow in-page play." },
+      {
+        id: "playgta5",
+        label: "Server 1 — v2",
+        // Proxied so the v2 build runs inside the frame too.
+        url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://sigamespremiumrp.spideyiraj1925.workers.dev/",
+        note: "The v2 build, proxied so it runs inside SI GAMES.",
+      },
       {
         id: "gta5v2",
         label: "Server 2 — v1",
-        // The proxied build. It has no frame-ancestors restriction, so SI GAMES
-        // can embed it directly; `{enter mode}` is swapped for the picked mode
-        // by the player (story / sandbox / sandbox&map=env_test / blank).
-        url: "https://playgta5-pro-p.webfuse.com/pro/playgta5/v1-game/ST/m31bzCYRpeDTpuxgoLFbE8Uw//////////?SURFLY_INITIATOR_ORIGIN=none?SURFLY_TOP_FRAME_DEPTH=1?SURFLY_TAB_PREFIX=_surfly_tab1000?mode={enter mode}",
+        // Proxied build. `{enter mode}` is swapped for the picked mode by the
+        // player (story / sandbox / sandbox&map=env_test / blank), which lands
+        // in the proxy's nested target URL.
+        url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://v1-game.playgta5.pro/?mode={enter mode}",
         note: "Runs inside SI GAMES. Pick a mode below — Story, Sandbox or the GTA VI map.",
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
