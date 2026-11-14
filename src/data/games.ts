@@ -1450,12 +1450,10 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       {
         id: "gta5v2",
         label: "Server 2 — GTA V V2",
-        // The old v1-game host answers with `frame-ancestors` that lists only
-        // its own family of domains, so SI GAMES can never frame it. This card
-        // therefore points at the same PlayGTA5 build on the host that does
-        // allow framing, and keeps the mode presets (index.html keeps it a
-        // distinct server from Server 3, which is the bare root).
-        url: "https://playgta5.com/index.html",
+        // The proxied build. It has no frame-ancestors restriction, so SI GAMES
+        // can embed it directly; `{enter mode}` is swapped for the picked mode
+        // by the player (story / sandbox / sandbox&map=env_test / blank).
+        url: "https://playgta5-pro-p.webfuse.com/pro/playgta5/v1-game/ST/m31bzCYRpeDTpuxgoLFbE8Uw//////////?SURFLY_INITIATOR_ORIGIN=none?SURFLY_TOP_FRAME_DEPTH=1?SURFLY_TAB_PREFIX=_surfly_tab1000?mode={enter mode}",
         note: "Runs inside SI GAMES. Pick a mode below — Story, Sandbox or the GTA VI map.",
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },

@@ -14,10 +14,11 @@ ADD  AI search on the shelf: the query is read as intent instead of a
      latency. src/lib/search.ts.
 
 CHG  GTA V Server 2 and Server 3 now launch in-frame instead of handing over a
-     copied link. The old v1-game host sends `frame-ancestors` that excludes
-     SI GAMES, so Server 2 points at the same PlayGTA5 build on the host that
-     allows framing (keeping Story / Sandbox / GTA VI / title presets); Server 3
-     is the bare playgta5.com build. Server 1 is still a copy-link hand-over.
+     copied link. Server 2 is the proxied PlayGTA5 build at
+     playgta5-pro-p.webfuse.com: its URL carries a `{enter mode}` slot that the
+     player fills from the selected mode card (Story / Sandbox / GTA VI / title),
+     preserving the proxy's `?`-chained SURFLY parameters. Server 3 is the bare
+     playgta5.com build. Server 1 is still a copy-link hand-over.
 
 CHG  Comments need no account at all now: a display name and an email are
      typed next to the comment. The email is stored for the one-per-person

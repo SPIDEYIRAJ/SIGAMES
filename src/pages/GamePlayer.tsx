@@ -354,10 +354,17 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   const modes = useMemo<GameMode[]>(() => activeServer?.modes ?? [], [activeServer]);
   const [modeId, setModeId] = useState<string | null>(null);
   const activeMode = modes.find((mode) => mode.id === modeId) ?? modes[0] ?? null;
-  /** What the player actually launches: the picked server plus its picked `?mode=` query. */
-  const launchLink = activeMode
-    ? `${activeServer?.url ?? game?.sourceUrl ?? ""}${activeMode.query}`
-    : activeServer?.url ?? game?.sourceUrl ?? "";
+  /** What the player actually launches: the picked server plus its picked `?mode=` query.
+   *  Mirrors that carry `{enter mode}` (the proxied GTA V build) get the mode
+   *  value swapped into that exact slot — their proxy expects `?mode=` chained
+   *  with `?`, not a normal `&` query. */
+  const launchBase = activeServer?.url ?? game?.sourceUrl ?? "";
+  const launchModeValue = activeMode ? activeMode.query.replace(/^\?mode=/, "") : "story";
+  const launchLink = launchBase.includes("{enter mode}")
+    ? launchBase.replace("{enter mode}", launchModeValue)
+    : activeMode
+      ? `${launchBase}${activeMode.query}`
+      : launchBase;
   /** Hosts that refuse framing hand the player a link instead of loading here. */
   const handsLink = Boolean(activeServer?.external);
   /** Off-screen fallback field: the link lands here only if the clipboard API is
