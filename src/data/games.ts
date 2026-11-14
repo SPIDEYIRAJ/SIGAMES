@@ -834,9 +834,13 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   // headers, but it is offered as a hand-over link like the other two).
   "gta-v": {
     thumbnail: IMG + "gta-v.webp",
-    // playgta5.com serves the canvas build directly and sends no framing
-    // headers, so Server 3 stays inside the site rather than copying a link.
-    servers: [{ name: "playgta5.com", url: "https://playgta5.com/" }],
+    // Server 3 is the same proxied build without a mode preset, so the game's
+    // own title screen asks (multiplayer sits at the top of it). No framing
+    // restriction on this host, so it stays inside the site.
+    servers: [{
+      name: "multiplayer v1",
+      url: "https://playgta5-pro-p.webfuse.com/pro/playgta5/v1-game/ST/m31bzCYRpeDTpuxgoLFbE8Uw//////////?SURFLY_INITIATOR_ORIGIN=none?SURFLY_TOP_FRAME_DEPTH=1?SURFLY_TAB_PREFIX=_surfly_tab1000",
+    }],
   },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
   "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
@@ -957,10 +961,16 @@ function redactText(text: string): string {
 }
 
 /** Server cards read as `Server 1`, `Server 2` and nothing else: the friendly
- * suffix behind the dash (host name, build name) never reaches the interface. */
+ * suffix behind the dash (host name, build name) never reaches the interface.
+ * Build tags are the exception — `v1`, `v2` and `multiplayer v1` are labels the
+ * owner sets on purpose, not host names, so they stay. */
 function redactLabel(label: string): string {
-  const numbered = label.match(/^server\s+\d+/i);
-  if (numbered) return `Server ${numbered[0].match(/\d+/)![0]}`;
+  const numbered = label.match(/^server\s+(\d+)/i);
+  if (numbered) {
+    const suffix = label.split(/[—–-]/).slice(1).join("-").trim();
+    const safeTag = /^(?:multiplayer\s+)?v\d+$/i.test(suffix);
+    return safeTag ? `Server ${numbered[1]} — ${suffix}` : `Server ${numbered[1]}`;
+  }
   return redactText(label).replace(/\s*[—–-]\s*•+\s*$/, "").trim() || "Server";
 }
 
@@ -1446,10 +1456,10 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     openInNewTab: true,
     sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
     servers: [
-      { id: "playgta5", label: "Server 1", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The main GTA V build." },
+      { id: "playgta5", label: "Server 1 — v2", url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/", external: true, note: "The v2 build. Copy-link host — it does not allow in-page play." },
       {
         id: "gta5v2",
-        label: "Server 2 — GTA V V2",
+        label: "Server 2 — v1",
         // The proxied build. It has no frame-ancestors restriction, so SI GAMES
         // can embed it directly; `{enter mode}` is swapped for the picked mode
         // by the player (story / sandbox / sandbox&map=env_test / blank).
