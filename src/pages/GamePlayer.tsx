@@ -22,6 +22,9 @@ const EXIT_MENU_MS = 8000;
 
 interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
   src: string;
+  /** When set, the document is fetched (CORS-open) and rendered as the frame's
+   *  srcdoc, bypassing hosts that send X-Frame-Options on their play page. */
+  htmlUrl?: string;
   title: string;
   allow?: string;
   allowFullScreen?: boolean;
@@ -30,18 +33,49 @@ interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "
   onError: () => void;
 }
 
-function GameFrame({ src, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
+function GameFrame({ src, htmlUrl, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
+  const [doc, setDoc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  const onErrorRef = useRef(onError);
+  useEffect(() => { onErrorRef.current = onError; }, [onError]);
+
+  useEffect(() => {
+    if (!htmlUrl) return;
+    let active = true;
+    fetch(htmlUrl)
+      .then((response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.text();
+      })
+      .then((html) => { if (active) setDoc(html); })
+      .catch(() => {
+        if (!active) return;
+        setFailed(true);
+        onErrorRef.current();
+      });
+    return () => { active = false; };
+  }, [htmlUrl]);
+
+  if (htmlUrl && !doc) {
+    return (
+      <div className="frame-loading">
+        <Loader2 size={24} className="spin" />
+        <span>{failed ? "This build could not be loaded." : "Loading the game..."}</span>
+      </div>
+    );
+  }
+
   return createElement(
     "iframe",
     {
-      src,
+      ...(htmlUrl ? { srcDoc: doc } : { src }),
       title,
       allow,
       allowFullScreen,
       target: "_self",
       loading: loading ? "lazy" : undefined,
       referrerPolicy: "no-referrer",
-      sandbox: undefined,
+      sandbox: htmlUrl ? "allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-downloads allow-orientation-lock allow-presentation" : undefined,
       onLoad,
       onError,
     } as unknown as GameFrameProps
@@ -941,7 +975,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                 <span className="fs-hold-track"><span className="fs-hold-fill" style={{ "--fs-hold-ms": `${keyHold.ms}ms` } as CSSProperties} /></span>
               </div>
             )}
-            <GameFrame key={frameKey} src={playUrl ?? launchLink} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             {/* Optional on-screen controller (hidden settings toggle); only for titles that actually run in the frame. */}
             {game.type !== "external" && !handsLink && (
               <VirtualGamepad src={playUrl ?? launchLink} gameTitle={game.title} gameCategory={game.category} />

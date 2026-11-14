@@ -3,6 +3,22 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-14 — PlayTab arcade import, in-frame HTML loader
+--------------------------------------------------------
+
+ADD  832 PlayTab arcade titles, deduped against the existing library. Their
+     play pages send X-Frame-Options: SAMEORIGIN and frame-ancestors 'self', so
+     the player now fetches each game's own HTML from the CORS-open jsDelivr
+     mirror and renders it as the frame's srcdoc, keeping the HTML's own asset
+     base intact. 755 titles use that route, 77 embed a direct build, and 5
+     hosts that still refuse framing hand over their link. Covers and ids come
+     from the PlayTab catalog (src/data/bigPicture.ts); titles already in the
+     library were skipped.
+
+CHG  The player frame accepts an optional htmlUrl: while the document loads it
+     shows a "Loading the game..." state, and a fetch failure reports the build
+     as unavailable instead of leaving a blank TV.
+
 2026-11-13 — intent search, open comments, four new palettes
 ------------------------------------------------------------
 

@@ -1,3 +1,5 @@
+import { bigPictureGames } from "./bigPicture";
+
 /** Cover art, screenshots and video attached to a title's page. */
 export type GameMedia = {
   /** Transparent logo mark shown over the banner. */
@@ -43,6 +45,9 @@ export type Game = {
   thumbnail: string;
   sourceUrl: string;
   type: "iframe" | "external";
+  /** HTML document fetched into the frame instead of navigating the iframe to
+   *  a page that refuses framing (the PlayTab catalog). */
+  htmlUrl?: string;
   /** True for the locally hosted HTML browser games added from the source packet. */
   htmlGame?: boolean;
   /** Marks a freshly added title in the library. */
@@ -1462,6 +1467,23 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
+/** The PlayTab catalog import: its pages block framing, so each title hands the
+ *  player its own HTML document (fetched from the CORS-open jsDelivr mirror). */
+const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, htmlPath, directSrc, external], index): Game => ({
+  id: `bp-${slug}`,
+  title,
+  category: "Arcade",
+  tags: ["PlayTab", "Browser Ready"],
+  description: `${title}, from the PlayTab arcade catalog.`,
+  controls: "Click the frame first so it takes the keyboard. Most titles use the arrow keys or W A S D, with Space or the mouse for actions; any on-screen pad appears in the frame.",
+  thumbnail: coverId ? `https://cdn.jsdelivr.net/gh/freebuisness/covers@main/${coverId}.png` : cover(900 + index),
+  sourceUrl: directSrc || `https://bigpicture.playtab.fun/play/${slug}`,
+  type: "iframe",
+  heavy: true,
+  ...(htmlPath ? { htmlUrl: `https://cdn.jsdelivr.net/gh/freebuisness/html@main/${htmlPath}` } : {}),
+  ...(external ? { openInNewTab: true } : {}),
+}));
+
 /** The newest drop, newest first — what the New games shelf lists. */
 export const newGames: Game[] = [...featuredNewGames, ...importedGameEntries];
 
@@ -1937,6 +1959,7 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     openInNewTab: NON_FRAMABLE_HOSTS.some((host) => sourceUrl.includes(host)),    })),    ...serverGames,
     ...featuredNewGames,
     ...importedGameEntries,
+    ...bigPictureEntries,
     ...linkedGames.map(([id, title, category, tags, description, controls, sourceUrl, type, heavy, image], index): Game => ({
     id,
     title,
