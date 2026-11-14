@@ -849,7 +849,7 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
     // A fourth server is appended by the same patch below.
     servers: [
       { name: "multiplayer v1", url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://playgta5.com" },
-      { name: "v2 pages", url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://gta5-87g.pages.dev/" },
+      { name: "v1 pages", url: "https://proxy.webtoppings.bar/+iframe-demo?url=https://gta5-87g.pages.dev/" },
     ],
   },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
