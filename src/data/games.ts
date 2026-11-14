@@ -834,7 +834,9 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   // headers, but it is offered as a hand-over link like the other two).
   "gta-v": {
     thumbnail: IMG + "gta-v.webp",
-    servers: [{ name: "playgta5.com", url: "https://playgta5.com/", external: true }],
+    // playgta5.com serves the canvas build directly and sends no framing
+    // headers, so Server 3 stays inside the site rather than copying a link.
+    servers: [{ name: "playgta5.com", url: "https://playgta5.com/" }],
   },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
   "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
@@ -1448,15 +1450,17 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       {
         id: "gta5v2",
         label: "Server 2 — GTA V V2",
-        url: "https://v1-game.playgta5.pro/",
-        external: true,
-        note: "Second build on the alternate host. Pick a mode below — the launch stays hidden and opens in your own tab.",
-        // This host reads ?mode=story | sandbox | chromebook, ?map=env_test and ?play=.
+        // The old v1-game host answers with `frame-ancestors` that lists only
+        // its own family of domains, so SI GAMES can never frame it. This card
+        // therefore points at the same PlayGTA5 build on the host that does
+        // allow framing, and keeps the mode presets (index.html keeps it a
+        // distinct server from Server 3, which is the bare root).
+        url: "https://playgta5.com/index.html",
+        note: "Runs inside SI GAMES. Pick a mode below — Story, Sandbox or the GTA VI map.",
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
           { id: "sandbox", label: "Sandbox Mode", query: "?mode=sandbox", note: "Free roam on the GTA V map at a random spot, every weapon unlocked." },
           { id: "gtavi", label: "GTA VI Map", query: "?mode=sandbox&map=env_test", note: "Sandbox Mode on the env_test level — the GTA VI Map." },
-          { id: "chromebook", label: "Chromebook", query: "?mode=chromebook&play=story", note: "Lightweight preset: 960×540, 30 FPS, two engine cores and the low-memory profile." },
           { id: "title", label: "Title screen", query: "?mode=", note: "No preset — the game's own title screen asks (Enter = Story, Space = Sandbox)." },
         ],
       },
