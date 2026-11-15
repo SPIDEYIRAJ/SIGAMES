@@ -3,6 +3,18 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-15 — every frame through the proxy, Minecraft warning removed
+---------------------------------------------------------------------
+
+CHG  Every iframe game, the PlayTab import included, now launches through
+     https://proxy.webtoppings.bar/+iframe-demo?url=... so hosts that send
+     X-Frame-Options or frame-ancestors still render in the player. The
+     original URL is encoded into the proxy's url parameter; local
+     public/games builds keep their relative paths and GTA V Server 1 stays
+     the deliberate hand-over.
+
+DEL  Minecraft — Eaglercraft no longer shows the browser-extension prompt.
+
 2026-11-14 — PlayTab arcade import, in-frame HTML loader
 --------------------------------------------------------
 

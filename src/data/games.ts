@@ -45,9 +45,6 @@ export type Game = {
   thumbnail: string;
   sourceUrl: string;
   type: "iframe" | "external";
-  /** HTML document fetched into the frame instead of navigating the iframe to
-   *  a page that refuses framing (the PlayTab catalog). */
-  htmlUrl?: string;
   /** True for the locally hosted HTML browser games added from the source packet. */
   htmlGame?: boolean;
   /** Marks a freshly added title in the library. */
@@ -1467,9 +1464,9 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
-/** The PlayTab catalog import: its pages block framing, so each title hands the
- *  player its own HTML document (fetched from the CORS-open jsDelivr mirror). */
-const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, htmlPath, directSrc, external], index): Game => ({
+/** The PlayTab catalog import: each card keeps its play page and the player
+ *  routes that page through the iframe proxy, so X-Frame-Options never blocks. */
+const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId], index): Game => ({
   id: `bp-${slug}`,
   title,
   category: "Arcade",
@@ -1477,17 +1474,45 @@ const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, ht
   description: `${title}, from the PlayTab arcade catalog.`,
   controls: "Click the frame first so it takes the keyboard. Most titles use the arrow keys or W A S D, with Space or the mouse for actions; any on-screen pad appears in the frame.",
   thumbnail: coverId ? `https://cdn.jsdelivr.net/gh/freebuisness/covers@main/${coverId}.png` : cover(900 + index),
-  sourceUrl: directSrc || `https://bigpicture.playtab.fun/play/${slug}`,
+  sourceUrl: `https://bigpicture.playtab.fun/play/${slug}`,
   type: "iframe",
   heavy: true,
-  ...(htmlPath ? { htmlUrl: `https://cdn.jsdelivr.net/gh/freebuisness/html@main/${htmlPath}` } : {}),
-  ...(external ? { openInNewTab: true } : {}),
 }));
+
+/** Every playable frame goes through the proxy: hosts that refuse framing still
+ *  render there, and the nested URL is encoded so query strings survive. */
+const FRAME_PROXY = "https://proxy.webtoppings.bar/+iframe-demo?url=";
+
+function proxyUrl(url: string): string {
+  if (!url || url.startsWith("/") || url.startsWith("data:") || url.includes("{enter mode}")) return url;
+  try {
+    if (new URL(url).hostname === "proxy.webtoppings.bar") return url;
+  } catch {
+    return url;
+  }
+  return `${FRAME_PROXY}${encodeURIComponent(url)}`;
+}
+
+function wrapGameLinks(list: Game[]): Game[] {
+  return list.map((game) => {
+    if (game.type !== "iframe") return game;
+    const next: Game = { ...game };
+    // The proxy makes even the hand-over hosts playable in the frame.
+    delete next.openInNewTab;
+    next.sourceUrl = proxyUrl(next.sourceUrl);
+    if (next.servers) {
+      next.servers = next.servers.map((server) =>
+        server.external ? server : { ...server, url: proxyUrl(server.url) },
+      );
+    }
+    return next;
+  });
+}
 
 /** The newest drop, newest first — what the New games shelf lists. */
 export const newGames: Game[] = [...featuredNewGames, ...importedGameEntries];
 
-export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
+export const games: Game[] = wrapGameLinks(redactLibrary(handOverPremium(applyLibraryPatch([
   {
     id: "gta-v",
     title: "Grand Theft Auto V",
@@ -1758,11 +1783,6 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     sourceUrl: "https://eaglercraft.com",
     type: "iframe",
     heavy: true,
-    // Minecraft hands its link over instead of loading here: the player copies it
-    // and opens it in their own tab.
-    openInNewTab: true,
-    extensionNotice: true,
-    extensionUrl: "https://chromewebstore.google.com/detail/jkijbninecngmcipaijcnibjhbejaoch?utm_source=item-share-cb",
   },
   // ——— Other fan browser ports. Each URL was checked for reachability and for
   // X-Frame-Options / frame-ancestors before being listed, so every one loads in-frame.
@@ -1995,7 +2015,7 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       isNew: id === "51-starfighter-si-01",
     };
   }),
-])));
+]))));
 
 
 export const categories = ["All Games", ...Array.from(new Set(games.map((game) => game.category)))];
