@@ -13,7 +13,6 @@ import {
   Sparkles,
   Star,
   Trophy,
-  Tv,
   X,
   Zap,
 } from "lucide-react";
@@ -107,6 +106,13 @@ export default function Landing() {
   const [submitSent, setSubmitSent] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [founding, setFounding] = useState(() => {
+    try {
+      return localStorage.getItem("si-games-founding") === "1";
+    } catch {
+      return false;
+    }
+  });
   const searchInputRef = useRef<HTMLInputElement>(null);
   /** Ratings/comments across the whole shelf, one live subscription. */
   const signals = useQuery(api.feedback.overview);
@@ -133,6 +139,12 @@ export default function Landing() {
     const timeout = window.setTimeout(() => setToast(""), 2200);
     return () => window.clearTimeout(timeout);
   }, [toast]);
+
+  useEffect(() => {
+    const sync = () => setFounding(true);
+    window.addEventListener("si-games-founding", sync);
+    return () => window.removeEventListener("si-games-founding", sync);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -281,13 +293,14 @@ export default function Landing() {
           <nav className="desktop-nav" aria-label="Main navigation">
             <a href="#library">Library</a>
             <Link className="nav-extra" to="/new">New games</Link>
-            <Link className="nav-extra" to="/bigpicture">Big Picture</Link>
+            <Link className="nav-extra" to="/playtab">PlayTab</Link>
             <Link className="nav-extra" to="/changelog">Change list</Link>
             <a href="#favorites">Favorites</a>
             <a href="#about">About</a>
             <a href="/developers">Developers</a>
           </nav>
           <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
+          {founding && <span className="founding-chip">FOUNDING PLAYER</span>}
           <ThemePicker />
         </div>
       </header>
@@ -302,12 +315,17 @@ export default function Landing() {
             <p className="hero-subtitle">A community-driven shelf of browser games and classic builds — the whole arcade in one place, no clutter.</p>
             <div className="hero-actions">
               <button className="primary-button" onClick={() => playGame(games.find((game) => game.id === "gta-v") ?? games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
-              <Link className="soft-button" to="/bigpicture"><Tv size={16} /> Big Picture</Link>
+              <Link className="soft-button" to="/playtab"><Gamepad2 size={16} /> PlayTab shelf</Link>
               {recentTarget && (
                 <button className="soft-button" onClick={() => playGame(recentTarget)}><ArrowRight size={16} /> Continue playing</button>
               )}
             </div>
             <div className="hero-note"><span>✦</span> No ads inside SI GAMES <span>✦</span> Press <kbd>/</kbd> to search</div>
+            <div className="console-meta" aria-label="Console inspired interface">
+              <span>△</span><span>○</span><span>✕</span><span>□</span>
+              <b>CONSOLE DASHBOARD</b>
+              <small>XBOX / PLAYSTATION ENERGY</small>
+            </div>
           </div>
           <div className="hero-visual" aria-label="SI GAMES controller illustration">
             <div className="orbit orbit-one" /><div className="orbit orbit-two" />
@@ -319,6 +337,7 @@ export default function Landing() {
               <div className="console-controls"><span className="dpad"><i /><i /><i /><i /></span><div className="console-buttons"><b>+</b><b>•</b></div></div>
               <div className="console-label">SI / 01</div>
             </div>
+            <div className="console-glyphs" aria-hidden="true"><span>△</span><span>○</span><span>✕</span><span>□</span></div>
             <div className="float-chip chip-top"><Trophy size={14} /> {String(games.length).padStart(2, "0")} TITLES</div>
             <div className="float-chip chip-bottom"><Gamepad2 size={14} /> READY TO GO</div>
           </div>
@@ -339,9 +358,9 @@ export default function Landing() {
           {/* The two extra shelves. Kept here as well as in the header because
               the header nav is hidden on phones. */}
           <div className="shelf-shortcuts">
-            <Link className="shelf-shortcut shelf-shortcut--bp" to="/bigpicture">
-              <span className="shelf-shortcut-icon"><Tv size={16} /></span>
-              <span><b>Big Picture</b><small>TV mode, controllers, phone pads</small></span>
+            <Link className="shelf-shortcut shelf-shortcut--playtab" to="/playtab">
+              <span className="shelf-shortcut-icon"><Gamepad2 size={16} /></span>
+              <span><b>PlayTab shelf</b><small>{newGames.filter((game) => game.tags.includes("PlayTab")).length}+ PlayTab titles embedded</small></span>
               <ArrowRight size={16} />
             </Link>
             <Link className="shelf-shortcut" to="/new">

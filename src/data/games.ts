@@ -44,6 +44,8 @@ export type Game = {
   controls: string;
   thumbnail: string;
   sourceUrl: string;
+  /** A CORS-open HTML build to fetch and render as srcDoc instead of framing the play page. */
+  htmlUrl?: string;
   type: "iframe" | "external";
   /** True for the locally hosted HTML browser games added from the source packet. */
   htmlGame?: boolean;
@@ -1464,8 +1466,9 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
-/** The PlayTab catalog import: each card keeps its original play page link. */
-const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId], index): Game => ({
+/** The PlayTab catalog import: the play page is the share link, while the
+ *  CORS-open HTML build is what actually renders inside the frame. */
+const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, htmlPath], index): Game => ({
   id: `bp-${slug}`,
   title,
   category: "Arcade",
@@ -1474,6 +1477,7 @@ const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId], i
   controls: "Click the frame first so it takes the keyboard. Most titles use the arrow keys or W A S D, with Space or the mouse for actions; any on-screen pad appears in the frame.",
   thumbnail: coverId ? `https://cdn.jsdelivr.net/gh/freebuisness/covers@main/${coverId}.png` : cover(900 + index),
   sourceUrl: `https://bigpicture.playtab.fun/play/${slug}`,
+  htmlUrl: htmlPath ? `https://cdn.jsdelivr.net/gh/freebuisness/html@main/${htmlPath}` : undefined,
   type: "iframe",
   heavy: true,
 }));

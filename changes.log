@@ -3,30 +3,36 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-17 — Big Picture, phone pads, couch rooms, extension bridge
------------------------------------------------------------------
+2026-11-18 — console shell, PWA install, ambience, embedded PlayTab shelf
+-----------------------------------------------------------------------
 
-ADD  Big Picture (/bigpicture): a TV-first wall with huge key art, focus
-     navigation for arrows / D-pad / Enter, fullscreen, category shelves and a
-     full-screen game stage.
+DEL  Big Picture, the phone-pad rooms, the controller QR page and the browser
+     extension bridge are gone. Every outbound game now offers Copy link only;
+     the Enter in new tab controls were removed from the player and launch
+     screen, and the party tables were dropped from the Convex schema.
 
-ADD  Phone controllers: a Convex-backed room with QR pairing, up to six pads,
-     a crown host pad that changes the game on the TV, live pad snapshots, and
-     a mobile controller page (/controller) with stick, D-pad, ABXY, Start and
-     Select. Physical gamepads publish the same snapshots.
+ADD  Console theme: Xbox-green accent, PlayStation-blue glow, near-black
+     surfaces, coloured △ ○ ✕ □ glyphs and a one-time move to the new default.
+     Existing palette picks still work in the theme picker.
 
-ADD  Gameplay controller toggle in the player top bar plus a Big Picture jump
-     button; the optional OmniPad overlay is one tap away instead of hidden.
+ADD  PWA install experience: PNG app icons, maskable icon, shortcuts, a
+     service worker with navigation fallback, and a custom Install SI GAMES
+     card for Chrome and an Add to Home Screen path for iOS.
 
-ADD  extension/ — a Manifest V3 controller bridge. Big Picture posts pad
-     snapshots to its content script; the service worker fans them out to the
-     SI GAMES tab or any tab the player arms, and the page receives real key
-     edges. This covers games that must open in their own tab.
+ADD  First boot: new players get a console start-up overlay, a short boot
+     chime, and a Founding Player badge that stays on the shelf. Returning
+     players skip it.
 
-CHG  Animation pass: card light sweep, focus lift/glow on the Big Picture
-     rail, breathing ambient art, scanlines, hero crossfades, stage slide-in,
-     party pad entrances, controller sheet motion and orbit accents, all with
-     reduced-motion fallbacks.
+ADD  Ambient sound: a Web Audio console-room pad and occasional chime, with a
+     floating AMBIENT toggle and reduced-motion-safe equaliser.
+
+ADD  /playtab: the full PlayTab catalog as an in-house shelf with search,
+     genres and paged cards. PlayTab titles now fetch their CORS-open HTML
+     build and render it as srcDoc, so their play pages finally load embedded
+     instead of hitting X-Frame-Options.
+
+CHG  Extra motion and elements: liquid green/blue backdrop, console glyphs,
+     card sweep, shelf and player entrance motion, and new animation fallbacks.
 
 2026-11-16 — proxy removed, copy and new-tab controls added
 ----------------------------------------------------------

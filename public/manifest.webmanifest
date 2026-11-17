@@ -1,20 +1,56 @@
 {
+  "id": "/",
   "name": "SI GAMES",
   "short_name": "SI GAMES",
-  "description": "A focused browser-game launcher by ////SPIDEY_IRAJ////. Play. Discover. Enjoy.",
+  "description": "A console-styled browser-game launcher by ////SPIDEY_IRAJ////. Play. Discover. Enjoy.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#050816",
-  "theme_color": "#050816",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#05070a",
+  "theme_color": "#05070a",
   "lang": "en",
+  "dir": "ltr",
   "categories": ["games", "entertainment"],
   "icons": [
     {
-      "src": "/logo.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Library",
+      "short_name": "Library",
+      "description": "The full SI GAMES shelf",
+      "url": "/"
+    },
+    {
+      "name": "PlayTab shelf",
+      "short_name": "PlayTab",
+      "description": "The embedded PlayTab catalog",
+      "url": "/playtab"
+    },
+    {
+      "name": "New games",
+      "short_name": "New",
+      "description": "The latest additions",
+      "url": "/new"
     }
   ]
 }

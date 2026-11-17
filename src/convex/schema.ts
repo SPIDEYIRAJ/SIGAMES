@@ -67,48 +67,6 @@ const schema = defineSchema(
       reporterEmail: v.optional(v.string()),
       createdAt: v.number(),
     }).index("by_game", ["gameId"]),
-
-    // A Big Picture / couch-play room. The display keeps displayToken secret;
-    // phones join with the short code and one of them becomes the host pad.
-    partySessions: defineTable({
-      code: v.string(),
-      displayToken: v.string(),
-      status: v.union(v.literal("lobby"), v.literal("live"), v.literal("ended")),
-      gameId: v.optional(v.string()),
-      hostDeviceId: v.optional(v.string()),
-      createdAt: v.number(),
-      updatedAt: v.number(),
-    }).index("by_code", ["code"]),
-
-    // One row per phone / bridge. The input snapshot is replaced in place as
-    // the pad moves, so the display only ever reads the latest state.
-    partyDevices: defineTable({
-      sessionId: v.id("partySessions"),
-      deviceId: v.string(),
-      name: v.string(),
-      role: v.union(v.literal("host"), v.literal("player")),
-      joinedAt: v.number(),
-      lastSeen: v.number(),
-      input: v.optional(
-        v.object({
-          up: v.boolean(),
-          down: v.boolean(),
-          left: v.boolean(),
-          right: v.boolean(),
-          a: v.boolean(),
-          b: v.boolean(),
-          x: v.boolean(),
-          y: v.boolean(),
-          start: v.boolean(),
-          select: v.boolean(),
-          stickX: v.number(),
-          stickY: v.number(),
-          seq: v.number(),
-        }),
-      ),
-    })
-      .index("by_session", ["sessionId"])
-      .index("by_session_device", ["sessionId", "deviceId"]),
   },
   {
     schemaValidation: false,

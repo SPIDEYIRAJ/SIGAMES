@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowLeft, Check, Copy, Expand, ExternalLink, Flag, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Tv, X, Save } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, Flag, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import VirtualGamepad from "@/components/VirtualGamepad";
@@ -23,6 +23,7 @@ const EXIT_MENU_MS = 8000;
 
 interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
   src: string;
+  htmlUrl?: string;
   title: string;
   allow?: string;
   allowFullScreen?: boolean;
@@ -31,11 +32,44 @@ interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "
   onError: () => void;
 }
 
-function GameFrame({ src, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
+/** Injects a base so a fetched build can still resolve its sibling assets. */
+function withBase(html: string, base: string): string {
+  if (/<base\s/i.test(html)) return html;
+  const tag = `<base href="${base.replace(/"/g, "&quot;")}">`;
+  return /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, (match) => `${match}${tag}`) : `${tag}${html}`;
+}
+
+function GameFrame({ src, htmlUrl, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
+  const [doc, setDoc] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+
+  // PlayTab pages send X-Frame-Options; their CORS-open HTML build is fetched
+  // once and rendered in place, which keeps the title embedded in SI GAMES.
+  useEffect(() => {
+    if (!htmlUrl) return;
+    let live = true;
+    fetch(htmlUrl)
+      .then((response) => (response.ok ? response.text() : Promise.reject(new Error("build unavailable"))))
+      .then((html) => {
+        if (live) setDoc(withBase(html, new URL(htmlUrl).href));
+      })
+      .catch(() => {
+        if (live) setFailed(true);
+      });
+    return () => {
+      live = false;
+    };
+  }, [htmlUrl]);
+
+  // Hold the TV on its warming-up screen until the build arrives, so the
+  // empty about:blank load never dismisses the loader.
+  if (htmlUrl && !doc && !failed) return null;
+
   return createElement(
     "iframe",
     {
-      src,
+      src: htmlUrl && !failed && !doc ? undefined : src,
+      srcDoc: doc ?? undefined,
       title,
       allow,
       allowFullScreen,
@@ -830,7 +864,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
               <div className="copy-link">
                 <span className="copy-link-label"><Save size={13} /> Launch link</span>
                 <span className="copy-open-hint" role="status">
-                  Copy the link for your own tab, or enter the site in a new one.
+                  Copy the link, then open a new tab yourself and paste it there.
                 </span>
                 <div className="copy-link-row">
                   <button
@@ -840,9 +874,6 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                   >
                     {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied — paste in a new tab" : "Copy link"}
                   </button>
-                  <a className="launch-play copy-link-btn" href={launchLink} target="_blank" rel="noreferrer">
-                    Enter in new tab <ExternalLink size={18} />
-                  </a>
                 </div>
                 <textarea ref={linkInputRef} className="copy-link-hidden" readOnly value={launchLink} aria-hidden="true" tabIndex={-1} />
                 <span className="launch-note">Copies the{activeMode ? ` ${activeMode.label}` : ""} link straight to your clipboard — the address is never shown here. Paste it into a new tab yourself; no tab opens automatically. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
@@ -902,7 +933,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
-        <div className="player-actions"><button className={`player-icon-button ${controllersOn ? "is-controller" : ""}`} onClick={() => { const next = !controllersOn; setControllersEnabled(next); setControllersOn(next); }} aria-label={controllersOn ? "Hide the on-screen controller" : "Show the on-screen controller"} title={controllersOn ? "Controller on" : "Controller off"}><Gamepad2 size={18} /></button><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-icon-button bp-jump" onClick={() => navigate("/bigpicture")} aria-label="Open Big Picture mode" title="Big Picture"><Tv size={18} /></button><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
+        <div className="player-actions"><button className={`player-icon-button ${controllersOn ? "is-controller" : ""}`} onClick={() => { const next = !controllersOn; setControllersEnabled(next); setControllersOn(next); }} aria-label={controllersOn ? "Hide the on-screen controller" : "Show the on-screen controller"} title={controllersOn ? "Controller on" : "Controller off"}><Gamepad2 size={18} /></button><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
       </header>
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
@@ -946,14 +977,14 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                 <span className="fs-hold-track"><span className="fs-hold-fill" style={{ "--fs-hold-ms": `${keyHold.ms}ms` } as CSSProperties} /></span>
               </div>
             )}
-            <GameFrame key={frameKey} src={playUrl ?? launchLink} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
             {/* Optional on-screen controller (hidden settings toggle); only for titles that actually run in the frame. */}
             {game.type !== "external" && !handsLink && (
               <VirtualGamepad src={playUrl ?? launchLink} gameTitle={game.title} gameCategory={game.category} />
             )}
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}{game.type !== "external" && /^https?:\/\//i.test(game.sourceUrl) && (<><button type="button" className="open-external" onClick={() => copyLink(launchLink)}>{linkCopied ? <Check size={15} /> : <Copy size={15} />} {linkCopied ? "Copied" : "Copy link"}</button><a className="open-external" href={launchLink} target="_blank" rel="noreferrer">Enter in new tab <ExternalLink size={15} /></a></>)}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}{game.type !== "external" && /^https?:\/\//i.test(game.sourceUrl) && (<button type="button" className="open-external" onClick={() => copyLink(launchLink)}>{linkCopied ? <Check size={15} /> : <Copy size={15} />} {linkCopied ? "Copied" : "Copy link"}</button>)}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
         <textarea ref={linkInputRef} className="copy-link-hidden" readOnly value={launchLink} aria-hidden="true" tabIndex={-1} />
 
         {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
