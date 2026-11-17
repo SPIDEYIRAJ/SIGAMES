@@ -3,6 +3,31 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-17 — Big Picture, phone pads, couch rooms, extension bridge
+-----------------------------------------------------------------
+
+ADD  Big Picture (/bigpicture): a TV-first wall with huge key art, focus
+     navigation for arrows / D-pad / Enter, fullscreen, category shelves and a
+     full-screen game stage.
+
+ADD  Phone controllers: a Convex-backed room with QR pairing, up to six pads,
+     a crown host pad that changes the game on the TV, live pad snapshots, and
+     a mobile controller page (/controller) with stick, D-pad, ABXY, Start and
+     Select. Physical gamepads publish the same snapshots.
+
+ADD  Gameplay controller toggle in the player top bar plus a Big Picture jump
+     button; the optional OmniPad overlay is one tap away instead of hidden.
+
+ADD  extension/ — a Manifest V3 controller bridge. Big Picture posts pad
+     snapshots to its content script; the service worker fans them out to the
+     SI GAMES tab or any tab the player arms, and the page receives real key
+     edges. This covers games that must open in their own tab.
+
+CHG  Animation pass: card light sweep, focus lift/glow on the Big Picture
+     rail, breathing ambient art, scanlines, hero crossfades, stage slide-in,
+     party pad entrances, controller sheet motion and orbit accents, all with
+     reduced-motion fallbacks.
+
 2026-11-16 — proxy removed, copy and new-tab controls added
 ----------------------------------------------------------
 

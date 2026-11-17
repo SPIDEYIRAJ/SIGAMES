@@ -13,6 +13,7 @@ import {
   Sparkles,
   Star,
   Trophy,
+  Tv,
   X,
   Zap,
 } from "lucide-react";
@@ -280,6 +281,7 @@ export default function Landing() {
           <nav className="desktop-nav" aria-label="Main navigation">
             <a href="#library">Library</a>
             <Link className="nav-extra" to="/new">New games</Link>
+            <Link className="nav-extra" to="/bigpicture">Big Picture</Link>
             <Link className="nav-extra" to="/changelog">Change list</Link>
             <a href="#favorites">Favorites</a>
             <a href="#about">About</a>
@@ -300,6 +302,7 @@ export default function Landing() {
             <p className="hero-subtitle">A community-driven shelf of browser games and classic builds — the whole arcade in one place, no clutter.</p>
             <div className="hero-actions">
               <button className="primary-button" onClick={() => playGame(games.find((game) => game.id === "gta-v") ?? games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
+              <Link className="soft-button" to="/bigpicture"><Tv size={16} /> Big Picture</Link>
               {recentTarget && (
                 <button className="soft-button" onClick={() => playGame(recentTarget)}><ArrowRight size={16} /> Continue playing</button>
               )}
@@ -336,6 +339,11 @@ export default function Landing() {
           {/* The two extra shelves. Kept here as well as in the header because
               the header nav is hidden on phones. */}
           <div className="shelf-shortcuts">
+            <Link className="shelf-shortcut shelf-shortcut--bp" to="/bigpicture">
+              <span className="shelf-shortcut-icon"><Tv size={16} /></span>
+              <span><b>Big Picture</b><small>TV mode, controllers, phone pads</small></span>
+              <ArrowRight size={16} />
+            </Link>
             <Link className="shelf-shortcut" to="/new">
               <span className="shelf-shortcut-icon"><Sparkles size={16} /></span>
               <span><b>New games</b><small>{newGames.length} latest additions</small></span>

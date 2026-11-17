@@ -1,11 +1,12 @@
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowLeft, Check, Copy, Expand, ExternalLink, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, ExternalLink, Flag, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Tv, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import VirtualGamepad from "@/components/VirtualGamepad";
 import GameFeedback from "@/components/GameFeedback";
 import BootConsole, { measureBootBox, type BootBox } from "@/components/BootConsole";
 import { peekLaunchSource, takeLaunchSource, type LaunchSource } from "@/lib/launch";
+import { isControllersEnabled, setControllersEnabled } from "@/lib/omnipad";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -327,6 +328,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   const navigate = useNavigate();
   const game = useMemo(() => games.find((item) => item.id === resolvedId), [resolvedId]);
   const [favorites, setFavorites] = useState<string[]>(readFavorites);
+  const [controllersOn, setControllersOn] = useState(() => isControllersEnabled());
   const [loading, setLoading] = useState(true);
   const [showExtension, setShowExtension] = useState(Boolean(game?.extensionNotice));
   const [isImmersive, setIsImmersive] = useState(false);
@@ -900,7 +902,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
-        <div className="player-actions"><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
+        <div className="player-actions"><button className={`player-icon-button ${controllersOn ? "is-controller" : ""}`} onClick={() => { const next = !controllersOn; setControllersEnabled(next); setControllersOn(next); }} aria-label={controllersOn ? "Hide the on-screen controller" : "Show the on-screen controller"} title={controllersOn ? "Controller on" : "Controller off"}><Gamepad2 size={18} /></button><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-icon-button bp-jump" onClick={() => navigate("/bigpicture")} aria-label="Open Big Picture mode" title="Big Picture"><Tv size={18} /></button><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
       </header>
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">

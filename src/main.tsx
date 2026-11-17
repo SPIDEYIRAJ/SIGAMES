@@ -18,6 +18,8 @@ const Landing = lazy(() => import("./pages/Landing.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NewGames = lazy(() => import("./pages/NewGames.tsx"));
+const BigPicture = lazy(() => import("./pages/BigPicture.tsx"));
+const Controller = lazy(() => import("./pages/Controller.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
 const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
@@ -438,6 +440,9 @@ function AnimatedRoutes() {
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/new" element={<NewGames />} />
+            <Route path="/bigpicture" element={<BigPicture />} />
+            <Route path="/controller" element={<Controller />} />
+            <Route path="/controller/:code" element={<Controller />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/sheet" element={<DataSheet />} />
             <Route path="/gta-v" element={<GamePlayer />} />
