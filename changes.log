@@ -3,6 +3,24 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-18 — mobile rendering sharpness
+----------------------------------------
+
+FIX  Embedded game builds are served with a device-width viewport when they
+     do not carry one. Phones were laying them out at ~980px and shrinking the
+     result, which made games look soft and tiny. Builds with their own
+     viewport keep it untouched.
+
+FIX  The five local games without a viewport now declare a width matched to
+     their fixed boards (Candy Crush, 2048, Ping Pong, Tetris, Quiz), and three
+     malformed <head> tags were repaired.
+
+CHG  Portrait intro film now uses contain instead of cover, so the phone does
+     not crop the sides and upscale a low-detail centre.
+
+CHG  Mobile search and form fields use a 16px base so iOS does not zoom the
+     whole page on focus.
+
 2026-11-18 — startup cinema, library merge, PlayTab branding removed
 -------------------------------------------------------------------
 

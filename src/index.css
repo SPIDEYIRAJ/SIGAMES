@@ -3852,6 +3852,26 @@
 }
 .startup-film-skip:hover { color: #fff; border-color: #9bf00b80; }
 
+/* Portrait phones are much taller than the intro film. Covering the screen
+   would crop the sides and upscale the picture, so preserve the native frame
+   and let the console-black bars carry the rest of the screen. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .startup-film video,
+  .startup-gate-video video { object-fit: contain; }
+  .startup-gate-video { background: #010203; }
+  .startup-film { background: #010203; }
+}
+
+/* iOS zooms the whole page when a text field smaller than 16px takes focus.
+   Keeping form fields at 16px stops that blurry, half-zoomed state. */
+@media (max-width: 720px) {
+  .search-box input,
+  .submit-form input,
+  .submit-form textarea,
+  .sort-box select,
+  .dev-height input { font-size: 16px; }
+}
+
 .first-entry-grid {
   position: absolute;
   inset: -30%;

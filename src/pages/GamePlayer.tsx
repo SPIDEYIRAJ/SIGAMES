@@ -33,10 +33,21 @@ interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "
 }
 
 /** Injects a base so a fetched build can still resolve its sibling assets. */
-function withBase(html: string, base: string): string {
-  if (/<base\s/i.test(html)) return html;
-  const tag = `<base href="${base.replace(/"/g, "&quot;")}">`;
-  return /<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, (match) => `${match}${tag}`) : `${tag}${html}`;
+const GAME_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">';
+
+/** Fetched game builds often ship without a viewport tag. On a phone the frame
+ *  then lays them out at desktop width and shrinks the whole page, which makes
+ *  the game look soft and tiny. Add a device-width viewport only when the build
+ *  did not provide one, and keep its own viewport when it did. */
+function prepareGameHtml(html: string, base: string): string {
+  const tags = [
+    /<base\s/i.test(html) ? "" : `<base href="${base.replace(/"/g, "&quot;")}">`,
+    /<meta[^>]+name\s*=\s*["']viewport["']/i.test(html) ? "" : GAME_VIEWPORT,
+  ].join("");
+  if (!tags) return html;
+  return /<head[^>]*>/i.test(html)
+    ? html.replace(/<head[^>]*>/i, (match) => `${match}${tags}`)
+    : `${tags}${html}`;
 }
 
 function GameFrame({ src, htmlUrl, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
@@ -51,7 +62,7 @@ function GameFrame({ src, htmlUrl, title, allow, allowFullScreen, loading, onLoa
     fetch(htmlUrl)
       .then((response) => (response.ok ? response.text() : Promise.reject(new Error("build unavailable"))))
       .then((html) => {
-        if (live) setDoc(withBase(html, new URL(htmlUrl).href));
+        if (live) setDoc(prepareGameHtml(html, new URL(htmlUrl).href));
       })
       .catch(() => {
         if (live) setFailed(true);
