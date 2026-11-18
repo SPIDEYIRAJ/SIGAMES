@@ -551,7 +551,7 @@ export const bigPictureGames: BigPictureEntry[] = [
   ["pizza-tower-scoutdigo", "Pizza Tower: Scoutdigo", 628, "628-fix2.html", "", false],
   ["plants-vs-zombies", "Plants vs. Zombies", 232, "232-fix2.html", "", false],
   ["plants-vs-zombies-goty-edition", "Plants vs. Zombies GOTY Edition", 842, "842.html", "", false],
-  ["playtab-gba", "PlayTab GBA", 0, "", "https://ps2.playtab.fun/gba/?invite=https%3A%2F%2Fbigpicture.playtab.fun%2Fplaying%2Fplaytab-gba", false],
+  ["playtab-gba", "Game Boy Advance", 0, "", "https://ps2.playtab.fun/gba/?invite=https%3A%2F%2Fbigpicture.playtab.fun%2Fplaying%2Fplaytab-gba", false],
   ["please-dont-touch-anything", "Please Don't Touch Anything", 660, "660-fix.html", "", false],
   ["plinko", "Plinko", 544, "544-fix.html", "", false],
   ["poke-catch", "Poké Catch", 0, "", "https://pokecatch-online.netlify.app/", false],

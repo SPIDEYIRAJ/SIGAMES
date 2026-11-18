@@ -5,12 +5,12 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import React, { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RequireAuth } from "./components/RequireAuth";
 import HiddenSettings from "./components/HiddenSettings";
 import AmbientSound from "./components/AmbientSound";
-import FirstVisitEntry from "./components/FirstVisitEntry";
+import StartupIntro from "./components/StartupIntro";
 import FluidBackdrop from "./components/FluidBackdrop";
 import InstallPrompt from "./components/InstallPrompt";
 import { armAmbientOnFirstGesture } from "./lib/ambient";
@@ -23,7 +23,6 @@ const Landing = lazy(() => import("./pages/Landing.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NewGames = lazy(() => import("./pages/NewGames.tsx"));
-const PlayTab = lazy(() => import("./pages/PlayTab.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
 const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
@@ -444,7 +443,7 @@ function AnimatedRoutes() {
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/new" element={<NewGames />} />
-            <Route path="/playtab" element={<PlayTab />} />
+            <Route path="/playtab" element={<Navigate to="/" replace />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/sheet" element={<DataSheet />} />
             <Route path="/gta-v" element={<GamePlayer />} />
@@ -485,7 +484,7 @@ function AppBootstrap() {
         <HiddenSettings />
         <AmbientSound />
         <InstallPrompt />
-        <FirstVisitEntry />
+        <StartupIntro />
         {/* The boot screen fades itself out while the shelf mounts underneath. */}
         <AnimatePresence>{isLoading && <LoadingScreen key="boot" />}</AnimatePresence>
         {!isLoading && <AnimatedRoutes />}

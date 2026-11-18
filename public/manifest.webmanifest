@@ -41,12 +41,6 @@
       "url": "/"
     },
     {
-      "name": "PlayTab shelf",
-      "short_name": "PlayTab",
-      "description": "The embedded PlayTab catalog",
-      "url": "/playtab"
-    },
-    {
       "name": "New games",
       "short_name": "New",
       "description": "The latest additions",

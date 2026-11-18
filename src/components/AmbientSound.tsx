@@ -9,7 +9,11 @@ export default function AmbientSound() {
   useEffect(() => {
     const sync = () => setOn(isAmbientEnabled());
     window.addEventListener("storage", sync);
-    return () => window.removeEventListener("storage", sync);
+    window.addEventListener("si-games-ambient-change", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("si-games-ambient-change", sync);
+    };
   }, []);
 
   return (

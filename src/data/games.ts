@@ -1466,14 +1466,14 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
-/** The PlayTab catalog import: the play page is the share link, while the
+/** The bulk arcade catalog: the game page is the share link, while the
  *  CORS-open HTML build is what actually renders inside the frame. */
 const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, htmlPath], index): Game => ({
   id: `bp-${slug}`,
   title,
   category: "Arcade",
-  tags: ["PlayTab", "Browser Ready"],
-  description: `${title}, from the PlayTab arcade catalog.`,
+  tags: ["Browser Ready"],
+  description: `${title} — a browser-ready arcade title.`,
   controls: "Click the frame first so it takes the keyboard. Most titles use the arrow keys or W A S D, with Space or the mouse for actions; any on-screen pad appears in the frame.",
   thumbnail: coverId ? `https://cdn.jsdelivr.net/gh/freebuisness/covers@main/${coverId}.png` : cover(900 + index),
   sourceUrl: `https://bigpicture.playtab.fun/play/${slug}`,

@@ -3793,8 +3793,64 @@
   overflow-x: hidden;
   overflow-y: auto;
   color: #eef4ff;
-  background: radial-gradient(90% 80% at 50% 42%, #0a1a12 0%, #04080c 55%, #010203 100%);
+  background:
+    radial-gradient(90% 80% at 50% 42%, #0a1a12d9 0%, #04080ce6 55%, #010203f2 100%),
+    #010203;
 }
+
+.startup-gate-video { position: absolute; inset: 0; overflow: hidden; }
+.startup-gate-video video { width: 100%; height: 100%; object-fit: cover; opacity: .52; }
+.startup-gate-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 60% at 50% 45%, #02060a26, #010203d9 78%),
+    linear-gradient(180deg, #010203a8, #01020399 45%, #010203e6);
+}
+
+.startup-film {
+  position: fixed;
+  inset: 0;
+  z-index: 125;
+  overflow: hidden;
+  background: #010203;
+  pointer-events: none;
+}
+.startup-film video { width: 100%; height: 100%; object-fit: cover; }
+.startup-film-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #0102035c, #01020314 45%, #010203cc);
+}
+.startup-film-label {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  color: #9bf00bb8;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .24em;
+}
+.startup-film-skip {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 131;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  color: #c8d6eb;
+  background: #050b12c7;
+  border: 1px solid #ffffff24;
+  border-radius: 6px;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+}
+.startup-film-skip:hover { color: #fff; border-color: #9bf00b80; }
 
 .first-entry-grid {
   position: absolute;
@@ -3892,6 +3948,13 @@
 .first-entry-badge { display: inline-flex; align-items: center; gap: 7px; margin-top: 18px; padding: 7px 11px; color: #d8ffb0; background: #9bf00b0f; border: 1px solid #9bf00b3d; border-radius: 6px; font-size: 8px; font-weight: 950; letter-spacing: .13em; }
 .first-entry-start { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; margin-top: 24px; padding: 0 30px; color: #04120a; background: linear-gradient(135deg, #c8ff5e, #9bf00b 55%, #6fbf00); border: 0; border-radius: 9px; box-shadow: 0 0 44px #9bf00b4d; font-size: 12px; font-weight: 950; letter-spacing: .16em; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease; }
 .first-entry-start:hover { transform: translateY(-2px) scale(1.015); box-shadow: 0 0 66px #9bf00b70; }
+.first-entry-start:disabled { opacity: .55; cursor: wait; transform: none; box-shadow: none; }
+.startup-sound-actions { display: flex; flex-direction: column; align-items: center; gap: 9px; width: min(340px, 100%); margin-top: 24px; }
+.startup-sound-actions .first-entry-start { width: 100%; margin-top: 0; }
+.first-entry-muted { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 18px; color: #c4d4ec; background: #ffffff09; border: 1px solid #ffffff21; border-radius: 9px; font-size: 10px; font-weight: 950; letter-spacing: .12em; cursor: pointer; transition: background .18s ease, border-color .18s ease; }
+.first-entry-muted:hover { background: #ffffff12; border-color: #9bf00b5e; }
+.first-entry-muted:disabled { opacity: .5; cursor: wait; }
+.first-entry-muted small { color: #6f84a3; font-size: 7px; letter-spacing: .08em; }
 .first-entry-skip { display: inline-flex; align-items: center; gap: 6px; margin-top: 14px; padding: 6px; color: #657997; background: none; border: 0; font-size: 8px; font-weight: 900; letter-spacing: .1em; cursor: pointer; }
 .first-entry-skip:hover { color: #b8c9e6; }
 .first-entry-foot { margin-top: 26px; color: #43546d; font-size: 7px; font-weight: 900; letter-spacing: .18em; }
@@ -4009,7 +4072,10 @@
   .first-entry-card p { font-size: 11px; }
   .first-entry-badge { font-size: 7px; }
   .first-entry-start { width: 100%; }
+  .startup-sound-actions { width: 100%; }
   .first-entry-foot { display: none; }
+  .startup-film-label { display: none; }
+  .startup-film-skip { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
   .pt-topbar, .pt-main, .pt-footer { width: min(100% - 28px, 1240px); }
   .pt-hero { padding-top: 10px; }
   .pt-glyphs { display: none; }

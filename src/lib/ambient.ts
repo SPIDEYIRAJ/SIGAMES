@@ -35,6 +35,9 @@ export function setAmbientEnabled(enabled: boolean): void {
   }
   if (enabled) void startAmbient();
   else stopAmbient();
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("si-games-ambient-change"));
+  }
 }
 
 function noiseBuffer(context: AudioContext): AudioBuffer {

@@ -293,7 +293,6 @@ export default function Landing() {
           <nav className="desktop-nav" aria-label="Main navigation">
             <a href="#library">Library</a>
             <Link className="nav-extra" to="/new">New games</Link>
-            <Link className="nav-extra" to="/playtab">PlayTab</Link>
             <Link className="nav-extra" to="/changelog">Change list</Link>
             <a href="#favorites">Favorites</a>
             <a href="#about">About</a>
@@ -315,7 +314,7 @@ export default function Landing() {
             <p className="hero-subtitle">A community-driven shelf of browser games and classic builds — the whole arcade in one place, no clutter.</p>
             <div className="hero-actions">
               <button className="primary-button" onClick={() => playGame(games.find((game) => game.id === "gta-v") ?? games[0])}><Zap size={17} fill="currentColor" /> Play now</button>
-              <Link className="soft-button" to="/playtab"><Gamepad2 size={16} /> PlayTab shelf</Link>
+              <a className="soft-button" href="#library"><Gamepad2 size={16} /> Browse the library</a>
               {recentTarget && (
                 <button className="soft-button" onClick={() => playGame(recentTarget)}><ArrowRight size={16} /> Continue playing</button>
               )}
@@ -358,11 +357,6 @@ export default function Landing() {
           {/* The two extra shelves. Kept here as well as in the header because
               the header nav is hidden on phones. */}
           <div className="shelf-shortcuts">
-            <Link className="shelf-shortcut shelf-shortcut--playtab" to="/playtab">
-              <span className="shelf-shortcut-icon"><Gamepad2 size={16} /></span>
-              <span><b>PlayTab shelf</b><small>{newGames.filter((game) => game.tags.includes("PlayTab")).length}+ PlayTab titles embedded</small></span>
-              <ArrowRight size={16} />
-            </Link>
             <Link className="shelf-shortcut" to="/new">
               <span className="shelf-shortcut-icon"><Sparkles size={16} /></span>
               <span><b>New games</b><small>{newGames.length} latest additions</small></span>

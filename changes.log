@@ -3,8 +3,24 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-18 — console shell, PWA install, ambience, embedded PlayTab shelf
------------------------------------------------------------------------
+2026-11-18 — startup cinema, library merge, PlayTab branding removed
+-------------------------------------------------------------------
+
+DEL  The separate catalog page is gone, along with its header link, hero
+     button, shelf shortcut and every PlayTab tag, label and description in the
+     interface. Its 832 titles stay in the main library like every other game.
+
+ADD  Startup cinema: a Convex-backed intro film opens the site behind a sound
+     gate. Players choose ENTER WITH SOUND to play the intro song, or ENTER
+     MUTED to keep the film quiet while the SI GAMES room tone runs. More audio
+     storage ids can be appended to the Convex media list and play in order.
+
+CHG  The first-boot overlay now doubles as the session start screen: it asks
+     for sound on each new session, while the Founding Player badge is still
+     only awarded the first time. Skipping the intro no longer awards it.
+
+2026-11-18 — console shell, PWA install, ambience, embedded shelf
+---------------------------------------------------------------
 
 DEL  Big Picture, the phone-pad rooms, the controller QR page and the browser
      extension bridge are gone. Every outbound game now offers Copy link only;
