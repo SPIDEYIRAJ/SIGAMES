@@ -3,8 +3,29 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — simple start screen, theme song on START, classic shell
+------------------------------------------------------------------
+
+CHG  The start of a visit is now one small screen: SI GAMES, one line and a
+     START button. It opens the shelf immediately and starts the SI theme song
+     in that same click (the gesture browsers require for audio). The separate
+     first-boot gate and intro-film gate are gone, so there is only one intro.
+
+CHG  The soundtrack panel is gone. There is no upload, folder import, source
+     picker or track list anywhere; the floating music button just toggles the
+     built-in theme song on and off.
+
+CHG  Reverted the liquid-glass restyle: the frosted/glossy override layer and
+     the Blush palette were removed, and the default is the Console theme again
+     (Xbox green accent, PlayStation blue glow) with the animated spectral
+     colours on the header seam, hero wordmark and cursor.
+
+ADD  A self-contained start-screen style (bevelled mark and START key) that
+     follows theme tokens instead of hard-coded pink/blue glass.
+
 2026-11-19 — Big Picture launcher
 ---------------------------------
+
 
 ADD  A full-screen, controller-first launcher at /bigpicture (linked from the
      header). Top bar with Home/Library/Store/Friends/Settings tabs, Wi-Fi,
@@ -12,7 +33,7 @@ ADD  A full-screen, controller-first launcher at /bigpicture (linked from the
 
 ADD  Hero showcase for the focused title with key art, title, description,
      Play/Resume, category, controller/keyboard badge, real playtime and an
-     honest \"saves on this device\" sync note, plus a Details expansion.
+     honest "saves on this device" sync note, plus a Details expansion.
 
 ADD  Recently played, Favorites, Installed (built-in HTML builds) and New
      shelves with large cover tiles, a full Library grid with paging, a

@@ -13,7 +13,6 @@ import AmbientSound from "./components/AmbientSound";
 import ThemeSong from "./components/ThemeSong";
 import MusicGate from "./components/MusicGate";
 import CustomCursor from "./components/CustomCursor";
-import StartupIntro from "./components/StartupIntro";
 import FluidBackdrop from "./components/FluidBackdrop";
 import InstallPrompt from "./components/InstallPrompt";
 import { armAmbientOnFirstGesture } from "./lib/ambient";
@@ -492,7 +491,6 @@ function AppBootstrap() {
         <CustomCursor />
         <MusicGate />
         <InstallPrompt />
-        <StartupIntro />
         {/* The boot screen fades itself out while the shelf mounts underneath. */}
         <AnimatePresence>{isLoading && <LoadingScreen key="boot" />}</AnimatePresence>
         {!isLoading && <AnimatedRoutes />}

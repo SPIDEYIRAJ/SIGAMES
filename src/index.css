@@ -5043,7 +5043,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-head h2 { margin: 8px 0 0; font-size: clamp(32px, 5.6vw, 52px); letter-spacing: -.05em; text-align: left; }
 .si-welcome-head h2 b {
   display: inline-block;
-  background: linear-gradient(105deg, #ff9ec7 0%, #d3b6ff 38%, #7cc7ff 74%, #ff9ec7 100%);
+  background: linear-gradient(105deg, #9bf00b 0%, #6bb1ff 38%, #ff7ad9 74%, #c9a7ff 100%);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -5055,7 +5055,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   50% { background-position: 100% 0; }
 }
 
-.si-welcome-kicker { color: #ffb3d1; letter-spacing: .26em; }
+.si-welcome-kicker { color: #b7ff62; letter-spacing: .26em; }
 .si-welcome-head > p { max-width: 520px; margin: 12px 0 0; color: #9fafd3; font-size: 11px; line-height: 1.7; }
 
 .si-welcome-optional {
@@ -5087,7 +5087,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   transition: color .16s ease, border-color .16s ease, background .16s ease;
 }
 
-.si-welcome-optional-btn:hover { color: #2a1020; background: #ff8fb8; border-color: #ff8fb8; }
+.si-welcome-optional-btn:hover { color: #07121d; background: #9bf00b; border-color: #9bf00b; }
 .si-welcome-optional small { color: #7c8db0; font-size: 8px; letter-spacing: .06em; }
 .si-welcome-prompt { margin-top: 18px; }
 .si-welcome-prompt .si-welcome-steps { margin-top: 0; }
@@ -5141,12 +5141,12 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-track i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #ff8fb8, #d3b6ff 50%, #7cc7ff);
+  background: linear-gradient(90deg, #9bf00b, #6bb1ff 50%, #ff7ad9);
   border-radius: inherit;
   transition: width .35s ease;
 }
 .si-welcome-scan.is-scanning .si-welcome-track i {
-  background: linear-gradient(90deg, #ff8fb8, #d3b6ff, #7cc7ff, #bfe4ff, #ff8fb8);
+  background: linear-gradient(90deg, #9bf00b, #6bb1ff, #ff7ad9, #c9a7ff, #9bf00b);
   background-size: 300% 100%;
   animation: si-scan-flow 1.4s linear infinite;
 }
@@ -5248,10 +5248,10 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 }
 
 .game-grid > .game-card { --card-glow: var(--si-glow); }
-.game-grid > .game-card:nth-child(4n + 1) { --card-glow: #ff8fb8; }
-.game-grid > .game-card:nth-child(4n + 2) { --card-glow: #7cc7ff; }
-.game-grid > .game-card:nth-child(4n + 3) { --card-glow: #b9a7ff; }
-.game-grid > .game-card:nth-child(4n) { --card-glow: #ff9ec7; }
+.game-grid > .game-card:nth-child(4n + 1) { --card-glow: #9bf00b; }
+.game-grid > .game-card:nth-child(4n + 2) { --card-glow: #6bb1ff; }
+.game-grid > .game-card:nth-child(4n + 3) { --card-glow: #ff7ad9; }
+.game-grid > .game-card:nth-child(4n) { --card-glow: #c9a7ff; }
 
 .game-grid > .game-card:hover {
   border-color: color-mix(in srgb, var(--card-glow) 38%, transparent);
@@ -5684,10 +5684,10 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-app::before {
   inset: -30%;
   background:
-    radial-gradient(closest-side at 26% 28%, #ff8fb83d, transparent 72%),
-    radial-gradient(closest-side at 72% 34%, #7cc7ff3d, transparent 74%),
-    radial-gradient(closest-side at 40% 78%, #b9a7ff33, transparent 72%),
-    radial-gradient(closest-side at 84% 74%, #ff9ec72e, transparent 74%);
+    radial-gradient(closest-side at 26% 28%, #9bf00b33, transparent 72%),
+    radial-gradient(closest-side at 72% 34%, #6bb1ff2e, transparent 74%),
+    radial-gradient(closest-side at 40% 78%, #ff7ad930, transparent 72%),
+    radial-gradient(closest-side at 84% 74%, #c9a7ff26, transparent 74%);
   animation: si-aurora-drift 26s ease-in-out infinite alternate;
   will-change: transform;
 }
@@ -5698,7 +5698,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   inset: -45%;
   z-index: -1;
   pointer-events: none;
-  background: conic-gradient(from 0deg, #ff8fb81c, #b9a7ff1c 24%, #7cc7ff1c 50%, #ff9ec714 74%, #ff8fb81c);
+  background: conic-gradient(from 0deg, #9bf00b14, #6bb1ff18 22%, #ff7ad916 46%, #c9a7ff14 70%, #9bf00b14);
   animation: si-colour-turn 46s linear infinite;
   will-change: transform;
 }
@@ -5729,11 +5729,11 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .hero-copy h1 span {
   background-image: linear-gradient(
     100deg,
-    #ff9ec7 0%,
-    #ff8fb8 18%,
-    #d3b6ff 42%,
-    #7cc7ff 72%,
-    #bfe4ff 100%
+    #9bf00b 0%,
+    #6bb1ff 22%,
+    #ff7ad9 48%,
+    #c9a7ff 74%,
+    #9bf00b 100%
   );
   background-size: 240% 100%;
   animation: si-colour-slide 11s linear infinite;
@@ -5773,11 +5773,11 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 
 @keyframes si-panel-glow {
   0%, 100% {
-    box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff0a inset, 0 0 110px #7cc7ff1f;
+    box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff0a inset, 0 0 100px #2f8fff1a;
   }
   50% {
     box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff12 inset,
-      0 0 120px #ff8fb82b, 0 0 80px #7cc7ff26;
+      0 0 120px #ff4e8526, 0 0 70px #9bf00b1f;
   }
 }
 
@@ -5845,7 +5845,7 @@ html.si-custom-cursor .soundtrack-fab {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #ff8fb8, #d3b6ff 30%, #7cc7ff 58%, #bfe4ff 78%, #ff8fb8);
+  background: conic-gradient(from 0deg, #9bf00b, #6bb1ff 26%, #ff7ad9 52%, #c9a7ff 76%, #9bf00b);
   -webkit-mask: radial-gradient(circle, transparent 0 61%, #000 62% 100%);
   mask: radial-gradient(circle, transparent 0 61%, #000 62% 100%);
   opacity: .78;
@@ -5889,377 +5889,6 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   }
 }
 
-/* ═════════════════════════════════════════════════════════════════════
-   BLUSH — the default palette. Warm pink through lilac into cool ice blue
-   over a deep twilight navy, so the light stays soft but readable.
-   ═════════════════════════════════════════════════════════════════════ */
-
-:root[data-theme="blush"] {
-  --si-accent: #ff8fb8;
-  --si-accent-hover: #ffa3c6;
-  --si-accent-active: #f777a6;
-  --si-accent-18: #ff8fb82e;
-  --si-accent-20: #ff8fb833;
-  --si-accent-22: #ff8fb838;
-  --si-accent-24: #ff8fb83d;
-  --si-accent-28: #ff8fb847;
-  --si-accent-30: #ff8fb84d;
-  --si-accent-60: #ff8fb899;
-  --si-accent-88: #ff8fb8e0;
-  --si-glow: #7cc7ff;
-  --si-glow-bright: #bfe4ff;
-  --si-glow-12: #7cc7ff1f;
-  --si-glow-14: #7cc7ff24;
-  --si-glow-16: #7cc7ff29;
-  --si-glow-25: #7cc7ff40;
-  --si-glow-28: #7cc7ff47;
-  --si-glow-40: #7cc7ff66;
-  --si-bg: #0a1020;
-  --si-bg-deep: #060a16;
-  --si-frame: #0b1226;
-  --si-kbd: #101a33;
-  --si-panel: #0e1730;
-  --si-panel-raised: #132042;
-  --si-panel-strong: #182a52;
-  --si-star-hot: #ff9ec7;
-  --si-star-cool: #8fd0ff;
-}
-
-/* ═════════════════════════════════════════════════════════════════════
-   LIQUID GLASS — frosted panels, soft light, floating depth.
-   Surfaces are translucent layers over the moving pink-to-blue aurora: a
-   bright top-left highlight, a low-opacity body and one crisp white hairline.
-   ═════════════════════════════════════════════════════════════════════ */
-
-/* Frosted shell. */
-.site-header {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--si-panel-strong) 62%, transparent),
-    color-mix(in srgb, var(--si-bg) 76%, transparent)
-  );
-  border-bottom: 1px solid #ffffff22;
-  backdrop-filter: blur(26px) saturate(170%);
-  -webkit-backdrop-filter: blur(26px) saturate(170%);
-  box-shadow: 0 18px 50px -26px #000000cc;
-}
-
-.site-header::after {
-  background: linear-gradient(90deg, transparent, #ff8fb8, #d3b6ff 32%, #7cc7ff 66%, transparent);
-  box-shadow: 0 0 18px #7cc7ff59;
-}
-
-/* Small floating glass chips around the hero and shelves. */
-.eyebrow,
-.float-chip,
-.header-status,
-.section-count,
-.console-meta {
-  border-radius: 999px;
-  border: 1px solid #ffffff26;
-  background: linear-gradient(160deg, #ffffff1f, #ffffff09);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-  box-shadow: 0 14px 34px -18px #000000b3, 0 1px 0 #ffffff1f inset;
-}
-
-/* Tickertape and search field as glass bars. */
-.arcade-ticker {
-  border-radius: 999px;
-  border: 1px solid #ffffff1f;
-  background: linear-gradient(120deg, #ffffff14, #ffffff05);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-}
-
-.search-box {
-  border: 1px solid #ffffff26;
-  background: linear-gradient(160deg, #ffffff17, #ffffff07);
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  box-shadow: inset 0 1px 0 #ffffff1a, 0 12px 30px -20px #000000a6;
-}
-
-/* Floating glass cards. */
-.game-card {
-  clip-path: none;
-  border-radius: 22px;
-  border: 1px solid #ffffff21;
-  background:
-    linear-gradient(158deg, #ffffff1a, #ffffff07 34%, #ffffff03 62%, transparent),
-    color-mix(in srgb, var(--si-panel) 68%, transparent);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  box-shadow: 0 28px 64px -30px #000000e0, 0 1px 0 #ffffff1a inset;
-}
-
-.game-grid > .game-card:hover {
-  border-color: #ffffff3d;
-  box-shadow:
-    0 38px 76px -28px #000000e6,
-    0 0 46px color-mix(in srgb, var(--card-glow, var(--si-glow)) 24%, transparent),
-    0 1px 0 #ffffff26 inset;
-}
-
-/* Panels, sheets and dialogs. */
-.si-welcome,
-.music-gate,
-.extension-modal,
-.about-card,
-.note-card,
-.favorite-item,
-.favorites-empty,
-.player-disclaimer--heavy,
-.toast,
-.console-card,
-.dev-game {
-  clip-path: none;
-  border-radius: 22px;
-  border: 1px solid #ffffff26;
-  background:
-    linear-gradient(158deg, #ffffff1f, #ffffff08 38%, #ffffff03 66%, transparent),
-    color-mix(in srgb, var(--si-panel-strong) 60%, transparent);
-  backdrop-filter: blur(26px) saturate(165%);
-  -webkit-backdrop-filter: blur(26px) saturate(165%);
-  box-shadow: 0 34px 90px -34px #000000e6, 0 1px 0 #ffffff1f inset;
-}
-
-/* The soundtrack sheet sits above everything, so it gets the heaviest frost. */
-.soundtrack-panel {
-  border-radius: 24px;
-  border: 1px solid #ffffff2b;
-  background:
-    linear-gradient(160deg, #ffffff1c, #ffffff08 40%, #ffffff03 70%, transparent),
-    color-mix(in srgb, var(--si-panel-strong) 72%, transparent);
-  backdrop-filter: blur(30px) saturate(170%);
-  -webkit-backdrop-filter: blur(30px) saturate(170%);
-  box-shadow: 0 34px 90px -30px #000000e6, 0 1px 0 #ffffff1a inset;
-}
-
-.soundtrack-fab {
-  border: 1px solid #ffffff30;
-  background: linear-gradient(160deg, #ffffff22, #ffffff08);
-  backdrop-filter: blur(22px) saturate(170%);
-  -webkit-backdrop-filter: blur(22px) saturate(170%);
-  box-shadow: 0 16px 40px -16px #000000b3, 0 1px 0 #ffffff2b inset;
-}
-
-.site-footer {
-  border-top: 1px solid #ffffff21;
-  background: linear-gradient(180deg, #ffffff08, transparent);
-  backdrop-filter: blur(18px) saturate(150%);
-  -webkit-backdrop-filter: blur(18px) saturate(150%);
-}
-
-/* Welcome screen light follows the pink-to-blue wash. */
-.si-welcome-aura {
-  background: conic-gradient(from 0deg, #ff8fb82e, #b9a7ff26 24%, #7cc7ff2e 52%, #ff9ec722 76%, #ff8fb82e);
-}
-
-.music-gate-backdrop.si-welcome-backdrop {
-  background:
-    radial-gradient(90% 70% at 50% 0%, #2a1d3d9e, transparent 62%),
-    radial-gradient(70% 60% at 85% 90%, #12294a8f, transparent 70%),
-    #060a16f2;
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
-}
-
-/* ——— Controls: soft rounded glass instead of sharp bevels. ——— */
-
-.primary-button,
-.soft-button,
-.play-button,
-.launch-play,
-.launch-play--external,
-.open-external,
-.search-box,
-.icon-button,
-.category-row button,
-.load-more button,
-.back-to-top,
-.modal-close,
-.dev-copy,
-.dev-back,
-.music-gate-primary,
-.music-gate-secondary,
-.si-welcome-enter,
-.si-welcome-optional-btn,
-.si-welcome-device,
-.soundtrack-add,
-.soundtrack-upload,
-.soundtrack-reconnect,
-.soundtrack-switch,
-.soundtrack-source button,
-.soundtrack-close,
-.soundtrack-menu button {
-  clip-path: none;
-}
-
-.primary-button,
-.play-button,
-.launch-play,
-.launch-play--external,
-.music-gate-primary,
-.si-welcome-enter,
-.dev-copy {
-  color: #17210c;
-  border-radius: 16px;
-  box-shadow: 0 16px 38px -16px color-mix(in srgb, var(--si-accent) 55%, transparent), 0 1px 0 #ffffff40 inset;
-}
-
-.music-gate-primary {
-  background: linear-gradient(115deg, #ff8fb8, #d3b6ff 46%, #7cc7ff);
-}
-
-.si-welcome-enter {
-  background-image: linear-gradient(110deg, #ff8fb8, #d3b6ff 34%, #7cc7ff 70%, #bfe4ff 100%);
-  color: #17210c;
-}
-
-.soft-button,
-.open-external,
-.dev-back,
-.music-gate-secondary,
-.si-welcome-device,
-.soundtrack-add,
-.soundtrack-reconnect {
-  border-radius: 999px;
-  border: 1px solid #ffffff26;
-  background: linear-gradient(160deg, #ffffff1c, #ffffff08);
-  backdrop-filter: blur(16px) saturate(150%);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  box-shadow: inset 0 1px 0 #ffffff1f;
-}
-
-.search-box,
-.category-row button,
-.load-more button,
-.icon-button,
-.back-to-top,
-.modal-close,
-.soundtrack-close,
-.soundtrack-upload,
-.soundtrack-switch {
-  border-radius: 999px;
-}
-
-/* ——— Marks and pills: fully rounded glass. ——— */
-
-.brand-mark,
-.player-brand-mark,
-.footer-mark,
-.category-pill,
-.new-pill,
-.html-pill,
-.player-category {
-  clip-path: none;
-  border-radius: 999px;
-}
-
-.brand-mark,
-.footer-mark,
-.player-brand-mark {
-  border: 1px solid #ffffff2b;
-  background: linear-gradient(160deg, #ffffff26, #ffffff0c), var(--si-panel-raised);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: 0 10px 26px -12px #000000b3, 0 1px 0 #ffffff2b inset;
-}
-
-/* Floating depth: the glass edges catch a little light on hover. */
-.game-card,
-.console-card,
-.soundtrack-panel {
-  background-clip: padding-box;
-}
-
-.si-welcome-optional,
-.si-welcome-scan,
-.si-welcome-folders li,
-.soundtrack-menu button,
-.soundtrack-folder-open,
-.soundtrack-track {
-  border-radius: 14px;
-  border-color: #ffffff1f;
-  background: linear-gradient(160deg, #ffffff12, #ffffff05);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-@media (max-width: 720px) {
-  .site-header { backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); }
-  .game-card { border-radius: 20px; }
-  .si-welcome,
-  .music-gate { border-radius: 26px; }
-  .soundtrack-panel { border-radius: 24px; }
-  .primary-button,
-  .soft-button { border-radius: 999px; }
-}
-
-/* ═════════════════════════════════════════════════════════════════════
-   GLOSS — one specular sweep over every glass surface, plus an iridescent
-   pink-to-blue rim. Keeps the layers readable instead of milky.
-   ═════════════════════════════════════════════════════════════════════ */
-
-.game-card,
-.si-welcome,
-.music-gate,
-.extension-modal,
-.console-card,
-.soundtrack-panel {
-  background-image:
-    radial-gradient(135% 95% at 12% -22%, #ffffff33, transparent 58%),
-    radial-gradient(95% 70% at 92% -8%, #7cc7ff1f, transparent 62%),
-    linear-gradient(158deg, #ffffff12, #ffffff05 44%, transparent 74%);
-  border-color: #ffffff2b;
-  box-shadow:
-    0 30px 80px -34px #000000d9,
-    0 1px 0 #ffffff33 inset,
-    0 0 0 1px #7cc7ff10;
-}
-
-.game-card:hover {
-  border-color: #ffffff42;
-}
-
-.primary-button,
-.play-button {
-  background-image: linear-gradient(180deg, #ffffff47, #ffffff00 52%);
-}
-
-.primary-button:hover,
-.play-button:hover { filter: brightness(1.03); }
-
-.si-welcome-enter,
-.music-gate-primary { box-shadow: 0 18px 44px -16px #ff8fb85c, 0 1px 0 #ffffff66 inset; }
-
-/* Sleek navigation: quiet links that turn into glass pills on hover. */
-.desktop-nav { gap: 2px; }
-
-.desktop-nav a {
-  border-radius: 999px;
-  transition: color .18s ease, background .18s ease, box-shadow .18s ease;
-}
-
-.desktop-nav a:hover {
-  color: #fff;
-  background: linear-gradient(160deg, #ffffff1f, #ffffff08);
-  box-shadow: inset 0 1px 0 #ffffff26;
-}
-
-.desktop-nav a.active {
-  color: #fff;
-  background: linear-gradient(150deg, #ff8fb83d, #7cc7ff2e);
-}
-
-/* Soft light under the nav, never a hard line. */
-.site-header { box-shadow: 0 24px 60px -40px #7cc7ff4d, 0 18px 50px -26px #000000cc; }
-
-@media (prefers-reduced-motion: reduce) {
-  .desktop-nav a { transition: none; }
-}
-
 /* Entry into the full-screen launcher. */
 .bp-entry {
   display: inline-flex;
@@ -6284,12 +5913,134 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 }
 
 .bp-entry:hover {
-  border-color: #ff9ec7;
-  box-shadow: 0 0 26px #ff8fb840, inset 0 1px 0 #ffffff2b;
+  border-color: var(--si-accent);
+  box-shadow: 0 0 26px var(--si-accent-24), inset 0 1px 0 #ffffff2b;
   transform: translateY(-1px);
 }
 
 @media (max-width: 720px) {
   .bp-entry { padding: 0 11px; min-height: 40px; }
   .bp-entry span { display: none; }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   START SCREEN — one greeting, one button. No panels, no setup.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.si-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(60% 46% at 50% 0%, var(--si-glow-16), transparent 70%),
+    radial-gradient(50% 40% at 50% 100%, var(--si-accent-18), transparent 72%),
+    var(--si-bg-deep);
+}
+
+.si-intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--si-glow-12) 1px, transparent 1px),
+    linear-gradient(90deg, var(--si-glow-12) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(circle at 50% 50%, #000 0 12%, transparent 68%);
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0 12%, transparent 68%);
+  opacity: .5;
+}
+
+.si-intro-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.si-intro-mark {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  color: #f2fff2;
+  background: var(--si-accent);
+  clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  font-size: 17px;
+  font-weight: 950;
+  letter-spacing: .04em;
+  box-shadow: 0 18px 40px -16px color-mix(in srgb, var(--si-accent) 70%, transparent);
+}
+
+.si-intro-kicker {
+  margin-top: 6px;
+  color: var(--si-glow-bright);
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .34em;
+}
+
+.si-intro h1 {
+  margin: 0;
+  color: #f7fbff;
+  font-size: clamp(46px, 11vw, 112px);
+  font-weight: 950;
+  letter-spacing: -.055em;
+  line-height: .92;
+  text-shadow: 0 30px 80px #000000a6;
+}
+
+.si-intro p {
+  margin: 0 0 10px;
+  color: #9da9bd;
+  font-size: clamp(12px, 1.5vw, 14px);
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.si-intro-start {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 0 46px;
+  color: #f4fff4;
+  background: var(--si-accent);
+  border: 1px solid color-mix(in srgb, #ffffff 30%, transparent);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 950;
+  letter-spacing: .22em;
+  box-shadow: 0 22px 48px -18px color-mix(in srgb, var(--si-accent) 75%, transparent);
+  transition: background .16s ease, transform .16s ease;
+}
+
+.si-intro-start:hover {
+  background: var(--si-accent-hover);
+  transform: translateY(-2px);
+}
+
+.si-intro-start:focus-visible {
+  outline: 3px solid var(--si-glow-bright);
+  outline-offset: 4px;
+}
+
+.si-intro small {
+  color: #6f7c92;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 560px) {
+  .si-intro-start { min-height: 52px; padding: 0 34px; }
+  .si-intro::before { background-size: 44px 44px; }
 }

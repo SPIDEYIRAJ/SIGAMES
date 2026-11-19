@@ -157,7 +157,7 @@ export function startThemeSong(): void {
   element.currentTime = 0;
   void element
     .play()
-    .then(() => rampTo(target, 14_000))
+    .then(() => rampTo(target, 4_000))
     .catch(() => bindFirstGesture());
 }
 

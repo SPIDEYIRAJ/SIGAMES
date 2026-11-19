@@ -1,83 +1,112 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Play, Sparkles } from "lucide-react";
+import { Play } from "lucide-react";
+import { useNavigate } from "react-router";
+import { setThemeSongEnabled, startThemeSong } from "@/lib/theme-song";
+import { stopLocalMusic } from "@/lib/local-music";
 
-const INTRO_SESSION_KEY = "si-games-intro-session";
+const SESSION_KEY = "si-games-intro-session";
+const SEEN_KEY = "si-games-entry-seen";
+const FOUNDING_KEY = "si-games-founding";
 
-function introAlreadyDone(): boolean {
+function shownThisSession(): boolean {
   try {
-    return sessionStorage.getItem(INTRO_SESSION_KEY) === "1";
+    return sessionStorage.getItem(SESSION_KEY) === "1";
+  } catch {
+    return true;
+  }
+}
+
+function seenBefore(): boolean {
+  try {
+    return localStorage.getItem(SEEN_KEY) === "1";
   } catch {
     return true;
   }
 }
 
 /**
- * The start-of-visit welcome screen.
+ * The start screen.
  *
- * It greets the player and opens the arcade. Nothing is asked for and nothing
- * is required: music, themes and folders all live in the soundtrack control.
+ * One button. It opens the shelf and starts the SI theme song in the same
+ * click, which is also the gesture browsers require before audio can play.
+ * There is nothing to configure here: no folders, no uploads, no choices.
  */
 export default function MusicGate() {
+  const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
-  const [introDone, setIntroDone] = useState(introAlreadyDone);
   const [open, setOpen] = useState(false);
-  const shown = useRef(false);
 
   useEffect(() => {
-    const handleDone = () => setIntroDone(true);
-    window.addEventListener("si-games-intro-done", handleDone);
-    return () => window.removeEventListener("si-games-intro-done", handleDone);
+    if (shownThisSession()) return;
+    const timer = window.setTimeout(() => setOpen(true), 1150);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!introDone || shown.current) return;
-    shown.current = true;
-    setOpen(true);
-  }, [introDone]);
-
-  /** While the welcome screen is up, the page behind it cannot scroll. */
-  useEffect(() => {
     if (!open) return;
-    const previousOverflow = document.body.style.overflow;
+    const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = previousOverflow;
+      document.body.style.overflow = previous;
     };
   }, [open]);
+
+  const start = () => {
+    try {
+      sessionStorage.setItem(SESSION_KEY, "1");
+    } catch {
+      // Private mode: the intro simply shows again next reload.
+    }
+
+    if (!seenBefore()) {
+      try {
+        localStorage.setItem(SEEN_KEY, "1");
+        localStorage.setItem(FOUNDING_KEY, "1");
+      } catch {
+        // The badge is cosmetic; the shelf opens either way.
+      }
+      window.dispatchEvent(new Event("si-games-founding"));
+    }
+
+    // This click is the user gesture: turn the theme on and play immediately.
+    setThemeSongEnabled(true);
+    stopLocalMusic(0);
+    startThemeSong();
+    window.dispatchEvent(new Event("si-games-intro-done"));
+
+    setOpen(false);
+    navigate("/");
+  };
 
   return (
     <AnimatePresence>
       {open && (
         <motion.div
-          className="music-gate-backdrop si-welcome-backdrop"
+          className="si-intro"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="si-intro-title"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: reduceMotion ? 0.1 : 0.4 }}
         >
-          <div className="si-welcome-aura" aria-hidden="true" />
           <motion.div
-            className="music-gate si-welcome"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="music-gate-title"
-            initial={{ opacity: 0, y: 30, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            className="si-intro-inner"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reduceMotion ? 0.1 : 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="si-welcome-head">
-              <span className="si-welcome-kicker"><Sparkles size={13} /> WELCOME BACK</span>
-              <h2 id="music-gate-title">Welcome to <b>SI GAMES</b></h2>
-              <p>Pick a game and jump straight in. Everything else — themes, sound, folders — is yours to set up whenever you feel like it.</p>
-            </div>
-
-            <button type="button" className="si-welcome-enter" onClick={() => setOpen(false)}>
-              <Play size={16} fill="currentColor" />
-              ENTER SI GAMES
+            <span className="si-intro-mark" aria-hidden="true">SI</span>
+            <span className="si-intro-kicker">INSERT COIN</span>
+            <h1 id="si-intro-title">SI GAMES</h1>
+            <p>Pick a game and jump straight in.</p>
+            <button type="button" className="si-intro-start" onClick={start} autoFocus>
+              <Play size={18} fill="currentColor" />
+              START
             </button>
-            <p className="si-welcome-require">No setup needed · start playing right away</p>
+            <small>No account · No setup</small>
           </motion.div>
         </motion.div>
       )}
