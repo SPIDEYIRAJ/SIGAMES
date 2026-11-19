@@ -5043,7 +5043,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-head h2 { margin: 8px 0 0; font-size: clamp(32px, 5.6vw, 52px); letter-spacing: -.05em; text-align: left; }
 .si-welcome-head h2 b {
   display: inline-block;
-  background: linear-gradient(105deg, #c6ff3d 0%, #ffe066 34%, #ff9f1c 68%, #c6ff3d 100%);
+  background: linear-gradient(105deg, #ff9ec7 0%, #d3b6ff 38%, #7cc7ff 74%, #ff9ec7 100%);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -5055,7 +5055,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   50% { background-position: 100% 0; }
 }
 
-.si-welcome-kicker { color: #b7ff62; letter-spacing: .26em; }
+.si-welcome-kicker { color: #ffb3d1; letter-spacing: .26em; }
 .si-welcome-head > p { max-width: 520px; margin: 12px 0 0; color: #9fafd3; font-size: 11px; line-height: 1.7; }
 
 .si-welcome-optional {
@@ -5087,7 +5087,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   transition: color .16s ease, border-color .16s ease, background .16s ease;
 }
 
-.si-welcome-optional-btn:hover { color: #07121d; background: #9bf00b; border-color: #9bf00b; }
+.si-welcome-optional-btn:hover { color: #2a1020; background: #ff8fb8; border-color: #ff8fb8; }
 .si-welcome-optional small { color: #7c8db0; font-size: 8px; letter-spacing: .06em; }
 .si-welcome-prompt { margin-top: 18px; }
 .si-welcome-prompt .si-welcome-steps { margin-top: 0; }
@@ -5141,12 +5141,12 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-track i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #c6ff3d, #ffe066 50%, #ff9f1c);
+  background: linear-gradient(90deg, #ff8fb8, #d3b6ff 50%, #7cc7ff);
   border-radius: inherit;
   transition: width .35s ease;
 }
 .si-welcome-scan.is-scanning .si-welcome-track i {
-  background: linear-gradient(90deg, #c6ff3d, #ffe066, #ff9f1c, #ff6b6b, #c6ff3d);
+  background: linear-gradient(90deg, #ff8fb8, #d3b6ff, #7cc7ff, #bfe4ff, #ff8fb8);
   background-size: 300% 100%;
   animation: si-scan-flow 1.4s linear infinite;
 }
@@ -5248,10 +5248,10 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 }
 
 .game-grid > .game-card { --card-glow: var(--si-glow); }
-.game-grid > .game-card:nth-child(4n + 1) { --card-glow: #c6ff3d; }
-.game-grid > .game-card:nth-child(4n + 2) { --card-glow: #ffe066; }
-.game-grid > .game-card:nth-child(4n + 3) { --card-glow: #ff9f1c; }
-.game-grid > .game-card:nth-child(4n) { --card-glow: #ff6b6b; }
+.game-grid > .game-card:nth-child(4n + 1) { --card-glow: #ff8fb8; }
+.game-grid > .game-card:nth-child(4n + 2) { --card-glow: #7cc7ff; }
+.game-grid > .game-card:nth-child(4n + 3) { --card-glow: #b9a7ff; }
+.game-grid > .game-card:nth-child(4n) { --card-glow: #ff9ec7; }
 
 .game-grid > .game-card:hover {
   border-color: color-mix(in srgb, var(--card-glow) 38%, transparent);
@@ -5684,10 +5684,10 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-app::before {
   inset: -30%;
   background:
-    radial-gradient(closest-side at 26% 28%, #c6ff3d33, transparent 72%),
-    radial-gradient(closest-side at 72% 34%, #ffe0662e, transparent 74%),
-    radial-gradient(closest-side at 40% 78%, #ff9f1c30, transparent 72%),
-    radial-gradient(closest-side at 84% 74%, #ff6b6b26, transparent 74%);
+    radial-gradient(closest-side at 26% 28%, #ff8fb83d, transparent 72%),
+    radial-gradient(closest-side at 72% 34%, #7cc7ff3d, transparent 74%),
+    radial-gradient(closest-side at 40% 78%, #b9a7ff33, transparent 72%),
+    radial-gradient(closest-side at 84% 74%, #ff9ec72e, transparent 74%);
   animation: si-aurora-drift 26s ease-in-out infinite alternate;
   will-change: transform;
 }
@@ -5698,7 +5698,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   inset: -45%;
   z-index: -1;
   pointer-events: none;
-  background: conic-gradient(from 0deg, #c6ff3d14, #ffe0661c 22%, #ff9f1c16 46%, #ff6b6b14 70%, #c6ff3d14);
+  background: conic-gradient(from 0deg, #ff8fb81c, #b9a7ff1c 24%, #7cc7ff1c 50%, #ff9ec714 74%, #ff8fb81c);
   animation: si-colour-turn 46s linear infinite;
   will-change: transform;
 }
@@ -5729,11 +5729,11 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .hero-copy h1 span {
   background-image: linear-gradient(
     100deg,
-    #c6ff3d 0%,
-    #ffe066 22%,
-    #ff9f1c 46%,
-    #ff6b6b 68%,
-    #c6ff3d 100%
+    #ff9ec7 0%,
+    #ff8fb8 18%,
+    #d3b6ff 42%,
+    #7cc7ff 72%,
+    #bfe4ff 100%
   );
   background-size: 240% 100%;
   animation: si-colour-slide 11s linear infinite;
@@ -5773,11 +5773,11 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 
 @keyframes si-panel-glow {
   0%, 100% {
-    box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff0a inset, 0 0 100px #2f8fff1a;
+    box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff0a inset, 0 0 110px #7cc7ff1f;
   }
   50% {
     box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff12 inset,
-      0 0 120px #ff4e8526, 0 0 70px #9bf00b1f;
+      0 0 120px #ff8fb82b, 0 0 80px #7cc7ff26;
   }
 }
 
@@ -5845,7 +5845,7 @@ html.si-custom-cursor .soundtrack-fab {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #c6ff3d, #ffe066 30%, #ff9f1c 56%, #ff6b6b 78%, #c6ff3d);
+  background: conic-gradient(from 0deg, #ff8fb8, #d3b6ff 30%, #7cc7ff 58%, #bfe4ff 78%, #ff8fb8);
   -webkit-mask: radial-gradient(circle, transparent 0 61%, #000 62% 100%);
   mask: radial-gradient(circle, transparent 0 61%, #000 62% 100%);
   opacity: .78;
@@ -5890,45 +5890,45 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 }
 
 /* ═════════════════════════════════════════════════════════════════════
-   CITRUS — the default palette. Lime, lemon, tangerine and grapefruit
-   over a deep leaf-green night, so bright accents keep crisp contrast.
+   BLUSH — the default palette. Warm pink through lilac into cool ice blue
+   over a deep twilight navy, so the light stays soft but readable.
    ═════════════════════════════════════════════════════════════════════ */
 
-:root[data-theme="citrus"] {
-  --si-accent: #ff9f1c;
-  --si-accent-hover: #ffb043;
-  --si-accent-active: #f08a00;
-  --si-accent-18: #ff9f1c2e;
-  --si-accent-20: #ff9f1c33;
-  --si-accent-22: #ff9f1c38;
-  --si-accent-24: #ff9f1c3d;
-  --si-accent-28: #ff9f1c47;
-  --si-accent-30: #ff9f1c4d;
-  --si-accent-60: #ff9f1c99;
-  --si-accent-88: #ff9f1ce0;
-  --si-glow: #c6ff3d;
-  --si-glow-bright: #e9ff9e;
-  --si-glow-12: #c6ff3d1f;
-  --si-glow-14: #c6ff3d24;
-  --si-glow-16: #c6ff3d29;
-  --si-glow-25: #c6ff3d40;
-  --si-glow-28: #c6ff3d47;
-  --si-glow-40: #c6ff3d66;
-  --si-bg: #07130f;
-  --si-bg-deep: #040c09;
-  --si-frame: #081a13;
-  --si-kbd: #0d2219;
-  --si-panel: #0b2018;
-  --si-panel-raised: #112b20;
-  --si-panel-strong: #163628;
-  --si-star-hot: #ffe066;
-  --si-star-cool: #c6ff3d;
+:root[data-theme="blush"] {
+  --si-accent: #ff8fb8;
+  --si-accent-hover: #ffa3c6;
+  --si-accent-active: #f777a6;
+  --si-accent-18: #ff8fb82e;
+  --si-accent-20: #ff8fb833;
+  --si-accent-22: #ff8fb838;
+  --si-accent-24: #ff8fb83d;
+  --si-accent-28: #ff8fb847;
+  --si-accent-30: #ff8fb84d;
+  --si-accent-60: #ff8fb899;
+  --si-accent-88: #ff8fb8e0;
+  --si-glow: #7cc7ff;
+  --si-glow-bright: #bfe4ff;
+  --si-glow-12: #7cc7ff1f;
+  --si-glow-14: #7cc7ff24;
+  --si-glow-16: #7cc7ff29;
+  --si-glow-25: #7cc7ff40;
+  --si-glow-28: #7cc7ff47;
+  --si-glow-40: #7cc7ff66;
+  --si-bg: #0a1020;
+  --si-bg-deep: #060a16;
+  --si-frame: #0b1226;
+  --si-kbd: #101a33;
+  --si-panel: #0e1730;
+  --si-panel-raised: #132042;
+  --si-panel-strong: #182a52;
+  --si-star-hot: #ff9ec7;
+  --si-star-cool: #8fd0ff;
 }
 
 /* ═════════════════════════════════════════════════════════════════════
    LIQUID GLASS — frosted panels, soft light, floating depth.
-   Surfaces are translucent layers over the moving citrus aurora: a bright
-   top-left highlight, a low-opacity body and one crisp white hairline.
+   Surfaces are translucent layers over the moving pink-to-blue aurora: a
+   bright top-left highlight, a low-opacity body and one crisp white hairline.
    ═════════════════════════════════════════════════════════════════════ */
 
 /* Frosted shell. */
@@ -5945,8 +5945,8 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 }
 
 .site-header::after {
-  background: linear-gradient(90deg, transparent, #c6ff3d, #ffe066 30%, #ff9f1c 58%, #ff6b6b 80%, transparent);
-  box-shadow: 0 0 18px #ff9f1c66;
+  background: linear-gradient(90deg, transparent, #ff8fb8, #d3b6ff 32%, #7cc7ff 66%, transparent);
+  box-shadow: 0 0 18px #7cc7ff59;
 }
 
 /* Small floating glass chips around the hero and shelves. */
@@ -6051,16 +6051,16 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   -webkit-backdrop-filter: blur(18px) saturate(150%);
 }
 
-/* Welcome screen light becomes citrus. */
+/* Welcome screen light follows the pink-to-blue wash. */
 .si-welcome-aura {
-  background: conic-gradient(from 0deg, #c6ff3d26, #ffe06626 22%, #ff9f1c26 48%, #ff6b6b1f 72%, #c6ff3d26);
+  background: conic-gradient(from 0deg, #ff8fb82e, #b9a7ff26 24%, #7cc7ff2e 52%, #ff9ec722 76%, #ff8fb82e);
 }
 
 .music-gate-backdrop.si-welcome-backdrop {
   background:
-    radial-gradient(90% 70% at 50% 0%, #16361f9e, transparent 62%),
-    radial-gradient(70% 60% at 85% 90%, #3a2a0a8f, transparent 70%),
-    #040c09f2;
+    radial-gradient(90% 70% at 50% 0%, #2a1d3d9e, transparent 62%),
+    radial-gradient(70% 60% at 85% 90%, #12294a8f, transparent 70%),
+    #060a16f2;
   backdrop-filter: blur(22px) saturate(160%);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
 }
@@ -6109,11 +6109,11 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 }
 
 .music-gate-primary {
-  background: linear-gradient(115deg, #c6ff3d, #ffe066 46%, #ff9f1c);
+  background: linear-gradient(115deg, #ff8fb8, #d3b6ff 46%, #7cc7ff);
 }
 
 .si-welcome-enter {
-  background-image: linear-gradient(110deg, #c6ff3d, #ffe066 34%, #ff9f1c 68%, #ff6b6b 100%);
+  background-image: linear-gradient(110deg, #ff8fb8, #d3b6ff 34%, #7cc7ff 70%, #bfe4ff 100%);
   color: #17210c;
 }
 
@@ -6195,4 +6195,67 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   .soundtrack-panel { border-radius: 24px; }
   .primary-button,
   .soft-button { border-radius: 999px; }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   GLOSS — one specular sweep over every glass surface, plus an iridescent
+   pink-to-blue rim. Keeps the layers readable instead of milky.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.game-card,
+.si-welcome,
+.music-gate,
+.extension-modal,
+.console-card,
+.soundtrack-panel {
+  background-image:
+    radial-gradient(135% 95% at 12% -22%, #ffffff33, transparent 58%),
+    radial-gradient(95% 70% at 92% -8%, #7cc7ff1f, transparent 62%),
+    linear-gradient(158deg, #ffffff12, #ffffff05 44%, transparent 74%);
+  border-color: #ffffff2b;
+  box-shadow:
+    0 30px 80px -34px #000000d9,
+    0 1px 0 #ffffff33 inset,
+    0 0 0 1px #7cc7ff10;
+}
+
+.game-card:hover {
+  border-color: #ffffff42;
+}
+
+.primary-button,
+.play-button {
+  background-image: linear-gradient(180deg, #ffffff47, #ffffff00 52%);
+}
+
+.primary-button:hover,
+.play-button:hover { filter: brightness(1.03); }
+
+.si-welcome-enter,
+.music-gate-primary { box-shadow: 0 18px 44px -16px #ff8fb85c, 0 1px 0 #ffffff66 inset; }
+
+/* Sleek navigation: quiet links that turn into glass pills on hover. */
+.desktop-nav { gap: 2px; }
+
+.desktop-nav a {
+  border-radius: 999px;
+  transition: color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.desktop-nav a:hover {
+  color: #fff;
+  background: linear-gradient(160deg, #ffffff1f, #ffffff08);
+  box-shadow: inset 0 1px 0 #ffffff26;
+}
+
+.desktop-nav a.active {
+  color: #fff;
+  background: linear-gradient(150deg, #ff8fb83d, #7cc7ff2e);
+}
+
+/* Soft light under the nav, never a hard line. */
+.site-header { box-shadow: 0 24px 60px -40px #7cc7ff4d, 0 18px 50px -26px #000000cc; }
+
+@media (prefers-reduced-motion: reduce) {
+  .desktop-nav a { transition: none; }
 }

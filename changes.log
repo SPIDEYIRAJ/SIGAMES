@@ -3,8 +3,8 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-19 — liquid glass, citrus palette, no music asking
----------------------------------------------------------
+2026-11-19 — liquid glass, pink-to-blue palette, no music asking
+---------------------------------------------------------------
 
 CHG  The welcome screen is only a greeting now: no folder scan, no upload
      prompt, no music ask. ENTER SI GAMES goes straight in; music lives in the
@@ -17,10 +17,14 @@ ADD  Liquid glass UI pass: frosted, translucent panels, cards, header, ticker,
      deep, low-contrast shadows; sharp bevelled corners replaced with rounded
      glass on controls, cards and pills.
 
-ADD  Citrus palette is now the default theme (lime, lemon, tangerine,
-     grapefruit over a deep leaf-green night) and recolours the aurora, header
-     seam, hero wordmark, card accents and custom cursor. Buttons use dark ink
-     on citrus fills to keep contrast high.
+ADD  Blush is now the default theme: warm pink through lilac into cool ice
+     blue on a twilight navy, recolouring the aurora, header seam, hero
+     wordmark, card accents, cursor ring and welcome light. Buttons use dark
+     ink on the soft pink/blue fills so contrast stays high.
+
+ADD  Gloss pass: a specular highlight and iridescent rim on glass cards,
+     panels and sheets, a top sheen on primary/play buttons, and a sleek nav
+     where links become frosted pills on hover.
 
 
 ADD  A themed custom cursor: white-hot dot, spectral conic ring that eases

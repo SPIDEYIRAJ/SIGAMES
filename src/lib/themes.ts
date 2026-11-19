@@ -8,7 +8,7 @@
  */
 
 export type ThemeId =
-  | "citrus"
+  | "blush"
   | "console"
   | "nebula"
   | "plasma"
@@ -34,7 +34,7 @@ export type Theme = {
 };
 
 export const THEMES: Theme[] = [
-  { id: "citrus", label: "Citrus", note: "Lime · tangerine", chrome: "#07130f", accent: "#ff9f1c", glow: "#c6ff3d" },
+  { id: "blush", label: "Blush", note: "Warm pink · ice blue", chrome: "#0a1020", accent: "#ff8fb8", glow: "#7cc7ff" },
   { id: "console", label: "Console", note: "Xbox green · PS blue", chrome: "#05070a", accent: "#107c10", glow: "#2f8fff" },
   { id: "nebula", label: "Nebula", note: "Neon blue · violet", chrome: "#050816", accent: "#5608f8", glow: "#3efeff" },
   { id: "plasma", label: "Plasma", note: "Violet · hot pink", chrome: "#16061f", accent: "#c31ff9", glow: "#ff70cf" },
@@ -49,7 +49,7 @@ export const THEMES: Theme[] = [
 ];
 
 const STORAGE_KEY = "si-games-theme";
-const DEFAULT_THEME: ThemeId = "citrus";
+const DEFAULT_THEME: ThemeId = "blush";
 
 /** Fired on <html> whenever the active palette changes — the landing
  *  starfield listens so its tints follow the theme instead of staying fixed. */
@@ -86,9 +86,9 @@ export function applyTheme(id: ThemeId): void {
 export function initTheme(): void {
   const editionKey = "si-games-theme-edition";
   try {
-    if (localStorage.getItem(editionKey) !== "citrus-1") {
+    if (localStorage.getItem(editionKey) !== "blush-1") {
       localStorage.setItem("si-games-theme", DEFAULT_THEME);
-      localStorage.setItem(editionKey, "citrus-1");
+      localStorage.setItem(editionKey, "blush-1");
     }
   } catch {
     // Private mode: the default still applies for this visit.
