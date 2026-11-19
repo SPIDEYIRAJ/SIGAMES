@@ -105,6 +105,12 @@ function stopThemeSong(ms: number): void {
   }, ms + 60);
 }
 
+/** Quiet the Convex theme without touching the player's saved preference. */
+export function silenceThemeSong(ms = 800): void {
+  fadeToken += 1;
+  stopThemeSong(ms);
+}
+
 /** Browsers only allow audio after a gesture, so retry on the next one. */
 function bindFirstGesture(): void {
   if (gestureBound || typeof window === "undefined") return;
@@ -173,9 +179,14 @@ export function unduckThemeSong(): void {
 
 /** The game has loaded: fade the theme out and stop it. */
 export function fadeThemeSongForGame(): void {
-  stoppedForGame = true;
   const element = audio;
-  if (!element || element.paused) return;
+  // Only remember a stop for the player that was actually sounding, so leaving
+  // the game never restarts both the theme and a local playlist at once.
+  if (!element || element.paused) {
+    stoppedForGame = false;
+    return;
+  }
+  stoppedForGame = true;
   ducked = false;
   fadeToken += 1;
   const token = fadeToken;

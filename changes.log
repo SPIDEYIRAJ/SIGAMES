@@ -3,6 +3,30 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — soundtrack folders, one-button music dock, compact UI
+-------------------------------------------------------------------
+
+ADD  Players can now add multiple song folders from their own device. Chromium
+     browsers remember the folder handles in IndexedDB; other browsers load
+     the folders for the current tab through the folder input.
+
+ADD  A start-of-visit SOUND CHECK gate appears after the startup cinema and
+     asks the player to reconnect or choose song folders before continuing,
+     with SI theme and silent options. It returns on every new visit.
+
+ADD  Local folders become the soundtrack playlist (with a slow fade-up) and
+     take over from the Convex theme; game ducking, game-load fade-out and
+     shelf resume apply to both sources.
+
+CHG  The separate theme and upload-song pills are now one expanding soundtrack
+     button with the theme switch, now-playing line, folder list and add /
+     remove controls. On phones it opens as a bottom sheet.
+
+CHG  Compact UI step on small screens: type, hero, gate, soundtrack panel and
+     player controls all scale down together without overlapping.
+
+CHG  Glass site header with a hairline seam for a more finished, AAA-style shell.
+
 2026-11-19 — library arcade identity
 -------------------------------------
 
