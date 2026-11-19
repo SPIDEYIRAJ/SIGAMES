@@ -831,6 +831,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
           <div className="player-title"><span className="player-dot" />{game.title}</div>
           <div className="player-actions"><button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
         </header>
+        {game.thumbnail && (
+          <div className="launch-art" aria-hidden="true">
+            <img src={game.thumbnail} alt="" loading="lazy" />
+            <span className="launch-art-grid" />
+          </div>
+        )}
         <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
         <main className="launch-main">
           <span className="section-kicker"><MonitorUp size={14} /> READY TO LAUNCH</span>
@@ -1047,8 +1053,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
               <strong>{game.title}</strong>
               <p>{game.controls}</p>
             </div>
+            <span className="console-deck-brand">SI · DECK 01</span>
             <span className="console-deck-tag">SCREEN ABOVE · CONTROLS BELOW</span>
+            <span className="console-deck-zone console-deck-zone--move">MOVE</span>
+            <span className="console-deck-zone console-deck-zone--act">ACTIONS</span>
           </div>
+          <span className="console-live"><i /> LIVE</span>
           <div className="console-pad">
             <VirtualGamepad
               mode="deck"

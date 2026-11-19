@@ -3,6 +3,22 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — player page design pass
+------------------------------------
+
+CHG  The launch screen now uses the game's own art as a blurred poster behind
+     the title, with a grid mask and a pill-shaped READY TO LAUNCH chip.
+
+CHG  Server and mode pickers sit in one glass control panel; tags, title glow
+     and the primary button picked up matching depth.
+
+CHG  In-game chrome: sticky glass topbar, accent rule under the heading, a
+     glowing CRT bezel with visible corner brackets and an inset vignette.
+
+CHG  Console mode reads as hardware now: corner zone labels, a DECK 01 mark,
+     a pulsing LIVE chip over the screen and corrected pad geometry that keeps
+     the look stick inside the bottom half on wide displays.
+
 2026-11-19 — console mode, responsive frame, muted theme
 ------------------------------------------------------
 

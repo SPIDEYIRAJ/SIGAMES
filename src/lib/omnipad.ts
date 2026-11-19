@@ -191,7 +191,7 @@ function lookItem(deck: boolean): OmniPadProfileItem {
       targetStageId: STAGE,
       mapping: { stick: { type: "mouse", button: 0 } },
       layout: deck
-        ? { right: "5%", top: "68%", width: "27%", zIndex: 10 }
+        ? { right: "4%", top: "62%", width: "24%", zIndex: 10 }
         : { right: "4%", bottom: "6%", width: "29%", zIndex: 10 },
     },
   };
@@ -202,12 +202,17 @@ function buttonItem(
   label: string,
   code: string,
   slot: number,
-  deck: boolean
+  deck: boolean,
+  compact: boolean
 ): OmniPadProfileItem {
   const layout = deck
-    ? slot === 0
-      ? { right: "5%", top: "55%", height: "13%", isSquare: true, zIndex: 10 }
-      : { right: "23%", top: "55%", height: "11%", isSquare: true, zIndex: 10 }
+    ? compact
+      ? slot === 0
+        ? { right: "5%", top: "52%", height: "11%", isSquare: true, zIndex: 10 }
+        : { right: "30%", top: "51%", height: "9%", isSquare: true, zIndex: 10 }
+      : slot === 0
+        ? { right: "5%", top: "55%", height: "15%", isSquare: true, zIndex: 10 }
+        : { right: "24%", top: "55%", height: "12%", isSquare: true, zIndex: 10 }
     : slot === 0
       ? { right: "5%", bottom: "39%", height: "15%", isSquare: true, zIndex: 10 }
       : { right: "24%", bottom: "39%", height: "13%", isSquare: true, zIndex: 10 };
@@ -277,7 +282,7 @@ function buildProfile(hints: ControlHints, mode: ControllerMode): OmniPadProfile
   if (cursor) items.push(lookItem(deck));
 
   actionButtons(hints).forEach((action, index) => {
-    items.push(buttonItem(`pad-${index === 0 ? "a" : "b"}`, action.label, action.code, index, deck));
+    items.push(buttonItem(`pad-${index === 0 ? "a" : "b"}`, action.label, action.code, index, deck, cursor));
   });
 
   return {
