@@ -5673,3 +5673,146 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   .pt-card, .pt-card:hover { transform: none; }
 }
 
+
+/* ═════════════════════════════════════════════════════════════════════
+   LIVING COLOUR — the palette and its lights keep moving.
+   Transform, opacity and background-position only, so the work stays on
+   the compositor. Everything here stops under prefers-reduced-motion.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* 1 · Whole-app aurora: two drifting colour fields behind every page. */
+.si-app::before {
+  inset: -30%;
+  background:
+    radial-gradient(closest-side at 26% 28%, #9bf00b26, transparent 72%),
+    radial-gradient(closest-side at 72% 34%, #2f8fff2e, transparent 74%),
+    radial-gradient(closest-side at 40% 78%, #ff4e8524, transparent 72%),
+    radial-gradient(closest-side at 84% 74%, #8a7bff26, transparent 74%);
+  animation: si-aurora-drift 26s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.si-app::after {
+  content: "";
+  position: fixed;
+  inset: -45%;
+  z-index: -1;
+  pointer-events: none;
+  background: conic-gradient(from 0deg, #9bf00b12, #2f8fff1c 22%, #ff4e8512 46%, #8a7bff1c 70%, #9bf00b12);
+  animation: si-colour-turn 46s linear infinite;
+  will-change: transform;
+}
+
+@keyframes si-aurora-drift {
+  0%   { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1.05); }
+  50%  { transform: translate3d(2%, 2%, 0) rotate(7deg) scale(1.16); }
+  100% { transform: translate3d(-1%, 3%, 0) rotate(-6deg) scale(1.1); }
+}
+
+@keyframes si-colour-turn { to { transform: rotate(1turn); } }
+
+/* 2 · The header seam runs its spectrum across the top of the shell. */
+.site-header::after {
+  background: linear-gradient(90deg, transparent, #9bf00b, #6bb1ff 26%, #ff7ad9 48%, #c9a7ff 70%, transparent);
+  background-size: 220% 100%;
+  opacity: .75;
+  box-shadow: 0 0 16px #6bb1ff5c;
+  animation: si-seam-flow 8s linear infinite;
+}
+
+@keyframes si-seam-flow {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* 3 · Hero wordmark and light pool keep breathing colour. */
+.hero-copy h1 span {
+  background-image: linear-gradient(
+    100deg,
+    var(--si-glow) 0%,
+    #c8ff6a 16%,
+    var(--si-accent) 36%,
+    #ff8bd8 56%,
+    #c9a7ff 74%,
+    var(--si-glow) 100%
+  );
+  background-size: 240% 100%;
+  animation: si-colour-slide 11s linear infinite;
+}
+
+.hero-section::before {
+  animation: si-pool-breathe 9s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes si-colour-slide {
+  from { background-position: 0% 50%; }
+  to   { background-position: 240% 50%; }
+}
+
+@keyframes si-pool-breathe {
+  50% { transform: translate3d(-4%, 3%, 0) scale(1.14); opacity: .84; }
+}
+
+/* 4 · Section kickers breathe a little light. */
+.section-heading .section-kicker { animation: si-kicker-glow 5s ease-in-out infinite; }
+
+@keyframes si-kicker-glow {
+  50% { text-shadow: 0 0 18px color-mix(in srgb, var(--si-glow) 55%, transparent); }
+}
+
+/* 5 · Cards sweep a band of light while hovered. */
+.game-card:hover::after { animation: si-card-sweep 2.6s ease-in-out infinite; }
+
+@keyframes si-card-sweep {
+  0%        { transform: translateX(-120%); }
+  55%, 100% { transform: translateX(120%); }
+}
+
+/* 6 · Welcome panel, soundtrack button and its ENTER key glow in motion. */
+.si-welcome { animation: si-panel-glow 12s ease-in-out infinite; }
+
+@keyframes si-panel-glow {
+  0%, 100% {
+    box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff0a inset, 0 0 100px #2f8fff1a;
+  }
+  50% {
+    box-shadow: 0 50px 140px #000000e6, 0 0 0 1px #ffffff12 inset,
+      0 0 120px #ff4e8526, 0 0 70px #9bf00b1f;
+  }
+}
+
+.si-welcome-enter {
+  background-image: linear-gradient(110deg, #c8ff6a, #9bf00b 26%, #6bb1ff 52%, #ff7ad9 76%, #c8ff6a 100%);
+  background-size: 230% 100%;
+  animation: si-colour-slide 8s linear infinite;
+}
+
+.soundtrack-fab.is-on { animation: si-fab-pulse 4.5s ease-in-out infinite; }
+
+@keyframes si-fab-pulse {
+  50% {
+    box-shadow: 0 14px 34px #0000008f, 0 0 34px color-mix(in srgb, var(--si-glow) 34%, transparent);
+  }
+}
+
+/* Small screens keep the light show, minus the heaviest full-page layer. */
+@media (max-width: 720px) {
+  .si-app::after { display: none; }
+  .si-app::before { animation-duration: 34s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .si-app::before,
+  .si-app::after,
+  .site-header::after,
+  .hero-copy h1 span,
+  .hero-section::before,
+  .section-heading .section-kicker,
+  .game-card:hover::after,
+  .si-welcome,
+  .si-welcome-enter,
+  .soundtrack-fab.is-on {
+    animation: none;
+  }
+}

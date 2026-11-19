@@ -3,8 +3,15 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-19 — welcome is optional music, console deck, colour pass
------------------------------------------------------------------
+2026-11-19 — living colour, optional music welcome, console deck
+----------------------------------------------------------------
+
+ADD  The palette now moves: a drifting aurora plus a slow-turning colour
+     field behind the app, a spectrum running along the header seam, an
+     animated hero wordmark and light pool, glowing section kickers, a light
+     band sweeping hovered cards, a breathing welcome glow, and a sliding
+     gradient on ENTER SI GAMES. All transform/opacity only, all stopped for
+     reduced motion (and the heaviest layer is dropped on phones).
 
 CHG  The song prompt is no longer mandatory. The welcome screen shows only
      ENTER SI GAMES; the folder/upload prompt stays hidden until the player
