@@ -5058,6 +5058,40 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-kicker { color: #b7ff62; letter-spacing: .26em; }
 .si-welcome-head > p { max-width: 520px; margin: 12px 0 0; color: #9fafd3; font-size: 11px; line-height: 1.7; }
 
+.si-welcome-optional {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding: 10px;
+  background: linear-gradient(120deg, #ffffff08, #ffffff03);
+  border: 1px dashed #ffffff1f;
+  border-radius: 13px;
+}
+
+.si-welcome-optional-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  color: #eaf4ff;
+  background: #ffffff10;
+  border: 1px solid #ffffff24;
+  border-radius: 9px;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color .16s ease, border-color .16s ease, background .16s ease;
+}
+
+.si-welcome-optional-btn:hover { color: #07121d; background: #9bf00b; border-color: #9bf00b; }
+.si-welcome-optional small { color: #7c8db0; font-size: 8px; letter-spacing: .06em; }
+.si-welcome-prompt { margin-top: 18px; }
+.si-welcome-prompt .si-welcome-steps { margin-top: 0; }
+
 .si-welcome-steps { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 18px; }
 .si-welcome-steps span {
   display: inline-flex;
@@ -5174,6 +5208,9 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-require { margin: 8px 0 0 !important; color: #64759a !important; font-size: 7px !important; letter-spacing: .08em; text-align: center; }
 
 @media (max-width: 560px) {
+  .si-welcome-optional { flex-direction: column; align-items: stretch; }
+  .si-welcome-optional-btn { justify-content: center; min-height: 40px; }
+  .si-welcome-optional small { text-align: center; }
   .si-welcome-backdrop { padding: 10px; place-items: end center; }
   .si-welcome { max-height: 92dvh; padding: 20px 15px calc(16px + env(safe-area-inset-bottom)); border-radius: 18px; }
   .si-welcome-head h2 { font-size: 30px; }

@@ -3,8 +3,14 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-19 — direct-input console deck, mandatory welcome, colour pass
------------------------------------------------------------------------
+2026-11-19 — welcome is optional music, console deck, colour pass
+-----------------------------------------------------------------
+
+CHG  The song prompt is no longer mandatory. The welcome screen shows only
+     ENTER SI GAMES; the folder/upload prompt stays hidden until the player
+     clicks “Upload song”, and the SI theme plays when they skip it.
+
+
 
 FIX  Console mode has a real controller now. The deck sends actual keyboard and
      mouse events into the game document instead of relying on cross-origin
