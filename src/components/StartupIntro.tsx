@@ -4,6 +4,7 @@ import { Crown, Gamepad2, Play, Sparkles, Volume2, VolumeX } from "lucide-react"
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { playEntryChime, setAmbientEnabled } from "@/lib/ambient";
+import { setThemeSongEnabled } from "@/lib/theme-song";
 
 const SESSION_KEY = "si-games-intro-session";
 const SEEN_KEY = "si-games-entry-seen";
@@ -101,7 +102,9 @@ export default function StartupIntro() {
         playEntryChime();
       }
     } else {
-      // Muted film, but the SI GAMES room tone is allowed to run.
+      // Muted film: the player asked for quiet, so the theme song stays off
+      // too. The floating THEME SONG pill can turn it back on at any time.
+      setThemeSongEnabled(false);
       setAmbientEnabled(true);
       playEntryChime();
     }

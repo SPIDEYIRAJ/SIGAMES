@@ -3,6 +3,25 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — console mode, responsive frame, muted theme
+------------------------------------------------------
+
+CHG  Entering the site through ENTER MUTED now leaves the theme song off too;
+     the floating THEME SONG pill can switch it back on.
+
+ADD  Console mode on every embedded game: the game fills the top half of the
+     screen and a live controller deck fills the bottom half. The deck uses
+     the title's own documented keys (WASD/arrows, mouse aim, jump, reload,
+     use, sprint, gas/brake), so each game gets the controls it asks for.
+     Escape or Exit console returns to the normal player page.
+
+CHG  The game frame now sizes to the viewport and pins the iframe to every
+     edge, with trimmed heights on phones and landscape.
+
+CHG  Responsive pass: the theme dock and sound pills wrap cleanly on narrow
+     screens, the player topbar tightens on phones, and console mode keeps a
+     readable deck header.
+
 2026-11-19 — theme song, game ducking and fade-out
 -------------------------------------------------
 

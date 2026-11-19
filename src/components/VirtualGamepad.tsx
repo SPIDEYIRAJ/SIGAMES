@@ -5,36 +5,54 @@ import {
   isControllersEnabled,
   CONTROLLERS_CHANGE_EVENT,
   trustedFrameOrigin,
+  type ControllerMode,
 } from "@/lib/omnipad";
 
 /**
- * The optional on-screen controller overlay: an absolutely-positioned layer
- * above the game frame that OmniPad decomposes into aTargetZone, D-pad,
- * buttons and/or joystick. Only mounts when the override is enabled from the
- * hidden settings panel; the physical gamepad poller starts with the forest.
+ * The optional on-screen controller: an absolutely-positioned layer over the
+ * game frame that OmniPad decomposes into a target stage, D-pad, buttons
+ * and/or cursor joystick. The `deck` mode moves the widgets into the lower half
+ * for console mode while the stage stays on the game screen above.
+ *
+ * Only mounts when the override is enabled from the hidden settings panel, or
+ * when console mode forces it on.
  */
-function VirtualGamepad({ src, gameTitle, gameCategory, ...rest }: HTMLAttributes<HTMLDivElement> & {
+function VirtualGamepad({
+  src,
+  gameId,
+  gameTitle,
+  gameCategory,
+  gameControls,
+  mode = "overlay",
+  force = false,
+  ...rest
+}: HTMLAttributes<HTMLDivElement> & {
   src: string;
+  gameId: string;
   gameTitle: string;
   gameCategory: string;
+  gameControls?: string;
+  mode?: ControllerMode;
+  force?: boolean;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [enabled, setEnabled] = useState(isControllersEnabled);
+  const [enabled, setEnabled] = useState(() => force || isControllersEnabled());
 
   // Follow the hidden-settings toggle live, including other tabs' changes.
   useEffect(() => {
-    const sync = () => setEnabled(isControllersEnabled());
+    const sync = () => setEnabled(force || isControllersEnabled());
+    if (force) setEnabled(true);
     window.addEventListener(CONTROLLERS_CHANGE_EVENT, sync);
     window.addEventListener("storage", sync);
     return () => {
       window.removeEventListener(CONTROLLERS_CHANGE_EVENT, sync);
       window.removeEventListener("storage", sync);
     };
-  }, []);
+  }, [force]);
 
   const profile = useMemo(
-    () => controllerProfileFor({ id: "", category: gameCategory }),
-    [gameCategory]
+    () => controllerProfileFor({ id: gameId, category: gameCategory, controls: gameControls }, mode),
+    [gameId, gameCategory, gameControls, mode]
   );
 
   // Build the OmniPad forest inside the overlay container, then tear it down
@@ -83,8 +101,9 @@ function VirtualGamepad({ src, gameTitle, gameCategory, ...rest }: HTMLAttribute
   return (
     <div
       ref={containerRef}
-      className="virtual-gamepad"
+      className={`virtual-gamepad ${mode === "deck" ? "is-deck" : ""}`}
       data-game-virtual-gamepad
+      data-mode={mode}
       data-title={gameTitle}
       {...rest}
     />

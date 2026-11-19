@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowLeft, Check, Copy, Expand, Flag, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Star, X, Save } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, Flag, Gamepad, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Star, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import VirtualGamepad from "@/components/VirtualGamepad";
@@ -389,6 +389,8 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   const keyHoldId = useRef(0);
   const [showFsPrompt, setShowFsPrompt] = useState(() => (game ? !game.standalone : false));
   const [showReport, setShowReport] = useState(false);
+  /** Split console: the game screen above, a live controller deck below. */
+  const [consoleMode, setConsoleMode] = useState(false);
   // For titles with a server picker: the URL chosen at the entrance.
   const [playUrl, setPlayUrl] = useState<string | null>(null);
   // Copy-link flow: confirm the link hit the clipboard.
@@ -444,6 +446,21 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  /** Console mode holds the page still and leaves with Escape. */
+  useEffect(() => {
+    if (!consoleMode) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !inFullscreen) setConsoleMode(false);
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [consoleMode, inFullscreen]);
 
   const finishBoot = useCallback(() => {
     firstFrameRect.current = frameRef.current?.getBoundingClientRect() ?? null;
@@ -948,11 +965,11 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   };
 
   return (
-    <div ref={playerRef} className={`player-page ${isImmersive ? "immersive-player" : ""} ${isNativeFullscreen ? "native-fullscreen" : ""}`} onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
+    <div ref={playerRef} className={`player-page ${isImmersive ? "immersive-player" : ""} ${isNativeFullscreen ? "native-fullscreen" : ""} ${consoleMode ? "is-console" : ""}`} onPointerMove={handlePointerMove} onPointerLeave={resetTilt}>
       <header className="player-topbar">
         <button className="player-brand" onClick={() => navigate("/")} aria-label="Return to SI GAMES library"><span className="player-brand-mark">SI</span><span>SI GAMES</span></button>
         <div className="player-title"><span className="player-dot" />{game.title}</div>
-        <div className="player-actions"><button className={`player-icon-button ${controllersOn ? "is-controller" : ""}`} onClick={() => { const next = !controllersOn; setControllersEnabled(next); setControllersOn(next); }} aria-label={controllersOn ? "Hide the on-screen controller" : "Show the on-screen controller"} title={controllersOn ? "Controller on" : "Controller off"}><Gamepad2 size={18} /></button><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
+        <div className="player-actions"><button className={`player-icon-button controller-toggle ${controllersOn ? "is-controller" : ""}`} onClick={() => { const next = !controllersOn; setControllersEnabled(next); setControllersOn(next); }} aria-label={controllersOn ? "Hide the on-screen controller" : "Show the on-screen controller"} title={controllersOn ? "Controller on" : "Controller off"}><Gamepad2 size={18} /></button><button className={`player-icon-button ${favorites.includes(game.id) ? "is-favorite" : ""}`} onClick={toggleFavorite} aria-label={favorites.includes(game.id) ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}><Heart size={18} fill={favorites.includes(game.id) ? "currentColor" : "none"} /></button><button className="player-icon-button" onClick={reload} aria-label="Reload this game"><RotateCcw size={17} /></button>{game.type !== "external" && !handsLink && <button className={`player-icon-button console-toggle ${consoleMode ? "is-on" : ""}`} onClick={() => setConsoleMode((on) => !on)} aria-label={consoleMode ? "Exit console mode" : "Open console mode"} title={consoleMode ? "Exit console mode" : "Console mode"}><Gamepad size={18} /></button>}{!inFullscreen && <button className="player-icon-button" onClick={toggleFullscreen} aria-label="Enter fullscreen gameplay"><Expand size={18} /></button>}<button className="player-back" onClick={() => navigate("/")}><ArrowLeft size={16} /> <span>Back to library</span></button></div>
       </header>
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
       <main className="player-main">
@@ -998,12 +1015,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
             )}
             <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={handleFrameLoad} onError={() => setLoading(false)} />
             {/* Optional on-screen controller (hidden settings toggle); only for titles that actually run in the frame. */}
-            {game.type !== "external" && !handsLink && (
-              <VirtualGamepad src={playUrl ?? launchLink} gameTitle={game.title} gameCategory={game.category} />
+            {!consoleMode && game.type !== "external" && !handsLink && (
+              <VirtualGamepad src={playUrl ?? launchLink} gameId={game.id} gameTitle={game.title} gameCategory={game.category} gameControls={game.controls} />
             )}
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
-        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}{game.type !== "external" && /^https?:\/\//i.test(game.sourceUrl) && (<button type="button" className="open-external" onClick={() => copyLink(launchLink)}>{linkCopied ? <Check size={15} /> : <Copy size={15} />} {linkCopied ? "Copied" : "Copy link"}</button>)}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
+        <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.type !== "external" && !handsLink && (<button type="button" className="open-external console-open" onClick={() => setConsoleMode(true)}><Gamepad size={15} /> Console mode</button>)}{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}{game.type !== "external" && /^https?:\/\//i.test(game.sourceUrl) && (<button type="button" className="open-external" onClick={() => copyLink(launchLink)}>{linkCopied ? <Check size={15} /> : <Copy size={15} />} {linkCopied ? "Copied" : "Copy link"}</button>)}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>
         <textarea ref={linkInputRef} className="copy-link-hidden" readOnly value={launchLink} aria-hidden="true" tabIndex={-1} />
 
         {game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>
@@ -1021,6 +1038,32 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
           ready={!loading}
           onFinish={finishBoot}
         />
+      )}
+      {consoleMode && (
+        <div className="console-shell">
+          <div className="console-deck">
+            <div className="console-deck-head">
+              <span className="console-deck-kicker"><Gamepad size={13} /> CONSOLE MODE</span>
+              <strong>{game.title}</strong>
+              <p>{game.controls}</p>
+            </div>
+            <span className="console-deck-tag">SCREEN ABOVE · CONTROLS BELOW</span>
+          </div>
+          <div className="console-pad">
+            <VirtualGamepad
+              mode="deck"
+              force
+              src={playUrl ?? launchLink}
+              gameId={game.id}
+              gameTitle={game.title}
+              gameCategory={game.category}
+              gameControls={game.controls}
+            />
+          </div>
+          <button type="button" className="console-exit" onClick={() => setConsoleMode(false)}>
+            <X size={14} /> Exit console
+          </button>
+        </div>
       )}
       {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       {showExtension && <div className="extension-backdrop" onClick={() => setShowExtension(false)}><div ref={extensionModalRef} className="extension-modal" role="dialog" aria-modal="true" aria-labelledby="extension-title" aria-describedby="extension-description" onClick={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setShowExtension(false)} aria-label="Close extension notice"><X size={18} /></button><div className="extension-icon">✦</div><span className="section-kicker">ONE QUICK STEP</span><h2 id="extension-title">A smoother Eaglercraft launch?</h2><p id="extension-description">The Eaglercraft browser extension unlocks the full experience for this title. You can skip it and still try the game as-is.</p><div className="extension-actions"><a className="primary-button" href={game.extensionUrl} target="_self" rel="noreferrer">Install extension <Expand size={15} /></a><button className="soft-button" onClick={() => setShowExtension(false)}>Continue without extension</button></div><p className="extension-skip-hint">Press <kbd>Esc</kbd> to skip</p></div></div>}

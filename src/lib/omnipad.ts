@@ -9,9 +9,12 @@
  *     (persisted in localStorage, announced with a window event).
  *  3. Profile factories — the flat OmniPadProfile JSON the docs' "data-driven
  *     mode" consumes (D-pad / joystick / buttons mapped to key + mouse events).
- *  4. `controllerLayoutIdFor(game)` — every game gets a controller; the layout
- *     is picked from a few explicit per-game overrides, then from the game's
- *     category, with a sensible keyboard default left over.
+ *  4. Per-game controller profiles, read from each title's documented controls
+ *     so the deck matches the keys the game actually listens for.
+ *
+ * Two placements share those profiles: `overlay` floats the controls over the
+ * game frame, and `deck` pins them to the bottom half of console mode while the
+ * target stage sits over the top half.
  */
 
 /** A string (or structured mapping) the OmniPad engine accepts for a control. */
@@ -105,38 +108,110 @@ export function setControllersEnabled(enabled: boolean): void {
 }
 
 /* ------------------------------------------------------------------ */
-/* Controller layouts                                                  */
+/* Controller profiles                                                 */
 /* ------------------------------------------------------------------ */
 
 const STAGE = "$stage";
 
-/** Shared target-zone item: it fills the mounted container (the game frame). */
-function stageItem(cursor: boolean): OmniPadProfileItem {
+export type ControllerLayoutId = "platform" | "wasd" | "shoot" | "drive";
+export type ControllerMode = "overlay" | "deck";
+
+export interface ControllerGameInfo {
+  id: string;
+  category: string;
+  /** The title's documented keyboard/mouse controls, used to pick the keys. */
+  controls?: string;
+}
+
+type ControlHints = {
+  move: "wasd" | "arrows";
+  look: boolean;
+  click: boolean;
+  jump: boolean;
+  reload: boolean;
+  use: boolean;
+  sprint: boolean;
+  enter: boolean;
+  drive: boolean;
+};
+
+/**
+ * Reads the control sentence every title ships with. The wording across the
+ * library is consistent enough ("W A S D to move", "arrow keys", "Space to
+ * jump", "click to fire", "R to reload"), so a controller can follow the same
+ * input scheme without a hand-written table per game.
+ */
+function readControls(game: ControllerGameInfo): ControlHints {
+  const text = (game.controls ?? "").toLowerCase();
+  const wasd = /w\s*a\s*s\s*d|wasd|w or arrow/.test(text);
+  const arrows = /arrow/.test(text);
+  const drive = game.category === "Racing" || /drive|steer|accelerat/.test(text);
+  const mouse = /mouse|look|aim|cursor/.test(text);
+  const click = /click|tap|fire|shoot|bite/.test(text);
+
   return {
-    id: STAGE,
-    type: "target-zone",
-    parentId: "$ui",
-    config: {
-      cursorEnabled: cursor,
-      layout: { left: 0, top: 0, width: "100%", height: "100%" },
-    },
+    // Most titles document WASD; arrows-only titles keep their arrow keys.
+    move: wasd ? "wasd" : arrows ? "arrows" : "wasd",
+    look: mouse,
+    click,
+    jump: /jump|space/.test(text) && !/handbrake|brake/.test(text),
+    reload: /reload/.test(text) || /\br\b/.test(text),
+    use: /\be\b|\bf\b/.test(text),
+    sprint: /shift|sprint|boost/.test(text),
+    enter: /enter/.test(text),
+    drive,
   };
 }
 
-function dpadItem(mapping: { up: string; down: string; left: string; right: string }): OmniPadProfileItem {
+/** Movement is a D-pad so the keys are exact, never an analog approximation. */
+function dpadItem(keys: { up: string; down: string; left: string; right: string }, deck: boolean): OmniPadProfileItem {
   return {
     id: "pad-dpad",
     type: "d-pad",
     parentId: "$ui",
     config: {
-      mapping,
+      mapping: keys,
       targetStageId: STAGE,
-      layout: { left: "4%", bottom: "6%", height: "34%", isSquare: true, zIndex: 10 },
+      layout: deck
+        ? { left: "4%", top: "56%", height: "30%", isSquare: true, zIndex: 10 }
+        : { left: "4%", bottom: "6%", height: "32%", isSquare: true, zIndex: 10 },
     },
   };
 }
 
-function buttonItem(id: string, label: string, code: string, right: string, bottom: string, size: string): OmniPadProfileItem {
+/** Mouse-look stick: turns thumb movement into a virtual cursor. */
+function lookItem(deck: boolean): OmniPadProfileItem {
+  return {
+    id: "pad-stick",
+    type: "joystick",
+    parentId: "$ui",
+    config: {
+      cursorMode: true,
+      cursorSensitivity: 1.1,
+      targetStageId: STAGE,
+      mapping: { stick: { type: "mouse", button: 0 } },
+      layout: deck
+        ? { right: "5%", top: "68%", width: "27%", zIndex: 10 }
+        : { right: "4%", bottom: "6%", width: "29%", zIndex: 10 },
+    },
+  };
+}
+
+function buttonItem(
+  id: string,
+  label: string,
+  code: string,
+  slot: number,
+  deck: boolean
+): OmniPadProfileItem {
+  const layout = deck
+    ? slot === 0
+      ? { right: "5%", top: "55%", height: "13%", isSquare: true, zIndex: 10 }
+      : { right: "23%", top: "55%", height: "11%", isSquare: true, zIndex: 10 }
+    : slot === 0
+      ? { right: "5%", bottom: "39%", height: "15%", isSquare: true, zIndex: 10 }
+      : { right: "24%", bottom: "39%", height: "13%", isSquare: true, zIndex: 10 };
+
   return {
     id,
     type: "button",
@@ -145,95 +220,99 @@ function buttonItem(id: string, label: string, code: string, right: string, bott
       label,
       mapping: code,
       targetStageId: STAGE,
-      layout: { right, bottom, height: size, isSquare: true, zIndex: 10 },
+      layout,
     },
   };
 }
 
-function joystickItem(cursorMode: boolean): OmniPadProfileItem {
-  return {
-    id: "pad-stick",
-    type: "joystick",
-    parentId: "$ui",
-    config: {
-      cursorMode,
-      cursorSensitivity: 1.1,
-      targetStageId: STAGE,
-      mapping: cursorMode
-        ? { stick: { type: "mouse", button: 0 } }
-        : { stick: { up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD" } },
-      layout: { left: "4%", bottom: "6%", width: "30%", zIndex: 10 },
-    },
-  };
+/** The two most useful actions for this title, in priority order. */
+function actionButtons(hints: ControlHints): Array<{ label: string; code: string }> {
+  if (hints.drive) {
+    const gas = hints.move === "arrows" ? "ArrowUp" : "KeyW";
+    return [
+      { label: "GAS", code: gas },
+      { label: "BRAKE", code: "Space" },
+    ];
+  }
+
+  const actions: Array<{ label: string; code: string }> = [];
+  // Enter leads: several titles need it before the game even starts.
+  if (hints.enter) actions.push({ label: "ENTER", code: "Enter" });
+  if ((hints.click || hints.look) && actions.length < 2) {
+    actions.push({ label: hints.look ? "FIRE" : "TAP", code: "Mouse:0" });
+  }
+  if (hints.jump && actions.length < 2) actions.push({ label: "JUMP", code: "Space" });
+  if (hints.use && actions.length < 2) actions.push({ label: "USE", code: "KeyE" });
+  if (hints.reload && actions.length < 2) actions.push({ label: "RELOAD", code: "KeyR" });
+  if (hints.sprint && actions.length < 2) actions.push({ label: "SPRINT", code: "ShiftLeft" });
+  if (actions.length < 2) actions.push({ label: "ACT", code: "KeyX" });
+  return actions.slice(0, 2);
 }
 
-/** The three layouts: action/D-pad, WASD pad, and mouse-aim shoot layout. */
-function buildLayout(layout: ControllerLayoutId): OmniPadProfile {
+function buildProfile(hints: ControlHints, mode: ControllerMode): OmniPadProfile {
+  const deck = mode === "deck";
+  // A cursor stick earns its space when the game aims or moves by mouse. Tap
+  // games (jump on click) only need the action button.
+  const cursor = hints.look || (hints.click && !hints.jump);
   const items: OmniPadProfileItem[] = [
     { id: "$ui", type: "root-layer", config: { layout: { width: "100%", height: "100%" } } },
+    {
+      id: STAGE,
+      type: "target-zone",
+      parentId: "$ui",
+      config: {
+        cursorEnabled: cursor,
+        layout: deck
+          ? { left: 0, top: 0, width: "100%", height: "50%" }
+          : { left: 0, top: 0, width: "100%", height: "100%" },
+      },
+    },
   ];
 
-  if (layout === "wasd") {
-    // WASD movers (Minecraft-style): WASD stick + jump/use + look-to-aim.
-    items.push(stageItem(true));
-    items.push(joystickItem(false));
-    items.push(buttonItem("pad-a", "JUMP", "Space", "5%", "22%", "16%"));
-    items.push(buttonItem("pad-b", "USE", "KeyE", "20%", "6%", "14%"));
-  } else if (layout === "shoot") {
-    // Aiming games: arrows to move, right stick steers a virtual cursor that
-    // left-clicks, plus a tap button that fires a mouse click.
-    items.push(stageItem(true));
-    items.push(dpadItem({ up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" }));
-    items.push(joystickItem(true));
-    items.push(buttonItem("pad-a", "FIRE", "Space", "5%", "20%", "16%"));
-    items.push(buttonItem("pad-b", "CLICK", "Mouse:0", "22%", "6%", "13%"));
-  } else {
-    // Platform/action default: D-pad on arrows, jump and action on Space/KeyX.
-    items.push(stageItem(false));
-    items.push(dpadItem({ up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" }));
-    items.push(buttonItem("pad-a", "JUMP", "Space", "5%", "20%", "16%"));
-    items.push(buttonItem("pad-b", "ACT", "KeyX", "20%", "6%", "13%"));
-  }
+  const keys = hints.move === "wasd"
+    ? { up: "KeyW", down: "KeyS", left: "KeyA", right: "KeyD" }
+    : { up: "ArrowUp", down: "ArrowDown", left: "ArrowLeft", right: "ArrowRight" };
+
+  items.push(dpadItem(keys, deck));
+  if (cursor) items.push(lookItem(deck));
+
+  actionButtons(hints).forEach((action, index) => {
+    items.push(buttonItem(`pad-${index === 0 ? "a" : "b"}`, action.label, action.code, index, deck));
+  });
 
   return {
     meta: { name: "SI GAMES controller" },
     items,
     // Physical Xbox / PlayStation controllers drive the same overlay buttons.
     gamepadMappings: [
-      { buttons: { A: "pad-a", B: "pad-b", X: "pad-b" }, ...(layout === "wasd" ? { leftStick: "pad-stick" } : {}) },
+      { buttons: { A: "pad-a", B: "pad-b", X: "pad-b" } },
     ],
   };
 }
 
-export type ControllerLayoutId = "platform" | "wasd" | "shoot";
-
-const LAYOUTS: Record<ControllerLayoutId, OmniPadProfile> = {
-  platform: buildLayout("platform"),
-  wasd: buildLayout("wasd"),
-  shoot: buildLayout("shoot"),
-};
-
-/** Per-game overrides where the game's documented controls justify one. */
-const LAYOUT_OVERRIDES: Record<string, ControllerLayoutId> = {
-  "minecraft-eaglercraft": "wasd",
-};
-
-/** Category → layout. Everything missing here falls back to the default. */
-const CATEGORY_LAYOUTS: Record<string, ControllerLayoutId> = {
-  Shooter: "shoot",
-  FPS: "shoot",
-  "Tower Defense": "shoot",
-  Minecraft: "wasd",
-  Sandbox: "wasd",
-};
-
-/** Every game gets a controller: overrides, then category, then the default. */
-export function controllerLayoutIdFor(game: { id: string; category: string }): ControllerLayoutId {
-  return LAYOUT_OVERRIDES[game.id] ?? CATEGORY_LAYOUTS[game.category] ?? "platform";
+/** Layout id kept for callers that only need a label for the scheme. */
+export function controllerLayoutIdFor(game: ControllerGameInfo): ControllerLayoutId {
+  if (game.id === "minecraft-eaglercraft") return "wasd";
+  if (game.category === "Racing") return "drive";
+  const hints = readControls(game);
+  if (hints.look || game.category === "Shooter" || game.category === "FPS") return "shoot";
+  if (hints.move === "wasd") return "wasd";
+  return "platform";
 }
 
-export function controllerProfileFor(game: { id: string; category: string }): OmniPadProfile {
-  return LAYOUTS[controllerLayoutIdFor(game)];
+const profileCache = new Map<string, OmniPadProfile>();
+
+/** Builds (and caches) the profile a title needs for the chosen placement. */
+export function controllerProfileFor(
+  game: ControllerGameInfo,
+  mode: ControllerMode = "overlay"
+): OmniPadProfile {
+  const key = `${game.id}|${game.category}|${game.controls ?? ""}|${mode}`;
+  const cached = profileCache.get(key);
+  if (cached) return cached;
+  const profile = buildProfile(readControls(game), mode);
+  profileCache.set(key, profile);
+  return profile;
 }
 
 /** Physical gamepad support also needs the frame host whitelisted. */
