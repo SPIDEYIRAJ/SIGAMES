@@ -182,7 +182,7 @@ export default function StartupIntro() {
                 <i className="first-entry-ring first-entry-ring--two" />
               </div>
               <span className="first-entry-kicker">
-                <Sparkles size={13} /> {founding ? "SI OS // FIRST BOOT" : "SI OS // SESSION START"}
+                <Sparkles size={13} /> {founding ? "SI GAMES // FIRST BOOT" : "SI GAMES // SESSION START"}
               </span>
               <h1 id="first-entry-title">
                 {founding ? <>Welcome,<br /><em>Player One.</em></> : <>Welcome back,<br /><em>Player One.</em></>}

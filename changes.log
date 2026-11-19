@@ -3,8 +3,25 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-19 — living colour, optional music welcome, console deck
-----------------------------------------------------------------
+2026-11-19 — liquid glass, citrus palette, no music asking
+---------------------------------------------------------
+
+CHG  The welcome screen is only a greeting now: no folder scan, no upload
+     prompt, no music ask. ENTER SI GAMES goes straight in; music lives in the
+     soundtrack control.
+
+CHG  "SI OS" branding is gone from the intro and welcome screens.
+
+ADD  Liquid glass UI pass: frosted, translucent panels, cards, header, ticker,
+     search bar, soundtrack sheet and dialogs with soft white hairlines and
+     deep, low-contrast shadows; sharp bevelled corners replaced with rounded
+     glass on controls, cards and pills.
+
+ADD  Citrus palette is now the default theme (lime, lemon, tangerine,
+     grapefruit over a deep leaf-green night) and recolours the aurora, header
+     seam, hero wordmark, card accents and custom cursor. Buttons use dark ink
+     on citrus fills to keep contrast high.
+
 
 ADD  A themed custom cursor: white-hot dot, spectral conic ring that eases
      behind the pointer and opens over anything clickable. Mouse/trackpad

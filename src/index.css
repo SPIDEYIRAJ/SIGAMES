@@ -5043,7 +5043,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-head h2 { margin: 8px 0 0; font-size: clamp(32px, 5.6vw, 52px); letter-spacing: -.05em; text-align: left; }
 .si-welcome-head h2 b {
   display: inline-block;
-  background: linear-gradient(105deg, #c8ff6a 0%, #6bb1ff 38%, #ff8bd8 72%, #c8ff6a 100%);
+  background: linear-gradient(105deg, #c6ff3d 0%, #ffe066 34%, #ff9f1c 68%, #c6ff3d 100%);
   background-size: 220% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -5141,12 +5141,12 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-welcome-track i {
   display: block;
   height: 100%;
-  background: linear-gradient(90deg, #9bf00b, #6bb1ff 55%, #ff7ad9);
+  background: linear-gradient(90deg, #c6ff3d, #ffe066 50%, #ff9f1c);
   border-radius: inherit;
   transition: width .35s ease;
 }
 .si-welcome-scan.is-scanning .si-welcome-track i {
-  background: linear-gradient(90deg, #6bb1ff, #ff7ad9, #9bf00b, #6bb1ff);
+  background: linear-gradient(90deg, #c6ff3d, #ffe066, #ff9f1c, #ff6b6b, #c6ff3d);
   background-size: 300% 100%;
   animation: si-scan-flow 1.4s linear infinite;
 }
@@ -5248,10 +5248,10 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 }
 
 .game-grid > .game-card { --card-glow: var(--si-glow); }
-.game-grid > .game-card:nth-child(4n + 1) { --card-glow: #9bf00b; }
-.game-grid > .game-card:nth-child(4n + 2) { --card-glow: #2f8fff; }
-.game-grid > .game-card:nth-child(4n + 3) { --card-glow: #ff4e85; }
-.game-grid > .game-card:nth-child(4n) { --card-glow: #c9a7ff; }
+.game-grid > .game-card:nth-child(4n + 1) { --card-glow: #c6ff3d; }
+.game-grid > .game-card:nth-child(4n + 2) { --card-glow: #ffe066; }
+.game-grid > .game-card:nth-child(4n + 3) { --card-glow: #ff9f1c; }
+.game-grid > .game-card:nth-child(4n) { --card-glow: #ff6b6b; }
 
 .game-grid > .game-card:hover {
   border-color: color-mix(in srgb, var(--card-glow) 38%, transparent);
@@ -5684,10 +5684,10 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .si-app::before {
   inset: -30%;
   background:
-    radial-gradient(closest-side at 26% 28%, #9bf00b26, transparent 72%),
-    radial-gradient(closest-side at 72% 34%, #2f8fff2e, transparent 74%),
-    radial-gradient(closest-side at 40% 78%, #ff4e8524, transparent 72%),
-    radial-gradient(closest-side at 84% 74%, #8a7bff26, transparent 74%);
+    radial-gradient(closest-side at 26% 28%, #c6ff3d33, transparent 72%),
+    radial-gradient(closest-side at 72% 34%, #ffe0662e, transparent 74%),
+    radial-gradient(closest-side at 40% 78%, #ff9f1c30, transparent 72%),
+    radial-gradient(closest-side at 84% 74%, #ff6b6b26, transparent 74%);
   animation: si-aurora-drift 26s ease-in-out infinite alternate;
   will-change: transform;
 }
@@ -5698,7 +5698,7 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
   inset: -45%;
   z-index: -1;
   pointer-events: none;
-  background: conic-gradient(from 0deg, #9bf00b12, #2f8fff1c 22%, #ff4e8512 46%, #8a7bff1c 70%, #9bf00b12);
+  background: conic-gradient(from 0deg, #c6ff3d14, #ffe0661c 22%, #ff9f1c16 46%, #ff6b6b14 70%, #c6ff3d14);
   animation: si-colour-turn 46s linear infinite;
   will-change: transform;
 }
@@ -5729,12 +5729,11 @@ html { scrollbar-color: var(--si-accent) var(--si-bg); }
 .hero-copy h1 span {
   background-image: linear-gradient(
     100deg,
-    var(--si-glow) 0%,
-    #c8ff6a 16%,
-    var(--si-accent) 36%,
-    #ff8bd8 56%,
-    #c9a7ff 74%,
-    var(--si-glow) 100%
+    #c6ff3d 0%,
+    #ffe066 22%,
+    #ff9f1c 46%,
+    #ff6b6b 68%,
+    #c6ff3d 100%
   );
   background-size: 240% 100%;
   animation: si-colour-slide 11s linear infinite;
@@ -5846,7 +5845,7 @@ html.si-custom-cursor .soundtrack-fab {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #9bf00b, #6bb1ff 30%, #ff7ad9 56%, #c9a7ff 78%, #9bf00b);
+  background: conic-gradient(from 0deg, #c6ff3d, #ffe066 30%, #ff9f1c 56%, #ff6b6b 78%, #c6ff3d);
   -webkit-mask: radial-gradient(circle, transparent 0 61%, #000 62% 100%);
   mask: radial-gradient(circle, transparent 0 61%, #000 62% 100%);
   opacity: .78;
@@ -5888,4 +5887,312 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   .soundtrack-fab.is-on {
     animation: none;
   }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   CITRUS — the default palette. Lime, lemon, tangerine and grapefruit
+   over a deep leaf-green night, so bright accents keep crisp contrast.
+   ═════════════════════════════════════════════════════════════════════ */
+
+:root[data-theme="citrus"] {
+  --si-accent: #ff9f1c;
+  --si-accent-hover: #ffb043;
+  --si-accent-active: #f08a00;
+  --si-accent-18: #ff9f1c2e;
+  --si-accent-20: #ff9f1c33;
+  --si-accent-22: #ff9f1c38;
+  --si-accent-24: #ff9f1c3d;
+  --si-accent-28: #ff9f1c47;
+  --si-accent-30: #ff9f1c4d;
+  --si-accent-60: #ff9f1c99;
+  --si-accent-88: #ff9f1ce0;
+  --si-glow: #c6ff3d;
+  --si-glow-bright: #e9ff9e;
+  --si-glow-12: #c6ff3d1f;
+  --si-glow-14: #c6ff3d24;
+  --si-glow-16: #c6ff3d29;
+  --si-glow-25: #c6ff3d40;
+  --si-glow-28: #c6ff3d47;
+  --si-glow-40: #c6ff3d66;
+  --si-bg: #07130f;
+  --si-bg-deep: #040c09;
+  --si-frame: #081a13;
+  --si-kbd: #0d2219;
+  --si-panel: #0b2018;
+  --si-panel-raised: #112b20;
+  --si-panel-strong: #163628;
+  --si-star-hot: #ffe066;
+  --si-star-cool: #c6ff3d;
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   LIQUID GLASS — frosted panels, soft light, floating depth.
+   Surfaces are translucent layers over the moving citrus aurora: a bright
+   top-left highlight, a low-opacity body and one crisp white hairline.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Frosted shell. */
+.site-header {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--si-panel-strong) 62%, transparent),
+    color-mix(in srgb, var(--si-bg) 76%, transparent)
+  );
+  border-bottom: 1px solid #ffffff22;
+  backdrop-filter: blur(26px) saturate(170%);
+  -webkit-backdrop-filter: blur(26px) saturate(170%);
+  box-shadow: 0 18px 50px -26px #000000cc;
+}
+
+.site-header::after {
+  background: linear-gradient(90deg, transparent, #c6ff3d, #ffe066 30%, #ff9f1c 58%, #ff6b6b 80%, transparent);
+  box-shadow: 0 0 18px #ff9f1c66;
+}
+
+/* Small floating glass chips around the hero and shelves. */
+.eyebrow,
+.float-chip,
+.header-status,
+.section-count,
+.console-meta {
+  border-radius: 999px;
+  border: 1px solid #ffffff26;
+  background: linear-gradient(160deg, #ffffff1f, #ffffff09);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 14px 34px -18px #000000b3, 0 1px 0 #ffffff1f inset;
+}
+
+/* Tickertape and search field as glass bars. */
+.arcade-ticker {
+  border-radius: 999px;
+  border: 1px solid #ffffff1f;
+  background: linear-gradient(120deg, #ffffff14, #ffffff05);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+.search-box {
+  border: 1px solid #ffffff26;
+  background: linear-gradient(160deg, #ffffff17, #ffffff07);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: inset 0 1px 0 #ffffff1a, 0 12px 30px -20px #000000a6;
+}
+
+/* Floating glass cards. */
+.game-card {
+  clip-path: none;
+  border-radius: 22px;
+  border: 1px solid #ffffff21;
+  background:
+    linear-gradient(158deg, #ffffff1a, #ffffff07 34%, #ffffff03 62%, transparent),
+    color-mix(in srgb, var(--si-panel) 68%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 28px 64px -30px #000000e0, 0 1px 0 #ffffff1a inset;
+}
+
+.game-grid > .game-card:hover {
+  border-color: #ffffff3d;
+  box-shadow:
+    0 38px 76px -28px #000000e6,
+    0 0 46px color-mix(in srgb, var(--card-glow, var(--si-glow)) 24%, transparent),
+    0 1px 0 #ffffff26 inset;
+}
+
+/* Panels, sheets and dialogs. */
+.si-welcome,
+.music-gate,
+.extension-modal,
+.about-card,
+.note-card,
+.favorite-item,
+.favorites-empty,
+.player-disclaimer--heavy,
+.toast,
+.console-card,
+.dev-game {
+  clip-path: none;
+  border-radius: 22px;
+  border: 1px solid #ffffff26;
+  background:
+    linear-gradient(158deg, #ffffff1f, #ffffff08 38%, #ffffff03 66%, transparent),
+    color-mix(in srgb, var(--si-panel-strong) 60%, transparent);
+  backdrop-filter: blur(26px) saturate(165%);
+  -webkit-backdrop-filter: blur(26px) saturate(165%);
+  box-shadow: 0 34px 90px -34px #000000e6, 0 1px 0 #ffffff1f inset;
+}
+
+/* The soundtrack sheet sits above everything, so it gets the heaviest frost. */
+.soundtrack-panel {
+  border-radius: 24px;
+  border: 1px solid #ffffff2b;
+  background:
+    linear-gradient(160deg, #ffffff1c, #ffffff08 40%, #ffffff03 70%, transparent),
+    color-mix(in srgb, var(--si-panel-strong) 72%, transparent);
+  backdrop-filter: blur(30px) saturate(170%);
+  -webkit-backdrop-filter: blur(30px) saturate(170%);
+  box-shadow: 0 34px 90px -30px #000000e6, 0 1px 0 #ffffff1a inset;
+}
+
+.soundtrack-fab {
+  border: 1px solid #ffffff30;
+  background: linear-gradient(160deg, #ffffff22, #ffffff08);
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  box-shadow: 0 16px 40px -16px #000000b3, 0 1px 0 #ffffff2b inset;
+}
+
+.site-footer {
+  border-top: 1px solid #ffffff21;
+  background: linear-gradient(180deg, #ffffff08, transparent);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+}
+
+/* Welcome screen light becomes citrus. */
+.si-welcome-aura {
+  background: conic-gradient(from 0deg, #c6ff3d26, #ffe06626 22%, #ff9f1c26 48%, #ff6b6b1f 72%, #c6ff3d26);
+}
+
+.music-gate-backdrop.si-welcome-backdrop {
+  background:
+    radial-gradient(90% 70% at 50% 0%, #16361f9e, transparent 62%),
+    radial-gradient(70% 60% at 85% 90%, #3a2a0a8f, transparent 70%),
+    #040c09f2;
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+}
+
+/* ——— Controls: soft rounded glass instead of sharp bevels. ——— */
+
+.primary-button,
+.soft-button,
+.play-button,
+.launch-play,
+.launch-play--external,
+.open-external,
+.search-box,
+.icon-button,
+.category-row button,
+.load-more button,
+.back-to-top,
+.modal-close,
+.dev-copy,
+.dev-back,
+.music-gate-primary,
+.music-gate-secondary,
+.si-welcome-enter,
+.si-welcome-optional-btn,
+.si-welcome-device,
+.soundtrack-add,
+.soundtrack-upload,
+.soundtrack-reconnect,
+.soundtrack-switch,
+.soundtrack-source button,
+.soundtrack-close,
+.soundtrack-menu button {
+  clip-path: none;
+}
+
+.primary-button,
+.play-button,
+.launch-play,
+.launch-play--external,
+.music-gate-primary,
+.si-welcome-enter,
+.dev-copy {
+  color: #17210c;
+  border-radius: 16px;
+  box-shadow: 0 16px 38px -16px color-mix(in srgb, var(--si-accent) 55%, transparent), 0 1px 0 #ffffff40 inset;
+}
+
+.music-gate-primary {
+  background: linear-gradient(115deg, #c6ff3d, #ffe066 46%, #ff9f1c);
+}
+
+.si-welcome-enter {
+  background-image: linear-gradient(110deg, #c6ff3d, #ffe066 34%, #ff9f1c 68%, #ff6b6b 100%);
+  color: #17210c;
+}
+
+.soft-button,
+.open-external,
+.dev-back,
+.music-gate-secondary,
+.si-welcome-device,
+.soundtrack-add,
+.soundtrack-reconnect {
+  border-radius: 999px;
+  border: 1px solid #ffffff26;
+  background: linear-gradient(160deg, #ffffff1c, #ffffff08);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  box-shadow: inset 0 1px 0 #ffffff1f;
+}
+
+.search-box,
+.category-row button,
+.load-more button,
+.icon-button,
+.back-to-top,
+.modal-close,
+.soundtrack-close,
+.soundtrack-upload,
+.soundtrack-switch {
+  border-radius: 999px;
+}
+
+/* ——— Marks and pills: fully rounded glass. ——— */
+
+.brand-mark,
+.player-brand-mark,
+.footer-mark,
+.category-pill,
+.new-pill,
+.html-pill,
+.player-category {
+  clip-path: none;
+  border-radius: 999px;
+}
+
+.brand-mark,
+.footer-mark,
+.player-brand-mark {
+  border: 1px solid #ffffff2b;
+  background: linear-gradient(160deg, #ffffff26, #ffffff0c), var(--si-panel-raised);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 10px 26px -12px #000000b3, 0 1px 0 #ffffff2b inset;
+}
+
+/* Floating depth: the glass edges catch a little light on hover. */
+.game-card,
+.console-card,
+.soundtrack-panel {
+  background-clip: padding-box;
+}
+
+.si-welcome-optional,
+.si-welcome-scan,
+.si-welcome-folders li,
+.soundtrack-menu button,
+.soundtrack-folder-open,
+.soundtrack-track {
+  border-radius: 14px;
+  border-color: #ffffff1f;
+  background: linear-gradient(160deg, #ffffff12, #ffffff05);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+@media (max-width: 720px) {
+  .site-header { backdrop-filter: blur(30px) saturate(180%); -webkit-backdrop-filter: blur(30px) saturate(180%); }
+  .game-card { border-radius: 20px; }
+  .si-welcome,
+  .music-gate { border-radius: 26px; }
+  .soundtrack-panel { border-radius: 24px; }
+  .primary-button,
+  .soft-button { border-radius: 999px; }
 }
