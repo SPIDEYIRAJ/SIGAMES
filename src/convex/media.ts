@@ -13,6 +13,20 @@ const INTRO_AUDIO_IDS = [
 
 const INTRO_VIDEO_ID = "kg23jdxpk3gvkj3dnb3e3j35zs8je88m";
 
+/**
+ * The SI GAMES theme song, looped across the site. Playback is handled by
+ * `src/lib/theme-song.ts`; this query only resolves the storage URL once.
+ */
+const THEME_SONG_ID = "kg2cz3s0q6kbhn69jfha331zr18jhv09";
+
+export const themeSong = query({
+  args: {},
+  handler: async (ctx) => {
+    const url = await ctx.storage.getUrl(THEME_SONG_ID as Id<"_storage">);
+    return { url };
+  },
+});
+
 export const introMedia = query({
   args: {},
   handler: async (ctx) => {

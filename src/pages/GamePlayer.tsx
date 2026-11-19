@@ -496,6 +496,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
     setFrameKey((key) => key + 1);
   }, []);
 
+  /** The frame is up: drop the loader and let the theme song fade itself out. */
+  const handleFrameLoad = useCallback(() => {
+    setLoading(false);
+    window.dispatchEvent(new Event("si-games-game-loaded"));
+  }, []);
+
   /** Copies the link only — no tab ever opens on its own, so the player decides
    * when to open a new tab and paste the link there. */
   const copyLink = useCallback(async (link: string) => {
@@ -990,7 +996,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                 <span className="fs-hold-track"><span className="fs-hold-fill" style={{ "--fs-hold-ms": `${keyHold.ms}ms` } as CSSProperties} /></span>
               </div>
             )}
-            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={() => setLoading(false)} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={handleFrameLoad} onError={() => setLoading(false)} />
             {/* Optional on-screen controller (hidden settings toggle); only for titles that actually run in the frame. */}
             {game.type !== "external" && !handsLink && (
               <VirtualGamepad src={playUrl ?? launchLink} gameTitle={game.title} gameCategory={game.category} />

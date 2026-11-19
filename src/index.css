@@ -3782,6 +3782,90 @@
   to { height: 12px; }
 }
 
+/* Theme song dock */
+
+.theme-dock {
+  position: fixed;
+  left: 18px;
+  bottom: 60px;
+  z-index: 62;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: min(430px, calc(100vw - 36px));
+  pointer-events: none;
+}
+
+.theme-dock-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.theme-song-toggle,
+.theme-own-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 11px;
+  color: #8194b4;
+  background: #050a0fd9;
+  border: 1px solid #ffffff18;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 950;
+  letter-spacing: .14em;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: color .18s ease, border-color .18s ease, background .18s ease, transform .18s ease;
+}
+
+.theme-song-toggle:hover,
+.theme-own-button:hover { color: #dbe7ff; border-color: #3efeff66; transform: translateY(-1px); }
+
+.theme-song-toggle.is-on { color: #b9f6ff; border-color: #3efeff55; background: #071318d9; }
+
+.theme-song-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+.theme-song-bars i { width: 2px; height: 4px; background: currentColor; border-radius: 1px; opacity: .55; }
+.theme-song-toggle.is-on .theme-song-bars i { animation: ambient-bar .9s ease-in-out infinite alternate; opacity: 1; }
+.theme-song-toggle.is-on .theme-song-bars i:nth-child(2) { animation-delay: -.3s; }
+.theme-song-toggle.is-on .theme-song-bars i:nth-child(3) { animation-delay: -.55s; }
+.theme-song-toggle.is-on .theme-song-bars i:nth-child(4) { animation-delay: -.15s; }
+
+.theme-own-button { color: #c9b3ff; border-color: #8a7bff44; }
+
+.theme-soon {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 13px;
+  color: #e6ddff;
+  background: linear-gradient(120deg, #160f2b, #0a0817 70%);
+  border: 1px solid #8a7bff5c;
+  border-radius: 12px;
+  box-shadow: 0 16px 40px #000000a6, 0 0 0 1px #00000080 inset;
+  animation: theme-soon-in .32s cubic-bezier(.2,.9,.2,1) both;
+}
+
+.theme-soon strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .16em;
+}
+
+.theme-soon small { font-size: 8px; letter-spacing: .06em; color: #a99cc9; }
+
+@keyframes theme-soon-in {
+  from { opacity: 0; transform: translateY(8px) scale(.97); }
+}
+
 /* PWA invite */
 
 .install-card {

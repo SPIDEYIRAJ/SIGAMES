@@ -3,6 +3,20 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — theme song, game ducking and fade-out
+-------------------------------------------------
+
+ADD  A site-wide theme song streamed from Convex storage and looped. It starts
+     after the startup cinema, fades up slowly from silence, and has a floating
+     THEME SONG toggle next to the ambient control.
+
+CHG  Game pages duck the theme to a low level on open. When the game frame
+     finishes loading, the song fades smoothly to silence and stops; leaving
+     the game brings it back with another fade-up.
+
+ADD  A PLAY YOUR OWN SONG button in the theme dock, showing a COMING SOON
+     note for custom song uploads.
+
 2026-11-19 — GTA V server row, motion, cache reset
 -------------------------------------------------
 

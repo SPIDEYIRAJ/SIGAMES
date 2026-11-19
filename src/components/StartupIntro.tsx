@@ -72,6 +72,12 @@ export default function StartupIntro() {
     return () => window.clearTimeout(timer);
   }, [phase]);
 
+  /** Lets the site-wide theme song know the cinema is over, however it ended. */
+  useEffect(() => {
+    if (phase !== "done") return;
+    window.dispatchEvent(new Event("si-games-intro-done"));
+  }, [phase]);
+
   const finish = (withSound: boolean) => {
     markSession();
     if (founding) {
