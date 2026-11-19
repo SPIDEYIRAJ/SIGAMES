@@ -3,6 +3,36 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — direct-input console deck, mandatory welcome, colour pass
+-----------------------------------------------------------------------
+
+FIX  Console mode has a real controller now. The deck sends actual keyboard and
+     mouse events into the game document instead of relying on cross-origin
+     OmniPad tunnelling: movement stick (WASD/arrows), aim stick (mouse move),
+     A/B/X/Y, L1/R1 and START, with per-game bindings read from each title's
+     controls (GTA V: F vehicle, Q cover, Shift sprint; CS 1.6: B buy, Walk;
+     racing: Space brake, boost, reset, camera).
+
+ADD  Input-link status chip, so a same-origin build reports INPUT LINKED and a
+     cross-origin host reports honestly that browsers block synthetic input.
+
+ADD  Mandatory SI GAMES welcome screen on every fresh visit: connect multiple
+     folders, real scan progress and discovered-song count, saved-folder
+     reconnect, device fallback, and ENTER SI GAMES only after songs are found.
+
+ADD  Upload Song, Import Music Folder, Import Multiple Folders and Set Theme
+     Song in the one expanding soundtrack menu, plus a theme/folders source
+     switch.
+
+ADD  Browsable folders with ID3 title/artist/album and embedded cover art,
+     duplicate detection across folders and uploads, duplicate-skip count.
+
+CHG  Colour pass: spectral header seam, ambient aurora on the home shell,
+     per-card accent lighting, animated welcome aura and gradient wordmark.
+
+CHG  Theme/folders choice persists; ENTER from the welcome screen selects the
+     folder soundtrack. Game duck/fade applies to either source.
+
 2026-11-19 — soundtrack folders, one-button music dock, compact UI
 -------------------------------------------------------------------
 

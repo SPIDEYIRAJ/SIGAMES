@@ -18,6 +18,7 @@ interface PlaylistTrack {
 
 let audio: HTMLAudioElement | null = null;
 let playlist: PlaylistTrack[] = [];
+let playlistKey = "";
 let index = 0;
 let rampFrame = 0;
 let ducked = false;
@@ -111,6 +112,11 @@ function playCurrent(): void {
 }
 
 export function setLocalPlaylist(tracks: TrackFile[]): void {
+  // A rescan that finds the same songs must not interrupt the one playing.
+  const nextKey = tracks.map((track) => `${track.name}-${track.file.size}`).join("|");
+  if (nextKey === playlistKey && playlist.length) return;
+  playlistKey = nextKey;
+
   const element = audio;
   swapping = true;
   if (element) {

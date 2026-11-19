@@ -169,7 +169,8 @@ async function ensurePermission(handle: FileSystemDirectoryHandle, request: bool
 async function collectTracks(
   directory: FileSystemDirectoryHandle,
   depth: number,
-  out: TrackFile[]
+  out: TrackFile[],
+  onTrack?: (count: number) => void
 ): Promise<void> {
   if (out.length >= MAX_TRACKS) return;
   const dir = directory as DirectoryWithEntries;
@@ -182,11 +183,12 @@ async function collectTracks(
         if (!isAudioFile(fileHandle.name)) continue;
         try {
           out.push({ name: prettyName(fileHandle.name), file: await fileHandle.getFile() });
+          onTrack?.(out.length);
         } catch {
           // A file can vanish between listing and reading; skip it.
         }
       } else if (depth < 2) {
-        await collectTracks(entry as FileSystemDirectoryHandle, depth + 1, out);
+        await collectTracks(entry as FileSystemDirectoryHandle, depth + 1, out, onTrack);
       }
     }
   } catch {
@@ -196,11 +198,12 @@ async function collectTracks(
 
 export async function folderTracks(
   handle: FileSystemDirectoryHandle,
-  requestAccess: boolean
+  requestAccess: boolean,
+  onTrack?: (count: number) => void
 ): Promise<TrackFile[]> {
   if (!(await ensurePermission(handle, requestAccess))) return [];
   const tracks: TrackFile[] = [];
-  await collectTracks(handle, 0, tracks);
+  await collectTracks(handle, 0, tracks, onTrack);
   return tracks.sort((a, b) => a.name.localeCompare(b.name));
 }
 
@@ -214,26 +217,52 @@ export async function pickFolder(): Promise<FileSystemDirectoryHandle> {
   return window.showDirectoryPicker({ mode: "read" });
 }
 
+export interface ScanProgress {
+  foldersDone: number;
+  foldersTotal: number;
+  tracks: number;
+  currentFolder?: string;
+}
+
 /** Every folder (saved + session) with the tracks it can currently read. */
-export async function readLibrary(requestAccess = false): Promise<LibraryFolder[]> {
+export async function readLibrary(
+  requestAccess = false,
+  onProgress?: (progress: ScanProgress) => void
+): Promise<LibraryFolder[]> {
   const saved = await listSavedFolders();
   const folders: LibraryFolder[] = [];
+  let scanned = 0;
   for (const record of saved) {
-    folders.push({
-      id: record.id,
-      name: record.name,
-      stored: true,
-      tracks: await folderTracks(record.handle, requestAccess),
-    });
+    onProgress?.({ foldersDone: scanned, foldersTotal: saved.length, tracks: countTracks(folders), currentFolder: record.name });
+    const tracks = await folderTracks(record.handle, requestAccess, (count) =>
+      onProgress?.({
+        foldersDone: scanned,
+        foldersTotal: saved.length,
+        tracks: countTracks(folders) + count,
+        currentFolder: record.name,
+      })
+    );
+    folders.push({ id: record.id, name: record.name, stored: true, tracks });
+    scanned += 1;
+    onProgress?.({ foldersDone: scanned, foldersTotal: saved.length, tracks: countTracks(folders) });
   }
   for (const folder of sessionFolders) {
     folders.push({ ...folder, stored: false });
   }
+  onProgress?.({ foldersDone: saved.length, foldersTotal: saved.length, tracks: countTracks(folders) });
   return folders;
 }
 
-export async function readLibraryTracks(requestAccess = false): Promise<TrackFile[]> {
-  const folders = await readLibrary(requestAccess);
+function countTracks(folders: LibraryFolder[]): number {
+  return folders.reduce((total, folder) => total + folder.tracks.length, 0);
+}
+
+export function folderTrackCount(folders: LibraryFolder[]): number {
+  return countTracks(folders);
+}
+
+/** All tracks from every folder, de-duplicated across folders. */
+export function flattenLibraryTracks(folders: LibraryFolder[]): TrackFile[] {
   const seen = new Set<string>();
   const tracks: TrackFile[] = [];
   for (const folder of folders) {
@@ -245,6 +274,10 @@ export async function readLibraryTracks(requestAccess = false): Promise<TrackFil
     }
   }
   return tracks.slice(0, MAX_TRACKS);
+}
+
+export async function readLibraryTracks(requestAccess = false): Promise<TrackFile[]> {
+  return flattenLibraryTracks(await readLibrary(requestAccess));
 }
 
 export async function reconnectSavedFolders(): Promise<boolean> {
@@ -283,13 +316,67 @@ export function addFoldersFromFileList(files: FileList): number {
   let added = 0;
   for (const [name, tracks] of groups) {
     if (!tracks.length) continue;
+    // Re-importing the same folder replaces the session copy instead of
+    // stacking a second identical list, and duplicate songs inside the
+    // selection are dropped.
+    sessionFolders = sessionFolders.filter((folder) => folder.name !== name);
+    const seen = new Set<string>();
+    const unique = tracks.filter((track) => {
+      const key = `${track.name}-${track.file.size}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
     sessionFolders.push({
       id: `session-${name}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
       name,
-      tracks: tracks.sort((a, b) => a.name.localeCompare(b.name)),
+      tracks: unique.sort((a, b) => a.name.localeCompare(b.name)),
     });
-    added += tracks.length;
+    added += unique.length;
   }
+  if (added) announce();
+  return added;
+}
+
+/**
+ * Adds individual songs (Upload Song) as an "Uploaded songs" session folder.
+ * Returns how many new songs were added; duplicates are skipped.
+ */
+export async function addSongsFromFileList(files: FileList): Promise<number> {
+  const incoming: TrackFile[] = [];
+  for (const file of Array.from(files)) {
+    if (!isAudioFile(file.name)) continue;
+    incoming.push({ name: prettyName(file.name), file });
+  }
+  if (!incoming.length) return 0;
+
+  const existingKeys = new Set<string>();
+  for (const folder of sessionFolders) {
+    for (const track of folder.tracks) existingKeys.add(`${track.name}-${track.file.size}`);
+  }
+  // Also catch songs that already live in reconnected on-disk folders.
+  const saved = await listSavedFolders();
+  for (const record of saved) {
+    for (const track of await folderTracks(record.handle, false)) {
+      existingKeys.add(`${track.name}-${track.file.size}`);
+    }
+  }
+
+  let folder = sessionFolders.find((entry) => entry.name === "Uploaded songs");
+  if (!folder) {
+    folder = { id: `session-uploaded-${Date.now()}`, name: "Uploaded songs", tracks: [] };
+    sessionFolders.push(folder);
+  }
+
+  let added = 0;
+  for (const track of incoming) {
+    const key = `${track.name}-${track.file.size}`;
+    if (existingKeys.has(key)) continue;
+    existingKeys.add(key);
+    folder.tracks.push(track);
+    added += 1;
+  }
+  folder.tracks.sort((a, b) => a.name.localeCompare(b.name));
   if (added) announce();
   return added;
 }

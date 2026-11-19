@@ -3,6 +3,7 @@ import { ArrowLeft, Check, Copy, Expand, Flag, Gamepad, Gamepad2, Heart, Loader2
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import VirtualGamepad from "@/components/VirtualGamepad";
+import ConsolePad from "@/components/ConsolePad";
 import GameFeedback from "@/components/GameFeedback";
 import BootConsole, { measureBootBox, type BootBox } from "@/components/BootConsole";
 import { peekLaunchSource, takeLaunchSource, type LaunchSource } from "@/lib/launch";
@@ -431,6 +432,19 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLElement>(null);
+
+  /** Console mode owns the whole viewport; the global music pills must not sit on the sticks. */
+  useEffect(() => {
+    if (!consoleMode) return;
+    document.body.classList.add("si-console-active");
+    const frame = frameRef.current?.querySelector("iframe");
+    try {
+      frame?.focus({ preventScroll: true });
+    } catch {
+      frame?.focus();
+    }
+    return () => document.body.classList.remove("si-console-active");
+  }, [consoleMode]);
 
   /** Titles with a real in-frame build get the console boot; hand-over and
    *  external titles have nothing to show in the TV, and reduced-motion
@@ -1059,17 +1073,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
             <span className="console-deck-zone console-deck-zone--act">ACTIONS</span>
           </div>
           <span className="console-live"><i /> LIVE</span>
-          <div className="console-pad">
-            <VirtualGamepad
-              mode="deck"
-              force
-              src={playUrl ?? launchLink}
-              gameId={game.id}
-              gameTitle={game.title}
-              gameCategory={game.category}
-              gameControls={game.controls}
-            />
-          </div>
+          <ConsolePad
+            gameId={game.id}
+            gameCategory={game.category}
+            gameControls={game.controls}
+            frameRef={frameRef}
+          />
           <button type="button" className="console-exit" onClick={() => setConsoleMode(false)}>
             <X size={14} /> Exit console
           </button>
