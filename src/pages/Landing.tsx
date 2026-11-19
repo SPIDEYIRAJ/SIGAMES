@@ -13,6 +13,7 @@ import {
   Sparkles,
   Star,
   Trophy,
+  Tv,
   X,
   Zap,
 } from "lucide-react";
@@ -300,6 +301,10 @@ export default function Landing() {
           </nav>
           <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
           {founding && <span className="founding-chip">FOUNDING PLAYER</span>}
+          <Link className="bp-entry" to="/bigpicture" aria-label="Open Big Picture mode">
+            <Tv size={15} />
+            <span>Big Picture</span>
+          </Link>
           <ThemePicker />
         </div>
       </header>

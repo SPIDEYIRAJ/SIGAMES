@@ -8,6 +8,7 @@ import GameFeedback from "@/components/GameFeedback";
 import BootConsole, { measureBootBox, type BootBox } from "@/components/BootConsole";
 import { peekLaunchSource, takeLaunchSource, type LaunchSource } from "@/lib/launch";
 import { isControllersEnabled, setControllersEnabled } from "@/lib/omnipad";
+import { trackSession } from "@/lib/playtime";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -428,6 +429,13 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
     // the entrance — the player picks a server or copies the link from there.
     return !target.standalone && !target.openInNewTab && target.type !== "external" && !hasServerChoice(target);
   });
+
+  /** Playtime is measured on this device, only while the title is open, and
+   *  feeds the Big Picture shelves. */
+  useEffect(() => {
+    if (!launched) return;
+    return trackSession(resolvedId);
+  }, [launched, resolvedId]);
 
   const [frameKey, setFrameKey] = useState(0);
   const playerRef = useRef<HTMLDivElement>(null);

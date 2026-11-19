@@ -3,8 +3,32 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
-2026-11-19 — liquid glass, pink-to-blue palette, no music asking
----------------------------------------------------------------
+2026-11-19 — Big Picture launcher
+---------------------------------
+
+ADD  A full-screen, controller-first launcher at /bigpicture (linked from the
+     header). Top bar with Home/Library/Store/Friends/Settings tabs, Wi-Fi,
+     controller and (when the browser reports one) battery status, and a clock.
+
+ADD  Hero showcase for the focused title with key art, title, description,
+     Play/Resume, category, controller/keyboard badge, real playtime and an
+     honest \"saves on this device\" sync note, plus a Details expansion.
+
+ADD  Recently played, Favorites, Installed (built-in HTML builds) and New
+     shelves with large cover tiles, a full Library grid with paging, a
+     community Store shelf, an honest Friends empty state and Settings
+     (sound, performance, controller, brightness, theme).
+
+ADD  Arrow-key and gamepad navigation (D-pad/left stick with repeat, A select,
+     B back, X/Y options and details, Start opens Quick Access), visible focus
+     rings, and the controller glyph footer.
+
+ADD  Quick Access drawer: sound toggle, brightness slider, performance mode,
+     controller status and exit back to the shelf.
+
+ADD  Local playtime tracking (src/lib/playtime.ts) recorded by the player page
+     and shown on the launcher; nothing leaves the device.
+
 
 CHG  The welcome screen is only a greeting now: no folder scan, no upload
      prompt, no music ask. ENTER SI GAMES goes straight in; music lives in the

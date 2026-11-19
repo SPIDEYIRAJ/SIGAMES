@@ -24,6 +24,7 @@ import "./index.css";
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
+const BigPicture = lazy(() => import("./pages/BigPicture.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NewGames = lazy(() => import("./pages/NewGames.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
@@ -449,6 +450,7 @@ function AnimatedRoutes() {
             <Route path="/playtab" element={<Navigate to="/" replace />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/sheet" element={<DataSheet />} />
+            <Route path="/bigpicture" element={<BigPicture />} />
             <Route path="/gta-v" element={<GamePlayer />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
             <Route path="/play/:id" element={<GamePlayer />} />
