@@ -342,6 +342,19 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* Marquee shelf strip: the arcade's own channel ticker. */}
+        <div className="arcade-ticker" aria-hidden="true">
+          <div className="arcade-ticker-track">
+            {[0, 1].map((copy) => (
+              <span className="arcade-ticker-row" key={copy}>
+                {games.slice(0, 14).map((item) => (
+                  <span key={item.id}><i>◆</i>{item.title}</span>
+                ))}
+              </span>
+            ))}
+          </div>
+        </div>
+
         {recentGames.length > 0 && (
           <section className="continue-section content-section" id="continue">
             <div className="section-heading compact"><div><span className="section-kicker"><Clock3 size={14} /> PICK UP WHERE YOU LEFT OFF</span><h2>Continue playing</h2></div><span className="section-count">{recentGames.length} recent</span></div>

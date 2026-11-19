@@ -3,6 +3,24 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — library arcade identity
+-------------------------------------
+
+ADD  A channel ticker under the hero, scrolling the shelf's titles in a loop
+     (pauses on hover, hidden motion when reduced motion is on).
+
+ADD  A slow conic halo behind the console illustration and a light pool off the
+     hero's right edge.
+
+CHG  Hero wordmark now uses a glow gradient, the eyebrow is a glass chip with a
+     breathing icon, and the Play now button is a lit gradient with a sweep.
+
+CHG  Game cards now lean toward the pointer and show a tracked light spot, so
+     the existing pointer tracking is visible instead of unused.
+
+CHG  Lit section headings, a light seam above the footer, themed scrollbars and
+     a themed text selection across the whole site.
+
 2026-11-19 — player page design pass
 ------------------------------------
 

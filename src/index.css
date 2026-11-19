@@ -4296,6 +4296,225 @@
   .console-live i { animation: none; }
 }
 
+/* ═════════════════════════════════════════════════════════════════════
+   ARCADE IDENTITY — hero halo, channel ticker and live card lighting.
+   ═════════════════════════════════════════════════════════════════════ */
+
+/* Hero: a slow conic sweep behind the console and a light pool off to the right. */
+.hero-section { position: relative; }
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: -90px;
+  right: -60px;
+  width: min(560px, 70vw);
+  height: min(560px, 70vw);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--si-glow) 18%, transparent), transparent 66%);
+  filter: blur(24px);
+}
+
+.hero-visual::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -16% -8%;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: .55;
+  filter: blur(26px);
+  background: conic-gradient(
+    from 0deg,
+    transparent 0 16%,
+    color-mix(in srgb, var(--si-glow) 30%, transparent) 24%,
+    transparent 36% 58%,
+    color-mix(in srgb, var(--si-accent) 28%, transparent) 68%,
+    transparent 82%
+  );
+  animation: hero-halo 20s linear infinite;
+}
+
+@keyframes hero-halo { to { transform: rotate(360deg); } }
+
+/* Hero type and primary action. */
+.hero-copy h1 span {
+  background: linear-gradient(105deg, var(--si-glow) 0%, var(--si-accent) 58%, #ffffff 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 34px color-mix(in srgb, var(--si-glow) 26%, transparent));
+}
+
+.eyebrow {
+  backdrop-filter: blur(10px);
+  box-shadow: 0 12px 34px #00000059, 0 0 0 1px #ffffff08 inset;
+}
+
+.eyebrow-icon {
+  box-shadow: 0 0 18px color-mix(in srgb, var(--si-glow) 45%, transparent);
+  animation: eyebrow-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes eyebrow-pulse {
+  50% { box-shadow: 0 0 8px color-mix(in srgb, var(--si-glow) 22%, transparent); }
+}
+
+.hero-actions .primary-button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--si-accent), color-mix(in srgb, var(--si-glow) 55%, var(--si-accent)));
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--si-accent) 32%, transparent), 0 0 0 1px #ffffff1f inset;
+}
+
+.hero-actions .primary-button:hover {
+  box-shadow: 0 20px 52px color-mix(in srgb, var(--si-accent) 42%, transparent), 0 0 0 1px #ffffff26 inset;
+  transform: translateY(-2px);
+}
+
+.hero-actions .primary-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 35%, #ffffff47 50%, transparent 65%);
+  transform: translateX(-130%);
+  transition: transform .65s ease;
+}
+
+.hero-actions .primary-button:hover::after { transform: translateX(130%); }
+
+/* Nav underline sweep. */
+.desktop-nav a { position: relative; }
+
+.desktop-nav a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: 4px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--si-glow), transparent);
+  transition: left .2s ease, right .2s ease;
+}
+
+.desktop-nav a:hover::after { left: 10px; right: 10px; }
+
+/* Channel ticker under the hero. */
+.arcade-ticker {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, 100% - 40px);
+  margin: 6px auto 0;
+  padding: 11px 0;
+  overflow: hidden;
+  border-block: 1px solid var(--si-accent-22);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--si-panel) 62%, transparent), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+.arcade-ticker-track {
+  display: flex;
+  width: max-content;
+  animation: ticker-slide 44s linear infinite;
+}
+
+.arcade-ticker-row {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding-right: 30px;
+}
+
+.arcade-ticker-row > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #93a4c8;
+  font-size: 9px;
+  font-weight: 950;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.arcade-ticker-row i {
+  color: var(--si-glow);
+  font-style: normal;
+  font-size: 8px;
+  text-shadow: 0 0 10px var(--si-glow);
+}
+
+@keyframes ticker-slide { to { transform: translateX(-50%); } }
+
+.arcade-ticker:hover .arcade-ticker-track { animation-play-state: paused; }
+
+/* Game cards: pointer-tracked light and a soft 3D lean. */
+.game-card {
+  transform: perspective(1100px) rotateX(calc(var(--tilt-x, 0deg) * .6)) rotateY(calc(var(--tilt-y, 0deg) * .6));
+  transform-style: preserve-3d;
+}
+
+.game-card:hover {
+  transform: perspective(1100px) rotateX(calc(var(--tilt-x, 0deg) * .6)) rotateY(calc(var(--tilt-y, 0deg) * .6)) translateY(-4px);
+  box-shadow: 0 22px 54px #00000080, 0 0 40px color-mix(in srgb, var(--si-glow) 14%, transparent);
+}
+
+.game-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(240px circle at var(--glow-x, 50%) var(--glow-y, 50%), color-mix(in srgb, var(--si-glow) 16%, transparent), transparent 66%);
+  opacity: 0;
+  transition: opacity .24s ease;
+}
+
+.game-card:hover::before { opacity: 1; }
+
+/* Section headings get a lit rule and the footer closes the page with a light seam. */
+.section-heading h2 { color: #f7faff; text-shadow: 0 22px 60px #000000a6; }
+.section-heading .section-kicker { color: var(--si-glow); }
+.site-footer { border-top-color: var(--si-accent-22); box-shadow: 0 -20px 70px #0000004d; }
+
+@media (max-width: 980px) {
+  .hero-section::before { right: -30%; }
+  .hero-visual::before { opacity: .42; }
+}
+
+@media (max-width: 720px) {
+  .arcade-ticker { width: calc(100% - 28px); padding: 9px 0; }
+  .arcade-ticker-row { gap: 22px; padding-right: 22px; }
+  .arcade-ticker-row > span { font-size: 8px; letter-spacing: .16em; }
+  .hero-actions .primary-button { width: 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-visual::before,
+  .eyebrow-icon,
+  .arcade-ticker-track { animation: none; }
+  .game-card,
+  .game-card:hover { transform: none; }
+  .hero-actions .primary-button::after { display: none; }
+}
+
+/* Site-wide finishing touches: a themed scrollbar and selection colour. */
+html { scrollbar-color: var(--si-accent) var(--si-bg); }
+
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--si-bg); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--si-accent), color-mix(in srgb, var(--si-glow) 55%, var(--si-accent)));
+  border: 3px solid var(--si-bg);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--si-accent-hover), var(--si-glow)); }
+
+::selection { color: #fff; background: color-mix(in srgb, var(--si-glow) 34%, transparent); }
+
 /* PWA invite */
 
 .install-card {
