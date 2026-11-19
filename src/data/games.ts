@@ -33,6 +33,10 @@ export type GameServer = {
   /** Presets the player picks on this server's own page; the chosen `query` is
    * appended to `url` (GTA V V2 asks for its start mode this way). */
   modes?: GameMode[];
+  /** Shows the gold recommended star and makes this the default pick. */
+  recommended?: boolean;
+  /** The mirror the entrance should select before the player changes it. */
+  preferred?: boolean;
 };
 
 export type Game = {
@@ -848,13 +852,8 @@ const LIBRARY_PATCH: Record<string, LibraryPatch> = {
   // headers, but it is offered as a hand-over link like the other two).
   "gta-v": {
     thumbnail: IMG + "gta-v.webp",
-    // Server 3 is the build without a mode preset, so the game's own title
-    // screen asks (multiplayer sits at the top of it).
-    // A fourth server is appended by the same patch below.
-    servers: [
-      { name: "multiplayer v1", url: "https://playgta5.com" },
-      { name: "v1 pages", url: "https://gta5-87g.pages.dev/" },
-    ],
+    // The five-server row lives on the game itself so the recommended mirrors
+    // keep their numbers instead of being renumbered by the patch pass.
   },
   cs16: { thumbnail: IMG + "counter-strike.webp" },
   "half-life": { thumbnail: IMG + "half-life.webp", servers: [{ name: "Xash3D", url: "https://x8bitrain.github.io/webXash/" }] },
@@ -1494,10 +1493,11 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // GTA V hands over its link instead of loading here: the entrance is a
-    // plain link with no mode cards — the player copies it and opens their own tab.
+    // GTA V has one embedded mirror (Server 5) and four copy-link mirrors.
+    // The entrance defaults to the embedded recommended build; picking any
+    // other card swaps the big button for the copy-to-new-tab hand-over.
     openInNewTab: true,
-    sourceUrl: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
+    sourceUrl: "https://ps2.playtab.fun/HOSTEDGTA5/",
     servers: [
       {
         id: "playgta5",
@@ -1505,21 +1505,45 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
         // The v2 build is handed over raw: it does not allow in-page play.
         url: "https://sigamespremiumrp.spideyiraj1925.workers.dev/",
         external: true,
-        note: "The v2 build. Opens in a new tab — this host does not allow in-page play.",
+        recommended: true,
+        note: "Recommended fallback. Copy the link, open a new tab yourself and paste it there — this host does not allow in-page play.",
       },
       {
         id: "gta5v2",
         label: "Server 2 — v1",
         // `{enter mode}` is swapped for the picked mode by the player (story /
-        // sandbox / sandbox&map=env_test / blank) before the build is loaded.
+        // sandbox / sandbox&map=env_test / blank) before the link is copied.
         url: "https://v1-game.playgta5.pro/?mode={enter mode}",
-        note: "Runs inside SI GAMES. Pick a mode below — Story, Sandbox or the GTA VI map.",
+        external: true,
+        note: "Copy-link build. Pick a mode below and the copied link carries it into a new tab.",
         modes: [
           { id: "story", label: "Story Mode", query: "?mode=story", note: "The campaign from the Prologue — Story Mode loads straight away." },
           { id: "sandbox", label: "Sandbox Mode", query: "?mode=sandbox", note: "Free roam on the GTA V map at a random spot, every weapon unlocked." },
           { id: "gtavi", label: "GTA VI Map", query: "?mode=sandbox&map=env_test", note: "Sandbox Mode on the env_test level — the GTA VI Map." },
           { id: "title", label: "Title screen", query: "?mode=", note: "No preset — the game's own title screen asks (Enter = Story, Space = Sandbox)." },
         ],
+      },
+      {
+        id: "playgta5-community",
+        label: "Server 3 — multiplayer v1",
+        url: "https://playgta5.com/",
+        external: true,
+        note: "Copy-link build. Open a new tab yourself and paste the copied link there.",
+      },
+      {
+        id: "playgta5-pages",
+        label: "Server 4 — v1 pages",
+        url: "https://gta5-87g.pages.dev/",
+        external: true,
+        note: "Copy-link build. Open a new tab yourself and paste the copied link there.",
+      },
+      {
+        id: "hosted",
+        label: "Server 5",
+        url: "https://ps2.playtab.fun/HOSTEDGTA5/",
+        recommended: true,
+        preferred: true,
+        note: "Recommended. Runs right here inside SI GAMES — the newest hosted build is the default pick.",
       },
     ],
     type: "iframe",

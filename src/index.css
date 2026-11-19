@@ -846,9 +846,78 @@
   font-size: 9px;
   line-height: 1.6;
 }
+.hidden-settings-divider {
+  height: 1px;
+  margin: 22px 0 18px;
+  background: linear-gradient(90deg, transparent, var(--si-accent-28), transparent);
+}
+.hidden-settings-subtitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #f2f6ff;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.hidden-settings-subtitle svg { color: #ff8a8a; }
+.hidden-settings-copy {
+  color: #9fb0d6;
+  margin-top: 8px;
+  font-size: 10px;
+  line-height: 1.65;
+}
+.hidden-settings-clear {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 14px;
+  padding: 0 16px;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(135deg, #b63145, #e0455c);
+  border: 1px solid #ff8a8a66;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.hidden-settings-clear::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, #ffffff38 50%, transparent 65%);
+  transform: translateX(-130%);
+  transition: transform .55s ease;
+}
+.hidden-settings-clear:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 12px 26px #b6314545; filter: brightness(1.08); }
+.hidden-settings-clear:hover:not(:disabled)::after { transform: translateX(130%); }
+.hidden-settings-clear:active:not(:disabled) { transform: translateY(0); }
+.hidden-settings-clear:disabled { cursor: wait; opacity: .8; }
+.hidden-settings-clear-note {
+  color: #7986a9;
+  margin-top: 8px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 @media (max-width: 720px) {
   .hidden-settings-modal { padding: 26px 20px; border-radius: 12px; }
   .hidden-settings-row { flex-direction: column; gap: 10px; }
+  .hidden-settings-clear { min-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hidden-settings-clear, .hidden-settings-clear::after { transition: none; }
 }
 
 /* ——— Fullscreen fill fix (the "frame on half the page" bug, worst in

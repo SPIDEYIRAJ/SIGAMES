@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowLeft, Check, Copy, Expand, Flag, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, X, Save } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, Flag, Gamepad2, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Star, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import VirtualGamepad from "@/components/VirtualGamepad";
@@ -396,7 +396,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   /** Mirrors this title exposes; single-host games just wrap their own URL. */
   const servers = useMemo<GameServer[]>(() => (game ? serversFor(game) : []), [game]);
   const [serverId, setServerId] = useState<string | null>(null);
-  const activeServer = servers.find((item) => item.id === serverId) ?? servers[0] ?? null;
+  const activeServer = servers.find((item) => item.id === serverId) ?? servers.find((item) => item.preferred) ?? servers[0] ?? null;
   /** Presets the active server offers (GTA V V2 asks for its start mode). */
   const modes = useMemo<GameMode[]>(() => activeServer?.modes ?? [], [activeServer]);
   const [modeId, setModeId] = useState<string | null>(null);
@@ -830,10 +830,12 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                     type="button"
                     role="radio"
                     aria-checked={activeServer?.id === server.id}
-                    className={`server-card ${activeServer?.id === server.id ? "is-active" : ""}`}
-                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length] } as CSSProperties}
+                    aria-label={`${server.label}${server.recommended ? " — recommended" : ""}`}
+                    className={`server-card ${activeServer?.id === server.id ? "is-active" : ""} ${server.recommended ? "is-recommended" : ""}`}
+                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length], "--server-index": index } as CSSProperties}
                     onClick={() => setServerId(server.id)}
                   >
+                    {server.recommended && <span className="server-card-star"><Star size={10} fill="currentColor" /> RECOMMENDED</span>}
                     <span className="server-card-label">{server.label}</span>
                     {activeServer?.id === server.id && <span className="server-card-dot" aria-hidden="true" />}
                   </button>
@@ -859,7 +861,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                     role="radio"
                     aria-checked={activeMode?.id === mode.id}
                     className={`server-card ${activeMode?.id === mode.id ? "is-active" : ""}`}
-                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length] } as CSSProperties}
+                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length], "--server-index": index } as CSSProperties}
                     onClick={() => setModeId(mode.id)}
                   >
                     <span className="server-card-label">{mode.label}</span>

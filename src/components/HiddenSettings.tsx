@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Gamepad2, X } from "lucide-react";
+import { Gamepad2, Loader2, RotateCcw, Trash2, X } from "lucide-react";
 import {
   CONTROLLERS_STORAGE_KEY,
   isControllersEnabled,
@@ -17,6 +17,49 @@ import {
 const SECRET_TAP_COUNT = 5;
 const SECRET_TAP_WINDOW_MS = 2500;
 const STORAGE_EVENT = "si-games-hidden-settings-open";
+
+/** Wipes everything this origin keeps in the browser, then reloads so the
+ *  startup cinema runs again from its first-visit state. */
+async function clearBrowserData(): Promise<void> {
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch {
+    // Storage can be blocked in private mode; caches below may still clear.
+  }
+
+  try {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((key) => caches.delete(key)));
+  } catch {
+    // Cache Storage is unavailable in some browsers.
+  }
+
+  try {
+    type DatabaseInfo = { name?: string };
+    const factory = indexedDB as IDBFactory & { databases?: () => Promise<DatabaseInfo[]> };
+    const databases = factory.databases ? await factory.databases() : [];
+    await Promise.all(
+      databases.map(
+        (database) =>
+          new Promise<void>((resolve) => {
+            if (!database.name) return resolve();
+            const request = indexedDB.deleteDatabase(database.name);
+            request.onsuccess = request.onerror = request.onblocked = () => resolve();
+          }),
+      ),
+    );
+  } catch {
+    // IndexedDB may not exist, or a tab may hold a database open.
+  }
+
+  try {
+    const registrations = await navigator.serviceWorker?.getRegistrations?.();
+    await Promise.all((registrations ?? []).map((registration) => registration.unregister()));
+  } catch {
+    // No service worker support; nothing to unregister.
+  }
+}
 
 /** Collected counter + broadcaster: the tap listener itself. */
 function useSecretTaps(onOpen: () => void) {
@@ -50,6 +93,7 @@ function useSecretTaps(onOpen: () => void) {
 export function HiddenSettings() {
   const [open, setOpen] = useState(false);
   const [controllers, setControllers] = useState(() => isControllersEnabled());
+  const [clearing, setClearing] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useSecretTaps(() => {
@@ -118,6 +162,27 @@ export function HiddenSettings() {
                 Saved on this device. Applies to the player screen only, in-play.
               </p>
             </div>
+
+            <div className="hidden-settings-divider" />
+            <h3 className="hidden-settings-subtitle"><Trash2 size={14} /> Browser data</h3>
+            <p className="hidden-settings-copy">
+              Deletes this browser's saved settings, favourites, recent games and cached files,
+              then reloads so the startup animation plays again from the mark.
+            </p>
+            <button
+              type="button"
+              className="hidden-settings-clear"
+              disabled={clearing}
+              onClick={async () => {
+                setClearing(true);
+                await clearBrowserData();
+                window.location.assign("/");
+              }}
+            >
+              {clearing ? <Loader2 size={15} className="spin" /> : <RotateCcw size={15} />}
+              {clearing ? "Clearing cache..." : "Clear cache & replay intro"}
+            </button>
+            <p className="hidden-settings-clear-note">This cannot be undone.</p>
           </div>
         </div>
       )}

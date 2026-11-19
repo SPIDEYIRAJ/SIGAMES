@@ -3,6 +3,24 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — GTA V server row, motion, cache reset
+-------------------------------------------------
+
+CHG  GTA V now offers five servers. Server 5 is the embedded hosted build
+     (ps2.playtab.fun/HOSTEDGTA5) and opens inside SI GAMES by default.
+     Servers 1–4 are copy-link mirrors: the player copies the link and pastes
+     it into a tab they open themselves.
+
+ADD  Recommended stars on Server 1 and Server 5, with Server 5 marked as the
+     default pick.
+
+ADD  More motion on the launch screen: drifting background auroras, staggered
+     server cards, hover shine, and a twinkling recommended badge.
+
+ADD  Hidden settings now includes a Clear cache button. It wipes local and
+     session storage, Cache Storage, IndexedDB and service workers, then
+     reloads so the startup animation and founding mark start over.
+
 2026-11-18 — mobile rendering sharpness
 ----------------------------------------
 
