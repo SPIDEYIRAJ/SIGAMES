@@ -6,6 +6,10 @@ CHG = behaviour changed, DEL = removed.
 2026-11-19 — living colour, optional music welcome, console deck
 ----------------------------------------------------------------
 
+ADD  A themed custom cursor: white-hot dot, spectral conic ring that eases
+     behind the pointer and opens over anything clickable. Mouse/trackpad
+     only, with the native cursor left alone on touch and reduced motion.
+
 ADD  The palette now moves: a drifting aurora plus a slow-turning colour
      field behind the app, a spectrum running along the header seam, an
      animated hero wordmark and light pool, glowing section kickers, a light

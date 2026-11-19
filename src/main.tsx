@@ -12,6 +12,7 @@ import HiddenSettings from "./components/HiddenSettings";
 import AmbientSound from "./components/AmbientSound";
 import ThemeSong from "./components/ThemeSong";
 import MusicGate from "./components/MusicGate";
+import CustomCursor from "./components/CustomCursor";
 import StartupIntro from "./components/StartupIntro";
 import FluidBackdrop from "./components/FluidBackdrop";
 import InstallPrompt from "./components/InstallPrompt";
@@ -486,6 +487,7 @@ function AppBootstrap() {
         <HiddenSettings />
         <AmbientSound />
         <ThemeSong />
+        <CustomCursor />
         <MusicGate />
         <InstallPrompt />
         <StartupIntro />
