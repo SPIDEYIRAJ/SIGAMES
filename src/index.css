@@ -6044,3 +6044,178 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   .si-intro-start { min-height: 52px; padding: 0 34px; }
   .si-intro::before { background-size: 44px 44px; }
 }
+
+/* ═════════════════════════════════════════════════════════════════════
+   DEVELOPER SHOWCASE — live canvas wordmark over a dot field.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.dev-showcase {
+  position: relative;
+  isolation: isolate;
+  height: clamp(340px, 52vw, 540px);
+  margin: 28px 0 18px;
+  border: 1px solid var(--si-accent-28);
+  border-radius: 16px;
+  overflow: hidden;
+  background: #04070b;
+  box-shadow: 0 30px 80px -40px #000000e6;
+}
+
+.dev-showcase-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.dev-showcase::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, #04070bd9, transparent 24%, transparent 74%, #04070be6),
+    radial-gradient(60% 60% at 50% 50%, transparent 40%, #04070b66);
+}
+
+.dev-showcase-chrome {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 20px;
+  pointer-events: none;
+}
+
+.dev-showcase-made,
+.dev-showcase-brand,
+.dev-showcase-hover {
+  font-family: var(--si-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: #8fa0bc;
+}
+
+.dev-showcase-made b {
+  color: var(--si-glow-bright);
+  font-weight: 950;
+}
+
+.dev-showcase-brand {
+  padding: 6px 10px;
+  border: 1px solid var(--si-accent-30);
+  border-radius: 4px;
+  color: #eef5ff;
+  letter-spacing: .34em;
+}
+
+.dev-showcase-wordmark {
+  position: absolute;
+  z-index: 2;
+  inset: 52px 14px 58px;
+}
+
+.dev-showcase-foot {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+}
+
+.dev-showcase-hover {
+  color: var(--si-accent-hover);
+  animation: si-hover-pulse 3.2s ease-in-out infinite;
+}
+
+@keyframes si-hover-pulse {
+  50% { opacity: .45; }
+}
+
+.dev-showcase-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.dev-showcase-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 13px;
+  color: #dbe6f7;
+  background: #ffffff0d;
+  border: 1px solid var(--si-glow-28);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.dev-showcase-btn:hover {
+  background: var(--si-glow-12);
+  border-color: var(--si-glow);
+  transform: translateY(-1px);
+}
+
+.dev-showcase-hint {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 52px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #9fb0c9;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Big Picture: the showcase becomes the screen. */
+.dev-showcase.is-big {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  height: 100dvh;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.dev-showcase.is-big .dev-showcase-wordmark { inset: 84px 28px 96px; }
+.dev-showcase.is-big .dev-showcase-chrome { padding: 24px 34px; }
+.dev-showcase.is-big .dev-showcase-foot { padding: 20px 34px; }
+
+.dev-page.is-big-picture .dev-topbar,
+.dev-page.is-big-picture .dev-main > *:not(.dev-showcase) { display: none; }
+
+@media (max-width: 640px) {
+  .dev-showcase { height: 380px; border-radius: 12px; }
+  .dev-showcase-wordmark { inset: 56px 6px 92px; }
+  .dev-showcase-foot { flex-wrap: wrap; }
+  .dev-showcase-hover { display: none; }
+  .dev-showcase.is-big .dev-showcase-wordmark { inset: 74px 8px 128px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dev-showcase-hover { animation: none; }
+  .dev-showcase-btn { transition: none; }
+}

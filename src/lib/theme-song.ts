@@ -22,6 +22,8 @@ let ducked = false;
 let stoppedForGame = false;
 let fadeToken = 0;
 let gestureBound = false;
+/** A start was requested before the stream URL resolved. */
+let pendingStart = false;
 
 export function isThemeSongEnabled(): boolean {
   try {
@@ -42,6 +44,7 @@ export function setThemeSongEnabled(enabled: boolean): void {
     stoppedForGame = false;
     startThemeSong();
   } else {
+    pendingStart = false;
     fadeToken += 1;
     stopThemeSong(700);
   }
@@ -57,6 +60,9 @@ function ensureAudio(): HTMLAudioElement | null {
     audio.loop = true;
     audio.preload = "auto";
     audio.volume = 0;
+    // iOS refuses inline playback without this even after a gesture.
+    audio.setAttribute("playsinline", "true");
+    audio.setAttribute("webkit-playsinline", "true");
   }
   if (sourceUrl && audio.getAttribute("src") !== sourceUrl) {
     audio.src = sourceUrl;
@@ -107,6 +113,7 @@ function stopThemeSong(ms: number): void {
 
 /** Quiet the Convex theme without touching the player's saved preference. */
 export function silenceThemeSong(ms = 800): void {
+  pendingStart = false;
   fadeToken += 1;
   stopThemeSong(ms);
 }
@@ -130,6 +137,8 @@ export function setThemeSongUrl(url: string | null | undefined): void {
   if (!url || url === sourceUrl) return;
   sourceUrl = url;
   ensureAudio();
+  // START can be clicked before the Convex query resolves; finish the request.
+  if (pendingStart) startThemeSong();
 }
 
 /**
@@ -140,10 +149,12 @@ export function startThemeSong(): void {
   if (!isThemeSongEnabled()) return;
   const element = ensureAudio();
   if (!element || !sourceUrl) {
+    pendingStart = true;
     bindFirstGesture();
     return;
   }
 
+  pendingStart = false;
   fadeToken += 1;
   stoppedForGame = false;
   const target = ducked ? DUCK_VOLUME : BASE_VOLUME;

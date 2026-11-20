@@ -7,6 +7,7 @@ interface InstallEvent extends Event {
 }
 
 const DISMISS_KEY = "si-games-install-dismissed";
+const INSTALLED_KEY = "si-games-installed";
 const DISMISS_DAYS = 5;
 
 function recentlyDismissed(): boolean {
@@ -18,6 +19,25 @@ function recentlyDismissed(): boolean {
   }
 }
 
+/** Already on the home screen: the app itself remembers, and standalone mode
+ *  is treated as installed even when the flag was never written. */
+function alreadyInstalled(): boolean {
+  try {
+    if (localStorage.getItem(INSTALLED_KEY) === "1") return true;
+  } catch {
+    // Storage unavailable: fall back to the display mode check below.
+  }
+  return window.matchMedia("(display-mode: standalone)").matches;
+}
+
+function markInstalled(): void {
+  try {
+    localStorage.setItem(INSTALLED_KEY, "1");
+  } catch {
+    // Private mode: the standalone matchMedia check still hides the card.
+  }
+}
+
 /** Custom PWA install invitation, with a manual iOS path when no prompt fires. */
 export default function InstallPrompt() {
   const [prompt, setPrompt] = useState<InstallEvent | null>(null);
@@ -25,28 +45,48 @@ export default function InstallPrompt() {
   const [ios] = useState(() => /iphone|ipad|ipod/i.test(navigator.userAgent) && !("MSStream" in window));
 
   useEffect(() => {
-    if (window.matchMedia("(display-mode: standalone)").matches) return;
+    if (alreadyInstalled()) {
+      markInstalled();
+      return;
+    }
     if (recentlyDismissed()) return;
+
+    const standalone = window.matchMedia("(display-mode: standalone)");
+    const onDisplayMode = () => {
+      if (!standalone.matches) return;
+      markInstalled();
+      setVisible(false);
+      setPrompt(null);
+    };
 
     const onPrompt = (event: Event) => {
       event.preventDefault();
+      // A prompt queued before installation must not reopen the card.
+      if (alreadyInstalled()) return;
       setPrompt(event as InstallEvent);
-      window.setTimeout(() => setVisible(true), 4200);
+      window.setTimeout(() => {
+        if (!alreadyInstalled()) setVisible(true);
+      }, 4200);
     };
     const onInstalled = () => {
+      markInstalled();
       setVisible(false);
       setPrompt(null);
     };
 
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
+    standalone.addEventListener?.("change", onDisplayMode);
 
     // If the browser never offers a prompt (iOS, or a dev preview), still ask
     // with the manual browser-menu path after the page has settled.
-    const timer = window.setTimeout(() => setVisible(true), ios ? 6500 : 8000);
+    const timer = window.setTimeout(() => {
+      if (!alreadyInstalled()) setVisible(true);
+    }, ios ? 6500 : 8000);
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
+      standalone.removeEventListener?.("change", onDisplayMode);
       if (timer) window.clearTimeout(timer);
     };
   }, [ios]);
@@ -64,7 +104,10 @@ export default function InstallPrompt() {
     if (!prompt) return;
     await prompt.prompt();
     const choice = await prompt.userChoice;
-    if (choice.outcome === "accepted") setVisible(false);
+    if (choice.outcome === "accepted") {
+      markInstalled();
+      setVisible(false);
+    }
     setPrompt(null);
   };
 

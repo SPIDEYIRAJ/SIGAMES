@@ -3,8 +3,34 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-19 — developer showcase, embedded Server 5, install + audio fixes
+------------------------------------------------------------------------
+
+ADD  Developer page now carries a live SI GAMES showcase: a WebGL dot field
+     with a cursor lens under a canvas wordmark (////SPIDEY_IRAJ////) that
+     assembles, outlines under the pointer, drags and kicks. "MADE BY :" sits
+     at the top, "HOVER" at the bottom, and no third-party branding is shown.
+
+ADD  Big Picture control for the showcase: it expands to the viewport, arrow
+     keys and D-pad/left stick cycle the wordmark style, B or Esc exits.
+
+CHG  GTA V Server 5 is embedded in the in-page frame again at its Big Picture
+     play URL; its link stays available from the player for hosts that refuse
+     framing.
+
+CHG  On START the soundtrack is requested immediately even if the stream URL
+     has not resolved yet (it starts as soon as the URL arrives), the fade-up
+     is 4 s, and iOS inline playback is enabled. The theme still comes from
+     Convex storage.
+
+CHG  Install invitation now remembers installation and hides itself when the
+     app runs standalone or after appinstalled, instead of reappearing later.
+
+DEL  Ambient sound control and its first-gesture auto-arm are removed.
+
 2026-11-19 — simple start screen, theme song on START, classic shell
 ------------------------------------------------------------------
+
 
 CHG  The start of a visit is now one small screen: SI GAMES, one line and a
      START button. It opens the shelf immediately and starts the SI theme song

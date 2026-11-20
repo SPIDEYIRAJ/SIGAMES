@@ -9,13 +9,11 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-route
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RequireAuth } from "./components/RequireAuth";
 import HiddenSettings from "./components/HiddenSettings";
-import AmbientSound from "./components/AmbientSound";
 import ThemeSong from "./components/ThemeSong";
 import MusicGate from "./components/MusicGate";
 import CustomCursor from "./components/CustomCursor";
 import FluidBackdrop from "./components/FluidBackdrop";
 import InstallPrompt from "./components/InstallPrompt";
-import { armAmbientOnFirstGesture } from "./lib/ambient";
 import { initTheme, THEME_CHANGE_EVENT } from "./lib/themes";
 import Dashboard from "./pages/Dashboard";
 import "./index.css";
@@ -477,8 +475,6 @@ function AppBootstrap() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  useEffect(() => armAmbientOnFirstGesture(), []);
-
   return (
     <ConvexAuthProvider client={convex}>
       <BrowserRouter>
@@ -486,7 +482,6 @@ function AppBootstrap() {
         <FluidBackdrop />
         <Backdrop />
         <HiddenSettings />
-        <AmbientSound />
         <ThemeSong />
         <CustomCursor />
         <MusicGate />
