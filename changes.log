@@ -22,6 +22,10 @@ CHG  GTA V Server 5 is embedded in the in-page frame again at its Big Picture
      play URL; its link stays available from the player for hosts that refuse
      framing.
 
+CHG  On phones and tablets (narrow viewport or coarse pointer) GTA V servers
+     2–5 are disabled with a "cannot run on mobile" note, and Server 1 is
+     selected automatically and shown as the working option.
+
 CHG  On START the soundtrack is requested immediately even if the stream URL
      has not resolved yet (it starts as soon as the URL arrives), the fade-up
      is 4 s, and iOS inline playback is enabled. The theme still comes from

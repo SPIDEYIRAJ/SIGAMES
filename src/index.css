@@ -6375,3 +6375,44 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   .dev-showcase-hover { animation: none; }
   .dev-showcase-btn { transition: none; }
 }
+
+/* GTA V mirrors that need a desktop browser. */
+.server-card.is-unavailable {
+  opacity: .42;
+  cursor: not-allowed;
+  filter: grayscale(.5);
+}
+
+.server-card.is-unavailable:hover,
+.server-card.is-unavailable:active {
+  transform: none;
+  border-color: #ffffff1f;
+}
+
+.server-card-blocked {
+  display: block;
+  margin-top: 2px;
+  color: #ffb38a;
+  font-size: 7px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.server-mobile-note {
+  margin: 10px 0 0;
+  padding: 9px 11px;
+  color: #ffcfb0;
+  background: #ff8a3d14;
+  border: 1px solid #ff8a3d3d;
+  border-radius: 7px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+@media (max-width: 720px) {
+  .server-card-blocked { font-size: 8px; }
+  .server-mobile-note { font-size: 11px; }
+}

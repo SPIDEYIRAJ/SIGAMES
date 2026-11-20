@@ -9,6 +9,7 @@ import BootConsole, { measureBootBox, type BootBox } from "@/components/BootCons
 import { peekLaunchSource, takeLaunchSource, type LaunchSource } from "@/lib/launch";
 import { isControllersEnabled, setControllersEnabled } from "@/lib/omnipad";
 import { trackSession } from "@/lib/playtime";
+import { useIsMobile } from "@/hooks/use-mobile";
 import "@/player-prompt.css";
 
 /** Standalone pages (for example /gta-v and /gta-vicecity) have no :id segment. */
@@ -400,7 +401,26 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
   /** Mirrors this title exposes; single-host games just wrap their own URL. */
   const servers = useMemo<GameServer[]>(() => (game ? serversFor(game) : []), [game]);
   const [serverId, setServerId] = useState<string | null>(null);
-  const activeServer = servers.find((item) => item.id === serverId) ?? servers.find((item) => item.preferred) ?? servers[0] ?? null;
+  /** GTA V's mirrors 2–5 need a desktop-class browser; phones get Server 1. */
+  const isMobile = useIsMobile();
+  const [coarsePointer, setCoarsePointer] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches
+  );
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: coarse)");
+    const sync = () => setCoarsePointer(query.matches);
+    query.addEventListener?.("change", sync);
+    return () => query.removeEventListener?.("change", sync);
+  }, []);
+  const mobileLocked = (isMobile || coarsePointer) && game?.id === "gta-v";
+  const mobileServer = mobileLocked ? servers.find((item) => item.id === "playgta5") : null;
+  const serverBlockedOnMobile = (server: GameServer) => mobileLocked && server.id !== "playgta5";
+  const activeServer =
+    mobileServer ??
+    servers.find((item) => item.id === serverId) ??
+    servers.find((item) => item.preferred) ??
+    servers[0] ??
+    null;
   /** Presets the active server offers (GTA V V2 asks for its start mode). */
   const modes = useMemo<GameMode[]>(() => activeServer?.modes ?? [], [activeServer]);
   const [modeId, setModeId] = useState<string | null>(null);
@@ -875,23 +895,37 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                 onPointerMove={tiltServerCard}
                 onPointerLeave={resetServerTilt}
               >
-                {servers.map((server, index) => (
-                  <button
-                    key={server.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={activeServer?.id === server.id}
-                    aria-label={`${server.label}${server.recommended ? " — recommended" : ""}`}
-                    className={`server-card ${activeServer?.id === server.id ? "is-active" : ""} ${server.recommended ? "is-recommended" : ""}`}
-                    style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length], "--server-index": index } as CSSProperties}
-                    onClick={() => setServerId(server.id)}
-                  >
-                    {server.recommended && <span className="server-card-star"><Star size={10} fill="currentColor" /> RECOMMENDED</span>}
-                    <span className="server-card-label">{server.label}</span>
-                    {activeServer?.id === server.id && <span className="server-card-dot" aria-hidden="true" />}
-                  </button>
-                ))}
+                {servers.map((server, index) => {
+                  const blocked = serverBlockedOnMobile(server);
+                  return (
+                    <button
+                      key={server.id}
+                      type="button"
+                      role="radio"
+                      aria-checked={activeServer?.id === server.id}
+                      aria-disabled={blocked}
+                      disabled={blocked}
+                      aria-label={`${server.label}${server.recommended ? " — recommended" : ""}${blocked ? " — cannot run on mobile devices" : ""}`}
+                      className={`server-card ${activeServer?.id === server.id ? "is-active" : ""} ${server.recommended ? "is-recommended" : ""} ${blocked ? "is-unavailable" : ""}`}
+                      style={{ "--server-accent": SERVER_ACCENTS[index % SERVER_ACCENTS.length], "--server-index": index } as CSSProperties}
+                      onClick={() => setServerId(server.id)}
+                    >
+                      {server.recommended && <span className="server-card-star"><Star size={10} fill="currentColor" /> RECOMMENDED</span>}
+                      <span className="server-card-label">{server.label}</span>
+                      {blocked ? (
+                        <span className="server-card-blocked">CANNOT RUN ON MOBILE</span>
+                      ) : (
+                        activeServer?.id === server.id && <span className="server-card-dot" aria-hidden="true" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
+              {mobileLocked && (
+                <p className="server-mobile-note" role="status">
+                  Servers 2–5 cannot run on mobile devices. Server 1 is selected instead.
+                </p>
+              )}
               {activeServer?.note && <span className="server-note">{activeServer.note}</span>}
             </div>
           )}
