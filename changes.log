@@ -14,6 +14,10 @@ ADD  Developer page now carries a live SI GAMES showcase: a WebGL dot field
 ADD  Big Picture control for the showcase: it expands to the viewport, arrow
      keys and D-pad/left stick cycle the wordmark style, B or Esc exits.
 
+CHG  Responsive showcase pass: fluid canvas height, safe-area aware insets in
+     Big Picture, style dots and a live style label, stacked touch-sized
+     controls on phones, corner ticks and a wider developer column.
+
 CHG  GTA V Server 5 is embedded in the in-page frame again at its Big Picture
      play URL; its link stays available from the player for hosts that refuse
      framing.

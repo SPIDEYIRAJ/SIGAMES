@@ -153,6 +153,9 @@ export default function Developers() {
 
           <div className="dev-showcase-chrome">
             <span className="dev-showcase-made">MADE BY : <b>SPIDEY_IRAJ</b></span>
+            <span className="dev-showcase-style" aria-live="polite">
+              0{variant + 1} / {showcase.id.toUpperCase()}
+            </span>
             <span className="dev-showcase-brand">SI GAMES</span>
           </div>
 
@@ -177,7 +180,22 @@ export default function Developers() {
           </div>
 
           <div className="dev-showcase-foot">
-            <span className="dev-showcase-hover">HOVER</span>
+            <div className="dev-showcase-meta">
+              <span className="dev-showcase-hover">HOVER</span>
+              <div className="dev-showcase-dots" role="tablist" aria-label="Wordmark style">
+                {VARIANTS.map((item, index) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={index === variant}
+                    aria-label={`Style ${index + 1}: ${item.id}`}
+                    className={`dev-showcase-dot${index === variant ? " is-active" : ""}`}
+                    onClick={() => setVariant(index)}
+                  />
+                ))}
+              </div>
+            </div>
             <div className="dev-showcase-actions">
               <button
                 type="button"
