@@ -1493,11 +1493,11 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     description: "A browser build of GTA V: Story Mode, ported to run in the browser.\n\n\"When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld, the U.S. government and the entertainment industry, they must pull off a series of dangerous heists to survive in a ruthless city in which they can trust nobody, least of all each other.\" — Official Description.",
     controls: "On Server 5, use your keyboard to navigate the first screen — press Enter to start. Then WASD to move, mouse to look around, click to interact, Space to jump, keys to switch weapons and use items. Story Mode starts from the Prologue.\n\nOfficially released September 17, 2013, for Xbox 360 and PlayStation 3, with enhanced Xbox One / PlayStation 4 versions on November 18, 2014, PC on April 14, 2015, and an expanded PlayStation 5 / Xbox Series X|S version on March 15, 2022; the PC version became available on March 4, 2025. Players may also purchase access to GTA V as an add-on for the standalone versions of GTA Online.",
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
-    // GTA V has one embedded mirror (Server 5) and four copy-link mirrors.
-    // The entrance defaults to the embedded recommended build; picking any
-    // other card swaps the big button for the copy-to-new-tab hand-over.
+    // GTA V's Server 5 refuses framing (X-Frame-Options: SAMEORIGIN), so it
+    // is handed over as a link like the other mirrors; the entrance opens on
+    // the recommended pick and the big button copies the link.
     openInNewTab: true,
-    sourceUrl: "https://ps2.playtab.fun/HOSTEDGTA5/",
+    sourceUrl: "https://bigpicture.playtab.fun/play/gta-5?bp=1",
     servers: [
       {
         id: "playgta5",
@@ -1540,10 +1540,11 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       {
         id: "hosted",
         label: "Server 5",
-        url: "https://ps2.playtab.fun/HOSTEDGTA5/",
+        url: "https://bigpicture.playtab.fun/play/gta-5?bp=1",
+        external: true,
         recommended: true,
         preferred: true,
-        note: "Recommended. Runs right here inside SI GAMES — use your keyboard to navigate the first screen, then press Enter to start.",
+        note: "Recommended. Opens on the game's own page in a new tab — use your keyboard to navigate the first screen, then press Enter to start.",
       },
     ],
     type: "iframe",
