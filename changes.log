@@ -31,6 +31,10 @@ ADD  Theme and intro media now ship from public storage (`public/audio`,
      film, plays a short intro sting on START, and the theme song starts from
      the same click with a quicker fade-in.
 
+CHG  Developer page now uses one fixed SPIDEY_IRAJ wordmark style (style
+     switcher removed) and reads in order: Spidey Iraj showcase, a detailed
+     SI GAMES section, then the SI GAMES style board and palette.
+
 CHG  On START the soundtrack is requested immediately even if the stream URL
      has not resolved yet (it starts as soon as the URL arrives), the fade-up
      is 4 s, and iOS inline playback is enabled. The theme still comes from
