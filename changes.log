@@ -26,6 +26,11 @@ CHG  On phones and tablets (narrow viewport or coarse pointer) GTA V servers
      2–5 are disabled with a "cannot run on mobile" note, and Server 1 is
      selected automatically and shown as the working option.
 
+ADD  Theme and intro media now ship from public storage (`public/audio`,
+     `public/videos`) instead of Convex URLs. The start gate shows the intro
+     film, plays a short intro sting on START, and the theme song starts from
+     the same click with a quicker fade-in.
+
 CHG  On START the soundtrack is requested immediately even if the stream URL
      has not resolved yet (it starts as soon as the URL arrives), the fade-up
      is 4 s, and iOS inline playback is enabled. The theme still comes from

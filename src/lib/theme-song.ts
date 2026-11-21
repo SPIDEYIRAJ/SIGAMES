@@ -6,7 +6,8 @@
  * the game itself has loaded. Stopping for a game is remembered, so leaving
  * the game brings the theme back with another fade-up.
  *
- * The source comes from Convex storage, so no file ships with the bundle.
+ * The track lives in `public/audio`, so it loads from the same origin as the
+ * app and never waits on a storage query or a cross-origin CORS check.
  */
 
 const STORAGE_KEY = "si-games-theme-song";
@@ -15,15 +16,15 @@ const STORAGE_KEY = "si-games-theme-song";
 export const BASE_VOLUME = 0.5;
 export const DUCK_VOLUME = 0.08;
 
+const THEME_SONG_FILE = "/audio/si-theme.mp3";
+
 let audio: HTMLAudioElement | null = null;
-let sourceUrl = "";
+let sourceUrl = THEME_SONG_FILE;
 let rampFrame = 0;
 let ducked = false;
 let stoppedForGame = false;
 let fadeToken = 0;
 let gestureBound = false;
-/** A start was requested before the stream URL resolved. */
-let pendingStart = false;
 
 export function isThemeSongEnabled(): boolean {
   try {
@@ -44,7 +45,6 @@ export function setThemeSongEnabled(enabled: boolean): void {
     stoppedForGame = false;
     startThemeSong();
   } else {
-    pendingStart = false;
     fadeToken += 1;
     stopThemeSong(700);
   }
@@ -113,7 +113,6 @@ function stopThemeSong(ms: number): void {
 
 /** Quiet the Convex theme without touching the player's saved preference. */
 export function silenceThemeSong(ms = 800): void {
-  pendingStart = false;
   fadeToken += 1;
   stopThemeSong(ms);
 }
@@ -132,15 +131,6 @@ function bindFirstGesture(): void {
   window.addEventListener("keydown", wake, { once: true });
 }
 
-/** The Convex query resolves the storage URL after boot. */
-export function setThemeSongUrl(url: string | null | undefined): void {
-  if (!url || url === sourceUrl) return;
-  sourceUrl = url;
-  ensureAudio();
-  // START can be clicked before the Convex query resolves; finish the request.
-  if (pendingStart) startThemeSong();
-}
-
 /**
  * Start the loop from silence and fade up slowly. When a game page is already
  * open the rise targets the ducked level instead of full volume.
@@ -148,13 +138,8 @@ export function setThemeSongUrl(url: string | null | undefined): void {
 export function startThemeSong(): void {
   if (!isThemeSongEnabled()) return;
   const element = ensureAudio();
-  if (!element || !sourceUrl) {
-    pendingStart = true;
-    bindFirstGesture();
-    return;
-  }
+  if (!element) return;
 
-  pendingStart = false;
   fadeToken += 1;
   stoppedForGame = false;
   const target = ducked ? DUCK_VOLUME : BASE_VOLUME;
@@ -168,7 +153,7 @@ export function startThemeSong(): void {
   element.currentTime = 0;
   void element
     .play()
-    .then(() => rampTo(target, 4_000))
+    .then(() => rampTo(target, 1_600))
     .catch(() => bindFirstGesture());
 }
 

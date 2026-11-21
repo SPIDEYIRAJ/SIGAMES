@@ -1,15 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router";
-import { useQuery } from "convex/react";
 import { Music2, VolumeX } from "lucide-react";
-import { api } from "@/convex/_generated/api";
 import {
   duckThemeSong,
   fadeThemeSongForGame,
   isThemeSongEnabled,
   resumeThemeSongAfterGame,
   setThemeSongEnabled,
-  setThemeSongUrl,
   startThemeSong,
   unduckThemeSong,
 } from "@/lib/theme-song";
@@ -28,19 +25,14 @@ function isGamePage(pathname: string): boolean {
  */
 export default function ThemeSong() {
   const { pathname } = useLocation();
-  const media = useQuery(api.media.themeSong);
   const [enabled, setEnabled] = useState(isThemeSongEnabled);
   const onGamePage = isGamePage(pathname);
 
-  useEffect(() => {
-    setThemeSongUrl(media?.url);
-  }, [media?.url]);
-
-  /** Start as soon as a URL and permission exist; a blocked autoplay is
-   *  retried on the next gesture inside the audio helper. */
+  /** The track is served from `/audio`, so it can start as soon as the app
+   *  mounts; a blocked autoplay is retried on the next gesture. */
   useEffect(() => {
     if (enabled) startThemeSong();
-  }, [enabled, media?.url]);
+  }, [enabled]);
 
   useEffect(() => {
     const sync = () => setEnabled(isThemeSongEnabled());

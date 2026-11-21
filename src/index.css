@@ -5940,9 +5940,32 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
     var(--si-bg-deep);
 }
 
+.si-intro-film {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .34;
+  filter: saturate(.85) contrast(1.05);
+  pointer-events: none;
+}
+
+.si-intro-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(58% 46% at 50% 42%, transparent 0 18%, #04070b80 74%),
+    linear-gradient(180deg, #04070bc7, #04070b80 42%, #04070bf0);
+}
+
 .si-intro::before {
   content: "";
   position: absolute;
+  z-index: 1;
   inset: 0;
   pointer-events: none;
   background-image:
@@ -5956,6 +5979,7 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 
 .si-intro-inner {
   position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6043,6 +6067,11 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 @media (max-width: 560px) {
   .si-intro-start { min-height: 52px; padding: 0 34px; }
   .si-intro::before { background-size: 44px 44px; }
+  .si-intro-film { opacity: .3; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .si-intro-film { display: none; }
 }
 
 /* ═════════════════════════════════════════════════════════════════════

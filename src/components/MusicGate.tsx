@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Play } from "lucide-react";
 import { useNavigate } from "react-router";
@@ -36,6 +36,45 @@ export default function MusicGate() {
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
+  const introSong = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => () => {
+    introSong.current?.pause();
+    introSong.current = null;
+  }, []);
+
+  /** Short intro sting; the theme rises under it and it fades out. */
+  const playIntroSting = () => {
+    try {
+      introSong.current?.pause();
+      const song = new Audio("/audio/si-intro.mp3");
+      song.preload = "auto";
+      song.volume = 0;
+      introSong.current = song;
+      void song
+        .play()
+        .then(() => {
+          const started = performance.now();
+          const step = (now: number) => {
+            if (introSong.current !== song) return;
+            const elapsed = now - started;
+            const rampIn = Math.min(1, elapsed / 900);
+            const rampOut = elapsed > 2800 ? Math.max(0, 1 - (elapsed - 2800) / 1400) : 1;
+            song.volume = 0.5 * rampIn * rampOut;
+            if (elapsed < 4_200) {
+              window.requestAnimationFrame(step);
+            } else {
+              song.pause();
+              if (introSong.current === song) introSong.current = null;
+            }
+          };
+          window.requestAnimationFrame(step);
+        })
+        .catch(() => undefined);
+    } catch {
+      // No Audio support: the theme song still starts on its own.
+    }
+  };
 
   useEffect(() => {
     if (shownThisSession()) return;
@@ -69,7 +108,8 @@ export default function MusicGate() {
       window.dispatchEvent(new Event("si-games-founding"));
     }
 
-    // This click is the user gesture: turn the theme on and play immediately.
+    // This click is the user gesture: play the intro sting and start the theme.
+    playIntroSting();
     setThemeSongEnabled(true);
     stopLocalMusic(0);
     startThemeSong();
@@ -92,6 +132,18 @@ export default function MusicGate() {
           exit={{ opacity: 0 }}
           transition={{ duration: reduceMotion ? 0.1 : 0.4 }}
         >
+          <video
+            className="si-intro-film"
+            src="/videos/si-intro.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            aria-hidden="true"
+            tabIndex={-1}
+          />
+          <span className="si-intro-scrim" aria-hidden="true" />
           <motion.div
             className="si-intro-inner"
             initial={{ opacity: 0, y: 18 }}
