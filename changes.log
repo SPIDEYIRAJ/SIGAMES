@@ -44,6 +44,11 @@ ADD  Share controls: a "Share site" button in the footer, a share icon on
      native share sheet where available, otherwise copy the link. Game shares
      use friendly /<game-id> URLs, now routed to the same player.
 
+ADD  Site-wide motion layer: scroll-triggered reveals for sections, cards and
+     footers on every route, staggered per row, plus slow orbital rings, edge
+     glyphs and a drifting scan behind the content. All decorative motion is
+     disabled under prefers-reduced-motion.
+
 CHG  On START the soundtrack is requested immediately even if the stream URL
      has not resolved yet (it starts as soon as the URL arrives), the fade-up
      is 4 s, and iOS inline playback is enabled. The theme still comes from

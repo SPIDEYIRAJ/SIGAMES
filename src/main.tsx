@@ -13,6 +13,7 @@ import ThemeSong from "./components/ThemeSong";
 import MusicGate from "./components/MusicGate";
 import CustomCursor from "./components/CustomCursor";
 import FluidBackdrop from "./components/FluidBackdrop";
+import SiteMotion from "./components/SiteMotion";
 import InstallPrompt from "./components/InstallPrompt";
 import { initTheme, THEME_CHANGE_EVENT } from "./lib/themes";
 import Dashboard from "./pages/Dashboard";
@@ -488,6 +489,8 @@ function AppBootstrap() {
         <CustomCursor />
         <MusicGate />
         <InstallPrompt />
+        <SiteMotion />
+        <SiteMotion />
         {/* The boot screen fades itself out while the shelf mounts underneath. */}
         <AnimatePresence>{isLoading && <LoadingScreen key="boot" />}</AnimatePresence>
         {!isLoading && <AnimatedRoutes />}
