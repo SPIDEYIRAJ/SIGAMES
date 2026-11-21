@@ -27,6 +27,7 @@ const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NewGames = lazy(() => import("./pages/NewGames.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
 const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
+const Benchmark = lazy(() => import("./pages/Benchmark.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -444,6 +445,7 @@ function AnimatedRoutes() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
+            <Route path="/benchmark" element={<Benchmark />} />
             <Route path="/new" element={<NewGames />} />
             <Route path="/playtab" element={<Navigate to="/" replace />} />
             <Route path="/changelog" element={<Changelog />} />

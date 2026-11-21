@@ -75,6 +75,12 @@ export default function SiteMotion() {
     <div className="site-motion" aria-hidden="true">
       <span className="site-motion-ring site-motion-ring--a" />
       <span className="site-motion-ring site-motion-ring--b" />
+      <span className="site-motion-beam site-motion-beam--a" />
+      <span className="site-motion-beam site-motion-beam--b" />
+      <span className="site-motion-corner corner-tl" />
+      <span className="site-motion-corner corner-tr" />
+      <span className="site-motion-corner corner-bl" />
+      <span className="site-motion-corner corner-br" />
       <span className="site-motion-scan" />
       {GLYPHS.map((item, index) => (
         <span

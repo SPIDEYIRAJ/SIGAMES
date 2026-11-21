@@ -326,6 +326,7 @@ export default function Landing() {
             <a href="#favorites">Favorites</a>
             <a href="#about">About</a>
             <a href="/developers">Developers</a>
+            <Link to="/benchmark">Benchmark</Link>
           </nav>
           <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
           {founding && <span className="founding-chip">FOUNDING PLAYER</span>}
@@ -354,6 +355,7 @@ export default function Landing() {
               <a href="#favorites" onClick={() => setMobileMenuOpen(false)}>Favorites</a>
               <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
               <Link to="/developers" onClick={() => setMobileMenuOpen(false)}>Developers</Link>
+              <Link to="/benchmark" onClick={() => setMobileMenuOpen(false)}>Benchmark</Link>
               <Link to="/bigpicture" onClick={() => setMobileMenuOpen(false)}>Big Picture</Link>
             </nav>
             <span className="mobile-nav-status"><span className="status-dot" /> {games.length} games ready to play</span>

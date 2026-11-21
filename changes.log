@@ -46,8 +46,14 @@ ADD  Share controls: a "Share site" button in the footer, a share icon on
 
 ADD  Site-wide motion layer: scroll-triggered reveals for sections, cards and
      footers on every route, staggered per row, plus slow orbital rings, edge
-     glyphs and a drifting scan behind the content. All decorative motion is
-     disabled under prefers-reduced-motion.
+     glyphs, drifting light beams, corner HUD marks and a scan behind the
+     content. All decorative motion is disabled under prefers-reduced-motion.
+
+ADD  /benchmark System Lab: live FPS meter, timed frame pacing with a traced
+     sparkline, sliced CPU throughput test, WebGL shader fill test, weighted
+     overall score/grade, and a device report (threads, memory, GPU/WebGL,
+     display, browser/OS, network, storage, language). Linked from the desktop
+     nav and phone menu.
 
 CHG  On START the soundtrack is requested immediately even if the stream URL
      has not resolved yet (it starts as soon as the URL arrives), the fade-up
