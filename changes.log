@@ -49,11 +49,11 @@ ADD  Site-wide motion layer: scroll-triggered reveals for sections, cards and
      glyphs, drifting light beams, corner HUD marks and a scan behind the
      content. All decorative motion is disabled under prefers-reduced-motion.
 
-ADD  /benchmark System Lab: live FPS meter, timed frame pacing with a traced
-     sparkline, sliced CPU throughput test, WebGL shader fill test, weighted
-     overall score/grade, and a device report (threads, memory, GPU/WebGL,
-     display, browser/OS, network, storage, language). Linked from the desktop
-     nav and phone menu.
+ADD  /benchmark System Lab (marked EXPERIMENTAL): live FPS meter, timed frame
+     pacing with a traced sparkline, sliced CPU throughput test, WebGL shader
+     fill test, and a device report (threads, memory, GPU/WebGL, display,
+     browser/OS, network, storage, language). Raw measurements only — no
+     invented score or grade. Linked from the desktop nav and phone menu.
 
 ADD  /settings control center: all 11 palettes, theme-song and controller
      toggles, a persisted Full/Calm motion preference that drives the global

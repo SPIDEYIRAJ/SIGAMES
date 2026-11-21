@@ -22,9 +22,6 @@ interface Spec {
 interface Result {
   fps: number;
   cpu: number;
-  gpu: number;
-  overall: number;
-  grade: string;
   gpuMs: number;
   samples: number[];
 }
@@ -39,10 +36,6 @@ const FPS_WINDOW = 2400;
 const CPU_WINDOW = 900;
 const GPU_SIZE = 512;
 const GPU_DRAWS = 24;
-
-function clamp(value: number, min = 0, max = 100) {
-  return Math.min(max, Math.max(min, value));
-}
 
 function browserName(ua: string) {
   const checks: Array<[RegExp, string]> = [
@@ -140,13 +133,13 @@ async function measureCpu(duration = CPU_WINDOW): Promise<number> {
 }
 
 /** Fullscreen shader pass: heavy per-pixel math, timed through readPixels. */
-function measureGpu(): { score: number; ms: number } {
+function measureGpu(): number {
   try {
     const canvas = document.createElement("canvas");
     canvas.width = GPU_SIZE;
     canvas.height = GPU_SIZE;
     const gl = canvas.getContext("webgl", { antialias: false, powerPreference: "high-performance" });
-    if (!gl) return { score: 0, ms: 0 };
+    if (!gl) return 0;
 
     const vertex = `attribute vec2 p; void main(){ gl_Position = vec4(p, 0.0, 1.0); }`;
     const fragment = `
@@ -181,7 +174,7 @@ function measureGpu(): { score: number; ms: number } {
     if (!vs || !fs || !program) {
       if (vs) gl.deleteShader(vs);
       if (fs) gl.deleteShader(fs);
-      return { score: 0, ms: 0 };
+      return 0;
     }
 
     gl.attachShader(program, vs);
@@ -191,7 +184,7 @@ function measureGpu(): { score: number; ms: number } {
       gl.deleteProgram(program);
       gl.deleteShader(vs);
       gl.deleteShader(fs);
-      return { score: 0, ms: 0 };
+      return 0;
     }
     gl.useProgram(program);
 
@@ -220,9 +213,9 @@ function measureGpu(): { score: number; ms: number } {
     const lose = gl.getExtension("WEBGL_lose_context");
     lose?.loseContext();
 
-    return { score: Math.round(clamp(2200 / Math.max(ms, 1), 0, 100)), ms: Math.round(ms * 10) / 10 };
+    return Math.round(ms * 10) / 10;
   } catch {
-    return { score: 0, ms: 0 };
+    return 0;
   }
 }
 
@@ -328,14 +321,10 @@ export default function Benchmark() {
     if (abort.current) return;
 
     setStep("Rendering a GPU pass…");
-    const gpuRun = measureGpu();
+    const gpuMs = measureGpu();
     if (abort.current) return;
 
-    const overall = Math.round(
-      clamp((fps.fps / 60) * 100) * 0.3 + clamp((cpu / 90) * 100) * 0.35 + gpuRun.score * 0.35,
-    );
-    const grade = overall >= 88 ? "S" : overall >= 75 ? "A" : overall >= 60 ? "B" : overall >= 42 ? "C" : "D";
-    setResult({ fps: fps.fps, cpu, gpu: gpuRun.score, gpuMs: gpuRun.ms, overall, grade, samples: fps.samples });
+    setResult({ fps: fps.fps, cpu, gpuMs, samples: fps.samples });
     setStep("Complete.");
     setPhase("done");
   };
@@ -344,11 +333,10 @@ export default function Benchmark() {
     abort.current = true;
   }, []);
 
-  const score = result?.overall ?? 0;
   const metrics = [
-    { key: "fps", label: "Frames per second", value: result ? `${result.fps.toFixed(1)}` : "—", sub: "requestAnimationFrame", score: result ? clamp((result.fps / 60) * 100) : 0, icon: Activity },
-    { key: "cpu", label: "CPU throughput", value: result ? `${result.cpu.toFixed(1)} M` : "—", sub: "ops / second", score: result ? clamp((result.cpu / 90) * 100) : 0, icon: Cpu },
-    { key: "gpu", label: "GPU pass", value: result ? `${result.gpuMs.toFixed(1)} ms` : "—", sub: "24 shader draws", score: result?.gpu ?? 0, icon: Zap },
+    { key: "fps", label: "Frames per second", value: result ? `${result.fps.toFixed(1)}` : "—", sub: "measured via requestAnimationFrame", icon: Activity },
+    { key: "cpu", label: "CPU throughput", value: result ? `${result.cpu.toFixed(1)} M` : "—", sub: "synthetic work units / second", icon: Cpu },
+    { key: "gpu", label: "GPU pass time", value: result ? `${result.gpuMs.toFixed(1)} ms` : "—", sub: "24 timed WebGL shader draws", icon: Zap },
   ];
 
   return (
@@ -358,6 +346,7 @@ export default function Benchmark() {
           <span className="brand-mark" aria-hidden="true"><span>SI</span></span>
           <span className="brand-name">SI GAMES</span>
         </Link>
+        <span className="bench-experimental">EXPERIMENTAL</span>
         <span className="bench-live"><i /> {liveFps || "—"} FPS LIVE</span>
         <Link className="bench-back" to="/"><ArrowLeft size={14} /> Library</Link>
       </header>
@@ -366,11 +355,12 @@ export default function Benchmark() {
         <span className="section-kicker"><Gauge size={14} /> SYSTEM LAB</span>
         <h1>Benchmark<br /><span>your browser.</span></h1>
         <p className="bench-lead">
-          A short, local test of frame pacing, single-thread CPU throughput and GPU shader fill.
-          Nothing is uploaded — the timings stay in this tab.
+          An experimental, local-only test of frame pacing, single-thread CPU throughput and GPU
+          shader fill. Every number below is measured in this tab — there is no score, rating or
+          invented hardware data. Nothing is uploaded.
         </p>
 
-        <section className="bench-hero" aria-label="Benchmark controls and score">
+        <section className="bench-hero" aria-label="Benchmark controls and live result">
           <div className="bench-radar" aria-hidden="true">
             <span className="bench-radar-ring ring-1" />
             <span className="bench-radar-ring ring-2" />
@@ -380,10 +370,9 @@ export default function Benchmark() {
           </div>
 
           <div className={`bench-score ${phase === "running" ? "is-running" : ""} ${result ? "is-done" : ""}`}>
-            <span className="bench-score-label">{result ? "OVERALL" : phase === "running" ? "TESTING" : "STANDBY"}</span>
-            <strong>{result ? result.overall : phase === "running" ? "··" : "—"}</strong>
-            <span className="bench-score-grade">{result ? `GRADE ${result.grade}` : "60 FPS TARGET"}</span>
-            <span className="bench-score-track"><i style={{ width: `${result ? score : 0}%` }} /></span>
+            <span className="bench-score-label">{phase === "running" ? "TESTING" : result ? "MEASURED FPS" : "NOT TESTED"}</span>
+            <strong>{result ? result.fps.toFixed(1) : phase === "running" ? "··" : "—"}</strong>
+            <span className="bench-score-grade">{result ? "RAW FRAME RATE · NO SCORE" : "EXPERIMENTAL LAB"}</span>
           </div>
 
           <div className="bench-action">
@@ -404,7 +393,6 @@ export default function Benchmark() {
                 <span className="bench-metric-label">{metric.label}</span>
                 <strong>{metric.value}</strong>
                 <span className="bench-metric-sub">{metric.sub}</span>
-                <span className="bench-meter"><i style={{ width: `${result ? metric.score : 0}%` }} /></span>
               </article>
             );
           })}
@@ -441,9 +429,10 @@ export default function Benchmark() {
             ))}
           </div>
           <p className="bench-note">
-            <Wifi size={13} /> Browsers deliberately mask some hardware details. CPU model, exact RAM and
-            the full GPU name are not exposed to web pages; the values above are the real signals a
-            browser will share.
+            <Wifi size={13} /> Experimental. Results are raw timings from this tab and vary with
+            background load, thermals, power saving and display refresh rate. Browsers deliberately
+            mask some hardware details: CPU model, exact RAM and sometimes the full GPU name are not
+            exposed to web pages, so nothing is guessed or filled in — masked values say so.
           </p>
         </section>
 

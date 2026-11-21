@@ -290,8 +290,8 @@ export default function Settings() {
           </div>
           <div className="settings-lab">
             <div>
-              <span className="section-kicker"><Gauge size={13} /> PERFORMANCE LAB</span>
-              <p>Measure this browser's frame pacing, CPU throughput and GPU shader fill.</p>
+              <span className="section-kicker"><Gauge size={13} /> PERFORMANCE LAB · EXPERIMENTAL</span>
+              <p>Raw frame pacing, CPU throughput and GPU shader timings from this browser.</p>
             </div>
             <Link className="settings-lab-link" to="/benchmark">Open benchmark <ArrowLeft size={14} className="settings-flip" /></Link>
           </div>

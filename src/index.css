@@ -6915,6 +6915,21 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   border-bottom: 1px solid var(--si-accent-18);
 }
 
+.bench-experimental {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  padding: 5px 7px;
+  color: #ffb38a;
+  background: #ff8a3d16;
+  border: 1px solid #ff8a3d42;
+  border-radius: 5px;
+  font-family: var(--si-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
 .bench-live {
   display: inline-flex;
   align-items: center;
@@ -7458,6 +7473,7 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
 @media (max-width: 560px) {
   .bench-main { width: min(100% - 28px, 640px); padding-top: 30px; }
   .bench-topbar { gap: 10px; }
+  .bench-experimental { display: none; }
   .bench-live { font-size: 8px; letter-spacing: .08em; }
   .bench-back { padding: 0 10px; }
   .bench-hero { grid-template-columns: 1fr; gap: 18px; }
