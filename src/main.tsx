@@ -451,6 +451,8 @@ function AnimatedRoutes() {
             <Route path="/gta-v" element={<GamePlayer />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
             <Route path="/play/:id" element={<GamePlayer />} />
+            {/* Friendly share links: sigames/<game-id> opens the same player. */}
+            <Route path="/:id" element={<GamePlayer />} />
             <Route
               path="/dashboard"
               element={

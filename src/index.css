@@ -6659,6 +6659,85 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   .mobile-nav-panel { animation: none; }
 }
 
+/* ═════════════════════════════════════════════════════════════════════
+   SHARE — site and game links through the native share sheet, with a
+   clipboard fallback on desktop browsers that do not expose one.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.share-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 12px;
+  color: #c6d4f2;
+  background: #ffffff0f;
+  border: 1px solid #ffffff1f;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.share-button:hover {
+  color: #fff;
+  background: var(--si-glow-14);
+  border-color: var(--si-glow-40);
+}
+
+.share-button:focus-visible {
+  outline: 2px solid var(--si-glow-bright);
+  outline-offset: 2px;
+}
+
+.share-button--compact {
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  flex: none;
+}
+
+.game-share-button {
+  position: absolute;
+  top: 10px;
+  right: 52px;
+  z-index: 2;
+  color: #e8effc;
+  background: #04070bcc;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.share-button--footer {
+  margin-left: auto;
+  flex: none;
+}
+
+@media (max-width: 720px) {
+  .share-button--compact {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .game-share-button {
+    top: 10px;
+    right: 60px;
+  }
+
+  .share-button--footer {
+    order: 4;
+    margin-left: 0;
+    min-height: 42px;
+  }
+}
+
 /* GTA V mirrors that need a desktop browser. */
 .server-card.is-unavailable {
   opacity: .42;

@@ -22,6 +22,7 @@ import { Link, useNavigate } from "react-router";
 import { categories, games, newGames, type Game } from "@/data/games";
 import InstallerAd from "@/components/InstallerAd";
 import ThemePicker from "@/components/ThemePicker";
+import ShareButton from "@/components/ShareButton";
 import { captureLaunchSource } from "@/lib/launch";
 import { SEARCH_IDEAS, searchGames } from "@/lib/search";
 import { useQuery } from "convex/react";
@@ -69,6 +70,13 @@ function GameCard({ game, favorite, onFavorite, onPlay, signal }: { game: Game; 
         <button type="button" className={`favorite-button ${favorite ? "is-favorite" : ""}`} onClick={onFavorite} aria-label={favorite ? `Remove ${game.title} from favorites` : `Add ${game.title} to favorites`}>
           <Heart size={17} fill={favorite ? "currentColor" : "none"} />
         </button>
+        <ShareButton
+          compact
+          className="game-share-button"
+          title={game.title}
+          text={`Play ${game.title} on SI GAMES`}
+          url={`/${game.id}`}
+        />
         <div className="art-bottomline">
           <span className="game-index">{String(games.indexOf(game) + 1).padStart(2, "0")}</span>
           {signal && signal.ratingCount > 0 && (
@@ -520,7 +528,7 @@ export default function Landing() {
       </main>
 
       <div className="watermark-layer" aria-hidden="true"><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span><span>////SPIDEY_IRAJ////</span></div>
-      <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>////SPIDEY_IRAJ////</small></div><div className="footer-mark" data-si-secret>SI<span>01</span></div></footer>
+      <footer className="site-footer"><div className="brand"><BrandMark /><span>SI GAMES</span></div><div className="footer-copy">PLAY. DISCOVER. ENJOY.<small>////SPIDEY_IRAJ////</small></div><ShareButton className="share-button--footer" title="SI GAMES" text="A whole browser arcade, ready to play." url="/" label="Share site" /><div className="footer-mark" data-si-secret>SI<span>01</span></div></footer>
       {toast && <div className="toast" role="status"><Heart size={15} fill="currentColor" /> {toast}</div>}
       {showBackToTop && <button type="button" className="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}><ArrowUp size={15} /> Return to orbit</button>}
     </div>
