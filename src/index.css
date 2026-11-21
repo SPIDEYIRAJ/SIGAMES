@@ -6548,6 +6548,117 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   .dev-showcase-btn { transition: none; }
 }
 
+/* ═════════════════════════════════════════════════════════════════════
+   PHONE MENU — the desktop nav disappears under 720px; this hamburger
+   reopens every destination underneath the header.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.mobile-menu-btn { display: none; }
+
+@media (max-width: 720px) {
+  .mobile-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    margin-left: 2px;
+    color: #e8effc;
+    background: #ffffff0f;
+    border: 1px solid #ffffff1f;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+  }
+
+  .mobile-menu-btn:hover,
+  .mobile-menu-btn[aria-expanded="true"] {
+    color: #fff;
+    background: var(--si-glow-14);
+    border-color: var(--si-glow-40);
+  }
+
+  .mobile-menu-btn:focus-visible {
+    outline: 2px solid var(--si-glow-bright);
+    outline-offset: 2px;
+  }
+}
+
+.mobile-nav-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px clamp(14px, 4vw, 22px) calc(14px + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--si-bg) 96%, transparent);
+  border-bottom: 1px solid var(--si-accent-28);
+  box-shadow: 0 24px 50px -24px #000000e6;
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  animation: mobile-nav-in .18s ease-out;
+  max-height: calc(100dvh - 70px);
+  overflow-y: auto;
+}
+
+.mobile-nav-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.mobile-nav-links a {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 14px;
+  color: #dfe8fa;
+  background: #ffffff0a;
+  border: 1px solid #ffffff14;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a:active {
+  color: #fff;
+  background: var(--si-glow-14);
+  border-color: var(--si-glow-28);
+}
+
+.mobile-nav-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #8790a8;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 721px) {
+  .mobile-nav-panel { display: none; }
+}
+
+@keyframes mobile-nav-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-nav-panel { animation: none; }
+}
+
 /* GTA V mirrors that need a desktop browser. */
 .server-card.is-unavailable {
   opacity: .42;

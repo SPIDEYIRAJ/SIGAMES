@@ -8,6 +8,7 @@ import {
   Check,
   Heart,
   History,
+  Menu,
   Search,
   Send,
   Sparkles,
@@ -107,6 +108,7 @@ export default function Landing() {
   const [submitSent, setSubmitSent] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [founding, setFounding] = useState(() => {
     try {
       return localStorage.getItem("si-games-founding") === "1";
@@ -146,6 +148,24 @@ export default function Landing() {
     window.addEventListener("si-games-founding", sync);
     return () => window.removeEventListener("si-games-founding", sync);
   }, []);
+
+  /** Phone menu: close on Escape and whenever the desktop nav returns. */
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileMenuOpen(false);
+    };
+    const desktop = window.matchMedia("(min-width: 721px)");
+    const onWidth = () => {
+      if (desktop.matches) setMobileMenuOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    desktop.addEventListener("change", onWidth);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onWidth);
+    };
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -306,7 +326,31 @@ export default function Landing() {
             <span>Big Picture</span>
           </Link>
           <ThemePicker />
+          <button
+            type="button"
+            className="mobile-menu-btn"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-nav"
+            onClick={() => setMobileMenuOpen((value) => !value)}
+          >
+            {mobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
+          </button>
         </div>
+        {mobileMenuOpen && (
+          <div className="mobile-nav-panel" id="mobile-nav">
+            <nav className="mobile-nav-links" aria-label="Mobile navigation">
+              <a href="#library" onClick={() => setMobileMenuOpen(false)}>Library</a>
+              <Link to="/new" onClick={() => setMobileMenuOpen(false)}>New games</Link>
+              <Link to="/changelog" onClick={() => setMobileMenuOpen(false)}>Change list</Link>
+              <a href="#favorites" onClick={() => setMobileMenuOpen(false)}>Favorites</a>
+              <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
+              <Link to="/developers" onClick={() => setMobileMenuOpen(false)}>Developers</Link>
+              <Link to="/bigpicture" onClick={() => setMobileMenuOpen(false)}>Big Picture</Link>
+            </nav>
+            <span className="mobile-nav-status"><span className="status-dot" /> {games.length} games ready to play</span>
+          </div>
+        )}
       </header>
 
       <main id="top">
