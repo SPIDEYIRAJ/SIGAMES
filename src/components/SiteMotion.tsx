@@ -1,5 +1,6 @@
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
 import { useLocation } from "react-router";
+import { MOTION_CHANGE_EVENT, motionIsReduced } from "@/lib/motion";
 
 /** Decorative glyphs pinned to the edges so they never sit over copy. */
 const GLYPHS = [
@@ -25,9 +26,23 @@ const GLYPHS = [
  */
 export default function SiteMotion() {
   const { pathname } = useLocation();
+  const [revision, setRevision] = useState(0);
+
+  /** Re-arm whenever the player changes the motion preference. */
+  useEffect(() => {
+    const sync = () => setRevision((value) => value + 1);
+    window.addEventListener(MOTION_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(MOTION_CHANGE_EVENT, sync);
+  }, []);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (motionIsReduced()) {
+      for (const element of Array.from(document.querySelectorAll<HTMLElement>(".motion-reveal"))) {
+        element.classList.remove("motion-reveal", "is-inview");
+        element.style.removeProperty("--motion-delay");
+      }
+      return;
+    }
     if (!("IntersectionObserver" in window)) return;
 
     const targets = "main > section, .game-card, .site-footer, .not-found-content";
@@ -69,7 +84,7 @@ export default function SiteMotion() {
       mutations.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [pathname]);
+  }, [pathname, revision]);
 
   return (
     <div className="site-motion" aria-hidden="true">

@@ -16,6 +16,7 @@ import FluidBackdrop from "./components/FluidBackdrop";
 import SiteMotion from "./components/SiteMotion";
 import InstallPrompt from "./components/InstallPrompt";
 import { initTheme, THEME_CHANGE_EVENT } from "./lib/themes";
+import { initMotion } from "./lib/motion";
 import Dashboard from "./pages/Dashboard";
 import "./index.css";
 
@@ -28,6 +29,7 @@ const NewGames = lazy(() => import("./pages/NewGames.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
 const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
 const Benchmark = lazy(() => import("./pages/Benchmark.tsx"));
+const Settings = lazy(() => import("./pages/Settings.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -446,6 +448,7 @@ function AnimatedRoutes() {
             <Route path="/" element={<Landing />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/benchmark" element={<Benchmark />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/new" element={<NewGames />} />
             <Route path="/playtab" element={<Navigate to="/" replace />} />
             <Route path="/changelog" element={<Changelog />} />
@@ -502,8 +505,9 @@ function AppBootstrap() {
   );
 }
 
-// Stamp the saved colour palette on <html> before the first paint.
+// Stamp the saved colour palette and motion choice before the first paint.
 initTheme();
+initMotion();
 
 // The installable shell only registers in the built app; Vite's dev server
 // must stay cache-free.

@@ -5,6 +5,7 @@ import {
   isControllersEnabled,
   setControllersEnabled,
 } from "@/lib/omnipad";
+import { clearEverythingForSiteAndGames } from "@/lib/browser-data";
 
 /**
  * Hidden settings — there is no menu item for it. It opens when you tap any
@@ -17,49 +18,6 @@ import {
 const SECRET_TAP_COUNT = 5;
 const SECRET_TAP_WINDOW_MS = 2500;
 const STORAGE_EVENT = "si-games-hidden-settings-open";
-
-/** Wipes everything this origin keeps in the browser, then reloads so the
- *  startup cinema runs again from its first-visit state. */
-async function clearBrowserData(): Promise<void> {
-  try {
-    localStorage.clear();
-    sessionStorage.clear();
-  } catch {
-    // Storage can be blocked in private mode; caches below may still clear.
-  }
-
-  try {
-    const keys = await caches.keys();
-    await Promise.all(keys.map((key) => caches.delete(key)));
-  } catch {
-    // Cache Storage is unavailable in some browsers.
-  }
-
-  try {
-    type DatabaseInfo = { name?: string };
-    const factory = indexedDB as IDBFactory & { databases?: () => Promise<DatabaseInfo[]> };
-    const databases = factory.databases ? await factory.databases() : [];
-    await Promise.all(
-      databases.map(
-        (database) =>
-          new Promise<void>((resolve) => {
-            if (!database.name) return resolve();
-            const request = indexedDB.deleteDatabase(database.name);
-            request.onsuccess = request.onerror = request.onblocked = () => resolve();
-          }),
-      ),
-    );
-  } catch {
-    // IndexedDB may not exist, or a tab may hold a database open.
-  }
-
-  try {
-    const registrations = await navigator.serviceWorker?.getRegistrations?.();
-    await Promise.all((registrations ?? []).map((registration) => registration.unregister()));
-  } catch {
-    // No service worker support; nothing to unregister.
-  }
-}
 
 /** Collected counter + broadcaster: the tap listener itself. */
 function useSecretTaps(onOpen: () => void) {
@@ -175,7 +133,7 @@ export function HiddenSettings() {
               disabled={clearing}
               onClick={async () => {
                 setClearing(true);
-                await clearBrowserData();
+                await clearEverythingForSiteAndGames();
                 window.location.assign("/");
               }}
             >

@@ -55,6 +55,16 @@ ADD  /benchmark System Lab: live FPS meter, timed frame pacing with a traced
      display, browser/OS, network, storage, language). Linked from the desktop
      nav and phone menu.
 
+ADD  /settings control center: all 11 palettes, theme-song and controller
+     toggles, a persisted Full/Calm motion preference that drives the global
+     motion layer, storage usage, a benchmark shortcut, a preferences reset,
+     and an EXPERIMENTAL wipe of all local storage for the site and every
+     game on the origin (plus sessions, caches, IndexedDB and the SW).
+
+CHG  PS6-style depth pass: cursor-lit layered settings hero with a tilting
+     3D deck, layered shadows and 3D hover lifts on game cards, settings and
+     benchmark panels, plus staggered reveals on every route.
+
 CHG  On START the soundtrack is requested immediately even if the stream URL
      has not resolved yet (it starts as soon as the URL arrives), the fade-up
      is 4 s, and iOS inline playback is enabled. The theme still comes from
