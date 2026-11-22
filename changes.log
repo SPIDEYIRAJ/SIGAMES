@@ -55,6 +55,25 @@ ADD  /benchmark System Lab (marked EXPERIMENTAL): live FPS meter, timed frame
      browser/OS, network, storage, language). Raw measurements only — no
      invented score or grade. Linked from the desktop nav and phone menu.
 
+ADD  /playtab index: every PlayTab mirror with name, slug and canonical
+     ?bp=1 play link, search, one-tap link copy, and the newest GTA V Server 5
+     embed snippet (playgta5.com).
+
+FIX  Theme song now ducks on every game route (all game ids, not just /play/),
+     and resumes the same loop position when returning to the library instead
+     of restarting from 0:00. Game load still fades it out after the duck.
+
+FIX  START now restarts the intro film, plays the welcome sting over it and
+     holds for 2.6s before opening the shelf; muted autoplay is retried on
+     canplay so the video no longer stays on a black frame.
+
+CHG  Every embedded game frame gets the full permission policy (gamepad,
+     pointer lock, motion sensors, clipboard, wake lock, WebXR, etc.),
+     referrerpolicy=origin, credentialless and a permissive game sandbox.
+
+UPD  GTA V Server 5 points at the newest https://playgta5.com/ build and
+     runs inside the player; all PlayTab catalog links now use ?bp=1.
+
 ADD  /settings control center: all 11 palettes, theme-song and controller
      toggles, a persisted Full/Calm motion preference that drives the global
      motion layer, storage usage, a benchmark shortcut, a preferences reset,

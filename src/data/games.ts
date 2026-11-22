@@ -1475,7 +1475,8 @@ const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, ht
   description: `${title} — a browser-ready arcade title.`,
   controls: "Click the frame first so it takes the keyboard. Most titles use the arrow keys or W A S D, with Space or the mouse for actions; any on-screen pad appears in the frame.",
   thumbnail: coverId ? `https://cdn.jsdelivr.net/gh/freebuisness/covers@main/${coverId}.png` : cover(900 + index),
-  sourceUrl: `https://bigpicture.playtab.fun/play/${slug}`,
+  // Canonical PlayTab link supplied by the catalog: name → slug → play URL.
+  sourceUrl: `https://bigpicture.playtab.fun/play/${slug}?bp=1`,
   htmlUrl: htmlPath ? `https://cdn.jsdelivr.net/gh/freebuisness/html@main/${htmlPath}` : undefined,
   type: "iframe",
   heavy: true,
@@ -1495,7 +1496,7 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
     thumbnail: "https://static.wikia.nocookie.net/gtawiki/images/7/76/CoverArt-GTAV.png/revision/latest?cb=20250708181846",
     // GTA V defaults to Server 5, played inside the in-page frame.
     openInNewTab: true,
-    sourceUrl: "https://bigpicture.playtab.fun/play/gta-5?bp=1",
+    sourceUrl: "https://playgta5.com/",
     servers: [
       {
         id: "playgta5",
@@ -1523,10 +1524,10 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       },
       {
         id: "playgta5-community",
-        label: "Server 3 — multiplayer v1",
+        label: "Server 3 — newest, new tab",
         url: "https://playgta5.com/",
         external: true,
-        note: "Copy-link build. Open a new tab yourself and paste the copied link there.",
+        note: "Fallback copy-link for the newest build if in-page play is blocked. Open a new tab yourself and paste the copied link there.",
       },
       {
         id: "playgta5-pages",
@@ -1537,8 +1538,10 @@ export const games: Game[] = redactLibrary(handOverPremium(applyLibraryPatch([
       },
       {
         id: "hosted",
-        label: "Server 5",
-        url: "https://bigpicture.playtab.fun/play/gta-5?bp=1",
+        label: "Server 5 — newest build",
+        // Newest PlayTab build. It runs in the in-page frame with the full
+        // permission set (gamepad, pointer lock, screen wake lock, clipboard).
+        url: "https://playgta5.com/",
         recommended: true,
         preferred: true,
         note: "Recommended. Runs right here inside SI GAMES — use your keyboard to navigate the first screen, then press Enter to start.",

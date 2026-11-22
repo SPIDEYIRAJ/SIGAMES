@@ -39,6 +39,27 @@ interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "
 /** Injects a base so a fetched build can still resolve its sibling assets. */
 const GAME_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">';
 
+/** Every title gets the same broad feature policy: console pads, pointer
+ *  capture, fullscreen, clipboard, motion sensors and screen wake lock. */
+const GAME_ALLOW = [
+  "accelerometer", "ambient-light-sensor", "autoplay", "bluetooth", "camera",
+  "clipboard-read", "clipboard-write", "cross-origin-isolated", "display-capture",
+  "encrypted-media", "fullscreen", "gamepad", "geolocation", "gyroscope", "hid",
+  "idle-detection", "keyboard-map", "local-fonts", "magnetometer", "microphone",
+  "midi", "payment", "picture-in-picture", "publickey-credentials-get",
+  "screen-wake-lock", "serial", "usb", "web-share", "window-management",
+  "xr-spatial-tracking",
+].join("; ");
+
+/** Permissive enough for full game builds (storage, popups, pointer lock,
+ *  downloads) while still isolating the frame from top-level navigation. */
+const GAME_SANDBOX = [
+  "allow-scripts", "allow-same-origin", "allow-forms", "allow-modals",
+  "allow-popups", "allow-popups-to-escape-sandbox", "allow-downloads",
+  "allow-pointer-lock", "allow-presentation", "allow-orientation-lock",
+  "allow-top-navigation-by-user-activation",
+].join(" ");
+
 /** Fetched game builds often ship without a viewport tag. On a phone the frame
  *  then lays them out at desktop width and shrinks the whole page, which makes
  *  the game look soft and tiny. Add a device-width viewport only when the build
@@ -86,12 +107,13 @@ function GameFrame({ src, htmlUrl, title, allow, allowFullScreen, loading, onLoa
       src: htmlUrl && !failed && !doc ? undefined : src,
       srcDoc: doc ?? undefined,
       title,
-      allow,
+      allow: allow ?? GAME_ALLOW,
       allowFullScreen,
       target: "_self",
       loading: loading ? "lazy" : undefined,
-      referrerPolicy: "no-referrer",
-      sandbox: undefined,
+      referrerPolicy: "origin",
+      sandbox: GAME_SANDBOX,
+      credentialless: "",
       onLoad,
       onError,
     } as unknown as GameFrameProps
@@ -1076,7 +1098,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                 <span className="fs-hold-track"><span className="fs-hold-fill" style={{ "--fs-hold-ms": `${keyHold.ms}ms` } as CSSProperties} /></span>
               </div>
             )}
-            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow="autoplay; fullscreen; gamepad; clipboard-write" allowFullScreen loading={loading} onLoad={handleFrameLoad} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow={GAME_ALLOW} allowFullScreen loading={loading} onLoad={handleFrameLoad} onError={() => setLoading(false)} />
             {/* Optional on-screen controller (hidden settings toggle); only for titles that actually run in the frame. */}
             {!consoleMode && game.type !== "external" && !handsLink && (
               <VirtualGamepad src={playUrl ?? launchLink} gameId={game.id} gameTitle={game.title} gameCategory={game.category} gameControls={game.controls} />

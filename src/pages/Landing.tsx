@@ -323,6 +323,7 @@ export default function Landing() {
             <a href="#library">Library</a>
             <Link className="nav-extra" to="/new">New games</Link>
             <Link className="nav-extra" to="/changelog">Change list</Link>
+            <Link className="nav-extra" to="/playtab">PlayTab index</Link>
             <a href="#favorites">Favorites</a>
             <a href="#about">About</a>
             <a href="/developers">Developers</a>
@@ -353,6 +354,7 @@ export default function Landing() {
               <a href="#library" onClick={() => setMobileMenuOpen(false)}>Library</a>
               <Link to="/new" onClick={() => setMobileMenuOpen(false)}>New games</Link>
               <Link to="/changelog" onClick={() => setMobileMenuOpen(false)}>Change list</Link>
+              <Link to="/playtab" onClick={() => setMobileMenuOpen(false)}>PlayTab index</Link>
               <a href="#favorites" onClick={() => setMobileMenuOpen(false)}>Favorites</a>
               <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
               <Link to="/developers" onClick={() => setMobileMenuOpen(false)}>Developers</Link>

@@ -25,6 +25,8 @@ let ducked = false;
 let stoppedForGame = false;
 let fadeToken = 0;
 let gestureBound = false;
+/** False until the track has started once; only then is "resume" a resume. */
+let hasStarted = false;
 
 export function isThemeSongEnabled(): boolean {
   try {
@@ -108,6 +110,7 @@ function stopThemeSong(ms: number): void {
     if (token !== fadeToken) return;
     element.pause();
     element.currentTime = 0;
+    hasStarted = false;
   }, ms + 60);
 }
 
@@ -150,10 +153,14 @@ export function startThemeSong(): void {
   }
 
   element.volume = 0;
-  element.currentTime = 0;
+  // Resume where the game left off; only a fresh track starts at 0:00.
+  if (!hasStarted) element.currentTime = 0;
   void element
     .play()
-    .then(() => rampTo(target, 1_600))
+    .then(() => {
+      hasStarted = true;
+      rampTo(target, 1_600);
+    })
     .catch(() => bindFirstGesture());
 }
 
@@ -189,8 +196,8 @@ export function fadeThemeSongForGame(): void {
   rampTo(0, 2_600);
   window.setTimeout(() => {
     if (token !== fadeToken) return;
+    // Pause in place so leaving the game resumes the same loop, not a replay.
     element.pause();
-    element.currentTime = 0;
   }, 2_700);
 }
 

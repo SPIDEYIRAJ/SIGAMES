@@ -11,10 +11,13 @@ import {
   unduckThemeSong,
 } from "@/lib/theme-song";
 import { stopLocalMusic } from "@/lib/local-music";
+import { games } from "@/data/games";
 
 /** Every route that hands the screen to a game gets the ducked soundtrack. */
 function isGamePage(pathname: string): boolean {
-  return pathname.startsWith("/play/") || pathname === "/gta-v" || pathname === "/gta-vicecity";
+  if (pathname.startsWith("/play/")) return true;
+  const segment = decodeURIComponent(pathname.replace(/^\/+/, "").split("/")[0] ?? "");
+  return games.some((game) => game.id === segment);
 }
 
 /**

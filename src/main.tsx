@@ -5,7 +5,7 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { ConvexReactClient } from "convex/react";
 import React, { StrictMode, useEffect, useRef, useState, lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { RequireAuth } from "./components/RequireAuth";
 import HiddenSettings from "./components/HiddenSettings";
@@ -30,6 +30,7 @@ const Changelog = lazy(() => import("./pages/Changelog.tsx"));
 const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
 const Benchmark = lazy(() => import("./pages/Benchmark.tsx"));
 const Settings = lazy(() => import("./pages/Settings.tsx"));
+const PlayTab = lazy(() => import("./pages/PlayTab.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 // Simple loading fallback for route transitions
@@ -450,7 +451,7 @@ function AnimatedRoutes() {
             <Route path="/benchmark" element={<Benchmark />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/new" element={<NewGames />} />
-            <Route path="/playtab" element={<Navigate to="/" replace />} />
+            <Route path="/playtab" element={<PlayTab />} />
             <Route path="/changelog" element={<Changelog />} />
             <Route path="/sheet" element={<DataSheet />} />
             <Route path="/bigpicture" element={<BigPicture />} />
