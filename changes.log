@@ -55,6 +55,12 @@ ADD  /benchmark System Lab (marked EXPERIMENTAL): live FPS meter, timed frame
      browser/OS, network, storage, language). Raw measurements only — no
      invented score or grade. Linked from the desktop nav and phone menu.
 
+CHG  Big Picture now uses the PlayStation / PS5 design system: pure-black
+     canvas, quiet 48px chrome, PlayStation Blue (#0070d1) pill actions,
+     light 300-weight display type (Roboto fallback for SST), flat 8px cards,
+     white focus rings, and the signature blue footer band. Removed the old
+     pink/blue glass gradients, glow shadows and rounded 20px tiles.
+
 ADD  /playtab index: every PlayTab mirror with name, slug and canonical
      ?bp=1 play link, search, one-tap link copy, and the newest GTA V Server 5
      embed snippet (playgta5.com).

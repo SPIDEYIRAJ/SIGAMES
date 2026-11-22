@@ -10,6 +10,7 @@ import {
   Heart,
   Home,
   Library,
+  Palette,
   Play,
   Power,
   Settings,
@@ -25,7 +26,6 @@ import { useNavigate } from "react-router";
 import { games, newGames, type Game } from "@/data/games";
 import { captureLaunchSource } from "@/lib/launch";
 import { formatPlaytime, readPlaytime } from "@/lib/playtime";
-import { applyTheme, readStoredTheme, THEMES, type ThemeId } from "@/lib/themes";
 import { isThemeSongEnabled, setThemeSongEnabled } from "@/lib/theme-song";
 import { stopLocalMusic } from "@/lib/local-music";
 import "@/bigpicture.css";
@@ -71,7 +71,6 @@ export default function BigPicture() {
   const [brightness, setBrightness] = useState(100);
   const [lite, setLite] = useState(false);
   const [musicOn, setMusicOn] = useState(isThemeSongEnabled);
-  const [theme, setTheme] = useState<ThemeId>(readStoredTheme);
   const [padConnected, setPadConnected] = useState(false);
   const [battery, setBattery] = useState<BatteryState>(null);
   const favorites = useMemo(() => readStoredList("si-games-favorites"), []);
@@ -563,26 +562,9 @@ export default function BigPicture() {
                   <span className="bp-setting-value">{brightness}%</span>
                 </div>
 
-                <div className="bp-setting-row bp-setting-row--stack">
-                  <span className="bp-setting-label">Theme</span>
-                  <div className="bp-themes">
-                    {THEMES.map((item) => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        className={`bp-theme${theme === item.id ? " is-active" : ""}`}
-                        data-bp-focus
-                        onClick={() => {
-                          applyTheme(item.id);
-                          setTheme(item.id);
-                        }}
-                        title={item.note}
-                      >
-                        <i style={{ background: `linear-gradient(135deg, ${item.accent}, ${item.glow})` }} />
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
+                <div className="bp-setting-row">
+                  <span className="bp-setting-label"><Palette size={16} /> Console theme</span>
+                  <span className="bp-setting-value is-on">PLAYSTATION · PS5</span>
                 </div>
               </div>
 
