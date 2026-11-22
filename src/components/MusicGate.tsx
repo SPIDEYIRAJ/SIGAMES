@@ -114,7 +114,8 @@ export default function MusicGate() {
       // Private mode: the intro simply shows again next reload.
     }
 
-    if (!seenBefore()) {
+    const firstVisit = !seenBefore();
+    if (firstVisit) {
       try {
         localStorage.setItem(SEEN_KEY, "1");
         localStorage.setItem(FOUNDING_KEY, "1");
@@ -138,10 +139,17 @@ export default function MusicGate() {
     startThemeSong();
     window.dispatchEvent(new Event("si-games-intro-done"));
 
+    let needsSetup = firstVisit;
+    try {
+      if (localStorage.getItem("si-games-setup-complete") === "1") needsSetup = false;
+    } catch {
+      // No storage: keep the first-visit setup redirect for this session.
+    }
+
     if (enterTimer.current) window.clearTimeout(enterTimer.current);
     enterTimer.current = window.setTimeout(() => {
       setOpen(false);
-      navigate("/");
+      navigate(needsSetup ? "/setup" : "/");
     }, 2_600);
   };
 

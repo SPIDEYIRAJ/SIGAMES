@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   Check,
   Gauge,
-  Gamepad2,
   HardDrive,
   Loader2,
   MonitorSmartphone,
@@ -17,11 +16,6 @@ import {
 } from "lucide-react";
 import { THEMES, applyTheme, readStoredTheme, type ThemeId } from "@/lib/themes";
 import { isThemeSongEnabled, setThemeSongEnabled } from "@/lib/theme-song";
-import {
-  CONTROLLERS_CHANGE_EVENT,
-  isControllersEnabled,
-  setControllersEnabled,
-} from "@/lib/omnipad";
 import {
   MOTION_CHANGE_EVENT,
   readMotionPreference,
@@ -62,7 +56,6 @@ function Toggle({
 export default function Settings() {
   const [theme, setTheme] = useState<ThemeId>(readStoredTheme);
   const [song, setSong] = useState(isThemeSongEnabled);
-  const [controllers, setControllers] = useState(isControllersEnabled);
   const [motion, setMotion] = useState<MotionPreference>(readMotionPreference);
   const [usage, setUsage] = useState<{ used: string; quota: string } | null>(null);
   const [busy, setBusy] = useState<"prefs" | "all" | null>(null);
@@ -74,14 +67,11 @@ export default function Settings() {
   useEffect(() => {
     void readStorageUsage().then(setUsage);
     const syncSong = () => setSong(isThemeSongEnabled());
-    const syncControllers = () => setControllers(isControllersEnabled());
     const syncMotion = () => setMotion(readMotionPreference());
     window.addEventListener("si-games-theme-song-change", syncSong);
-    window.addEventListener(CONTROLLERS_CHANGE_EVENT, syncControllers);
     window.addEventListener(MOTION_CHANGE_EVENT, syncMotion);
     return () => {
       window.removeEventListener("si-games-theme-song-change", syncSong);
-      window.removeEventListener(CONTROLLERS_CHANGE_EVENT, syncControllers);
       window.removeEventListener(MOTION_CHANGE_EVENT, syncMotion);
       if (armTimer.current) window.clearTimeout(armTimer.current);
     };
@@ -101,11 +91,6 @@ export default function Settings() {
   const toggleSong = (next: boolean) => {
     setThemeSongEnabled(next);
     setSong(next);
-  };
-
-  const toggleControllers = (next: boolean) => {
-    setControllersEnabled(next);
-    setControllers(next);
   };
 
   const pickMotion = (next: MotionPreference) => {
@@ -175,7 +160,7 @@ export default function Settings() {
             <div className="settings-hero-chips">
               <span className="settings-chip">{THEMES.find((item) => item.id === theme)?.label}</span>
               <span className="settings-chip">{motion === "full" ? "FULL MOTION" : "CALM MOTION"}</span>
-              <span className="settings-chip">{controllers ? "PAD ON" : "PAD OFF"}</span>
+              <span className="settings-chip">AAA CINEMA</span>
             </div>
           </div>
 
@@ -246,14 +231,6 @@ export default function Settings() {
                 <small>Loops the SI GAMES theme, ducks under a running game and resumes on the shelf.</small>
               </div>
               <Toggle on={song} label="Theme song" onChange={toggleSong} />
-            </div>
-            <div className="settings-row">
-              <span className="settings-row-icon"><Gamepad2 size={17} /></span>
-              <div className="settings-row-copy">
-                <strong>Controller overlay</strong>
-                <small>Adds the OmniPad touch pad and maps connected Xbox / PlayStation controllers.</small>
-              </div>
-              <Toggle on={controllers} label="Controller overlay" onChange={toggleControllers} />
             </div>
           </div>
         </section>
@@ -359,6 +336,7 @@ export default function Settings() {
 
         <div className="settings-footer">
           <ShareButton className="share-button--footer" title="SI GAMES" text="A whole browser arcade, ready to play." url="/" label="Share site" />
+          <Link className="settings-back" to="/setup">New-user setup</Link>
           <Link className="settings-back" to="/"><ArrowLeft size={14} /> Back to the library</Link>
         </div>
       </main>

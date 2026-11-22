@@ -1,18 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Gamepad2, Loader2, RotateCcw, Trash2, X } from "lucide-react";
-import {
-  CONTROLLERS_STORAGE_KEY,
-  isControllersEnabled,
-  setControllersEnabled,
-} from "@/lib/omnipad";
+import { Loader2, RotateCcw, Trash2, X } from "lucide-react";
 import { clearEverythingForSiteAndGames } from "@/lib/browser-data";
 
 /**
  * Hidden settings — there is no menu item for it. It opens when you tap any
  * element marked `data-si-secret` (the small "SI" corner marks) five times
- * within 2.5 seconds, then shows the site's unreferenced preferences. At the
- * moment that is one toggle: the OmniPad virtual controller overlay, applied
- * to every game.
+ * within 2.5 seconds, then offers the browser-data reset.
  */
 
 const SECRET_TAP_COUNT = 5;
@@ -50,14 +43,10 @@ function useSecretTaps(onOpen: () => void) {
 
 export function HiddenSettings() {
   const [open, setOpen] = useState(false);
-  const [controllers, setControllers] = useState(() => isControllersEnabled());
   const [clearing, setClearing] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
   useSecretTaps(() => {
-    // Read the saved setting as the panel opens — doing it in an effect would
-    // write state on mount for no reason (and trip the cascading-render lint).
-    setControllers(isControllersEnabled());
     setOpen(true);
     window.dispatchEvent(new Event(STORAGE_EVENT));
   });
@@ -95,34 +84,15 @@ export function HiddenSettings() {
             >
               <X size={18} />
             </button>
-            <div className="extension-icon"><Gamepad2 size={22} /></div>
+            <div className="extension-icon"><Trash2 size={22} /></div>
             <span className="section-kicker">HIDDEN SETTINGS</span>
-            <h2 id="hidden-settings-title">Controller overlay</h2>
+            <h2 id="hidden-settings-title">Browser data</h2>
             <p id="hidden-settings-description">
-              Turns the OmniPad virtual gamepad engine on across all games: on-screen
-              D-pad, joystick and action buttons, plus any connected Xbox / PlayStation
-              controller mapped onto the same overlay. Turn it off again the same way.
+              A hidden maintenance panel for this device. The controller overlay has
+              been removed, so all that remains is a clean local-data reset.
             </p>
-            <div className="hidden-settings-row">
-              <button
-                type="button"
-                className={`hidden-settings-toggle ${controllers ? "is-on" : ""}`}
-                role="switch"
-                aria-checked={controllers}
-                onClick={() => {
-                  setControllersEnabled(!controllers);
-                }}
-              >
-                <span className="hidden-settings-knob" />
-                <span className="hidden-settings-state">{controllers ? "On" : "Off"}</span>
-              </button>
-              <p className="hidden-settings-note" title={CONTROLLERS_STORAGE_KEY}>
-                Saved on this device. Applies to the player screen only, in-play.
-              </p>
-            </div>
 
-            <div className="hidden-settings-divider" />
-            <h3 className="hidden-settings-subtitle"><Trash2 size={14} /> Browser data</h3>
+            <h3 className="hidden-settings-subtitle"><Trash2 size={14} /> Reset</h3>
             <p className="hidden-settings-copy">
               Deletes this browser's saved settings, favourites, recent games and cached files,
               then reloads so the startup animation plays again from the mark.

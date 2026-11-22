@@ -3,6 +3,33 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-22 — cinematic launcher, first-run setup, OmniPad removal
+------------------------------------------------------------------
+
+ADD  New fullscreen launcher at "/": featured artwork stage with parallax,
+     atmospheric gradients and animated light, a horizontally expanding
+     selection strip, artwork rails (Continue playing, Trending, New
+     releases), fullscreen DETAILS, and a 1.65 s launch sequence that expands
+     the key art and shows the SI identity before opening the existing game
+     URL. All games, URLs, metadata and iframe routes are unchanged.
+
+ADD  Floating pill navigation for Home, Discover, My Games, Recently Played,
+     Favourites and Settings. Discover and My Games share a searchable,
+     category-filtered artwork grid with load-more; Recent and Favourites read
+     the existing si-games-recent and si-games-favorites keys.
+
+ADD  First-run setup at /setup — colour palette, theme song and cinematic
+     motion — reached automatically once after the intro. Sets
+     si-games-setup-complete, also linked from Settings and the launcher.
+
+ADD  Site-wide CinematicAmbience layer: slow light trails, reflective floor,
+     drifting dust and two passing car silhouettes. Hidden in the player and
+     disabled by the reduced-motion preference.
+
+DEL  OmniPad / console mode removed end to end: virtual gamepad component,
+     console pad, omnipad and game-input helpers, player toggles, overlay,
+     controller settings row and orphaned control-scheme helper.
+
 2026-11-19 — developer showcase, embedded Server 5, install + audio fixes
 ------------------------------------------------------------------------
 

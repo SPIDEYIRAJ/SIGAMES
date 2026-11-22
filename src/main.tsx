@@ -14,6 +14,7 @@ import MusicGate from "./components/MusicGate";
 import CustomCursor from "./components/CustomCursor";
 import FluidBackdrop from "./components/FluidBackdrop";
 import SiteMotion from "./components/SiteMotion";
+import CinematicAmbience from "./components/CinematicAmbience";
 import InstallPrompt from "./components/InstallPrompt";
 import { initTheme, THEME_CHANGE_EVENT } from "./lib/themes";
 import { initMotion } from "./lib/motion";
@@ -21,7 +22,7 @@ import Dashboard from "./pages/Dashboard";
 import "./index.css";
 
 // Lazy load route components for better code splitting
-const Landing = lazy(() => import("./pages/Landing.tsx"));
+const CinematicHome = lazy(() => import("./pages/CinematicHome.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
 const BigPicture = lazy(() => import("./pages/BigPicture.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
@@ -30,6 +31,7 @@ const Changelog = lazy(() => import("./pages/Changelog.tsx"));
 const DataSheet = lazy(() => import("./pages/DataSheet.tsx"));
 const Benchmark = lazy(() => import("./pages/Benchmark.tsx"));
 const Settings = lazy(() => import("./pages/Settings.tsx"));
+const Setup = lazy(() => import("./pages/Setup.tsx"));
 const PlayTab = lazy(() => import("./pages/PlayTab.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
@@ -446,10 +448,11 @@ function AnimatedRoutes() {
         )}
         <Suspense fallback={<RouteLoading />}>
           <Routes>
-            <Route path="/" element={<Landing />} />
+            <Route path="/" element={<CinematicHome />} />
             <Route path="/developers" element={<Developers />} />
             <Route path="/benchmark" element={<Benchmark />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/setup" element={<Setup />} />
             <Route path="/new" element={<NewGames />} />
             <Route path="/playtab" element={<PlayTab />} />
             <Route path="/changelog" element={<Changelog />} />
@@ -496,7 +499,7 @@ function AppBootstrap() {
         <MusicGate />
         <InstallPrompt />
         <SiteMotion />
-        <SiteMotion />
+        <CinematicAmbience />
         {/* The boot screen fades itself out while the shelf mounts underneath. */}
         <AnimatePresence>{isLoading && <LoadingScreen key="boot" />}</AnimatePresence>
         {!isLoading && <AnimatedRoutes />}
