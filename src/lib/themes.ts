@@ -35,10 +35,10 @@ export type Theme = {
 };
 
 export const THEMES: Theme[] = [
-  { id: "console", label: "Console", note: "Original theme · green + blue", chrome: "#05070a", accent: "#107c10", glow: "#2f8fff" },
+  { id: "nebula", label: "Nebula", note: "The original purple · neon blue", chrome: "#0d1527", accent: "#5608f8", glow: "#3efeff" },
+  { id: "console", label: "Console", note: "Green + blue · Xbox/PS inspired", chrome: "#05070a", accent: "#107c10", glow: "#2f8fff" },
   { id: "cinematic", label: "Cinematic", note: "Electric blue · violet", chrome: "#04070c", accent: "#8a7bff", glow: "#3b9dff" },
   { id: "liquidglass", label: "Liquid Glass", note: "Frosted ice · spectral light", chrome: "#08111c", accent: "#c9a7ff", glow: "#7ce7ff" },
-  { id: "nebula", label: "Nebula", note: "Neon blue · violet", chrome: "#050816", accent: "#5608f8", glow: "#3efeff" },
   { id: "plasma", label: "Plasma", note: "Violet · hot pink", chrome: "#16061f", accent: "#c31ff9", glow: "#ff70cf" },
   { id: "crimson", label: "Crimson", note: "Red · amber", chrome: "#200509", accent: "#f61e42", glow: "#ffb433" },
   { id: "tidal", label: "Tidal", note: "Azure · aqua", chrome: "#021422", accent: "#0099ff", glow: "#47ffff" },
@@ -51,7 +51,7 @@ export const THEMES: Theme[] = [
 ];
 
 const STORAGE_KEY = "si-games-theme";
-const DEFAULT_THEME: ThemeId = "console";
+const DEFAULT_THEME: ThemeId = "nebula";
 
 /** Fired on <html> whenever the active palette changes — the landing
  *  starfield listens so its tints follow the theme instead of staying fixed. */
@@ -82,15 +82,15 @@ export function applyTheme(id: ThemeId): void {
 }
 
 /** Runs once before the first render so the saved palette paints immediately.
- *  The first boot after the console edition intentionally moves existing
- *  players onto the new Xbox/PlayStation-inspired default once; after that
- *  their own palette pick wins. */
+ *  This edition restores the original purple (Nebula) theme as the default, so
+ *  existing players who were moved onto the green Console palette during the
+ *  console edition are brought back once. After that their own pick wins. */
 export function initTheme(): void {
   const editionKey = "si-games-theme-edition";
   try {
-    if (localStorage.getItem(editionKey) !== "console-2") {
+    if (localStorage.getItem(editionKey) !== "nebula-3") {
       localStorage.setItem("si-games-theme", DEFAULT_THEME);
-      localStorage.setItem(editionKey, "console-2");
+      localStorage.setItem(editionKey, "nebula-3");
     }
   } catch {
     // Private mode: the default still applies for this visit.

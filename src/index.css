@@ -50,6 +50,38 @@
   --si-star-cool: #6bb1ff;
 }
 
+/* Nebula — the original purple/blue palette, kept as the default look. */
+:root[data-theme="nebula"] {
+  --si-accent: #5608f8;
+  --si-accent-hover: #4320e0;
+  --si-accent-active: #3a18c4;
+  --si-accent-18: #5608f82e;
+  --si-accent-20: #5608f833;
+  --si-accent-22: #5608f838;
+  --si-accent-24: #5608f83d;
+  --si-accent-28: #5608f847;
+  --si-accent-30: #5608f84d;
+  --si-accent-60: #5608f899;
+  --si-accent-88: #5608f8e0;
+  --si-glow: #3efeff;
+  --si-glow-bright: #7ff9ff;
+  --si-glow-12: #3efeff1f;
+  --si-glow-14: #3efeff24;
+  --si-glow-16: #3efeff29;
+  --si-glow-25: #3efeff40;
+  --si-glow-28: #3efeff47;
+  --si-glow-40: #3efeff66;
+  --si-bg: #0d1527;
+  --si-bg-deep: #060e22;
+  --si-frame: #0a142e;
+  --si-kbd: #101a35;
+  --si-panel: #131e36;
+  --si-panel-raised: #182645;
+  --si-panel-strong: #1a2b55;
+  --si-star-hot: #ff6f91;
+  --si-star-cool: #6bb1ff;
+}
+
 :root[data-theme="console"] {
   --si-accent: #107c10;
   --si-accent-hover: #0e6b0e;

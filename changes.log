@@ -3,6 +3,15 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-23 — original purple theme restored as the default
+-----------------------------------------------------------
+
+FIX  Nebula — the original purple/neon-blue palette — is back as the default
+     look. It now has its own :root[data-theme="nebula"] block instead of
+     relying on the fallback :root values, and it leads the theme list in the
+     launcher, /settings and first-run setup. Everyone who was moved onto
+     Console by the console edition is returned to purple once.
+
 2026-11-23 — AAA interaction pass: cards, depth, sounds, smart library
 -----------------------------------------------------------------------
 

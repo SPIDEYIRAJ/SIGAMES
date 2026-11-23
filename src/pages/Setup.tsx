@@ -120,7 +120,7 @@ export default function Setup() {
             <div className="setup-summary">
               <Palette size={22} />
               <div>
-                <strong>{THEMES.find((item) => item.id === theme)?.label ?? "Console"} palette</strong>
+                <strong>{THEMES.find((item) => item.id === theme)?.label ?? "Nebula"} palette</strong>
                 <small>{song ? "Soundtrack on" : "Soundtrack off"} · {motion === "full" ? "Cinematic motion on" : "Reduced motion"}</small>
               </div>
               <Check size={18} />
