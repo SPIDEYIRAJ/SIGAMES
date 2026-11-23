@@ -37,64 +37,17 @@ export default function MusicGate() {
   const reduceMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
   const [launching, setLaunching] = useState(false);
-  const introSong = useRef<HTMLAudioElement | null>(null);
-  const film = useRef<HTMLVideoElement | null>(null);
   const enterTimer = useRef<number | null>(null);
 
   useEffect(() => () => {
-    introSong.current?.pause();
-    introSong.current = null;
-    film.current?.pause();
     if (enterTimer.current) window.clearTimeout(enterTimer.current);
   }, []);
-
-  /** Short intro sting; the theme rises under it and it fades out. */
-  const playIntroSting = () => {
-    try {
-      introSong.current?.pause();
-      const song = new Audio("/audio/si-intro.mp3");
-      song.preload = "auto";
-      song.volume = 0;
-      introSong.current = song;
-      void song
-        .play()
-        .then(() => {
-          const started = performance.now();
-          const step = (now: number) => {
-            if (introSong.current !== song) return;
-            const elapsed = now - started;
-            const rampIn = Math.min(1, elapsed / 900);
-            const rampOut = elapsed > 2800 ? Math.max(0, 1 - (elapsed - 2800) / 1400) : 1;
-            song.volume = 0.5 * rampIn * rampOut;
-            if (elapsed < 4_200) {
-              window.requestAnimationFrame(step);
-            } else {
-              song.pause();
-              if (introSong.current === song) introSong.current = null;
-            }
-          };
-          window.requestAnimationFrame(step);
-        })
-        .catch(() => undefined);
-    } catch {
-      // No Audio support: the theme song still starts on its own.
-    }
-  };
 
   useEffect(() => {
     if (shownThisSession()) return;
     const timer = window.setTimeout(() => setOpen(true), 1150);
     return () => window.clearTimeout(timer);
   }, []);
-
-  /** Muted autoplay is allowed, but some engines still need an explicit call. */
-  useEffect(() => {
-    if (!open) return;
-    const element = film.current;
-    if (!element) return;
-    element.muted = true;
-    void element.play().catch(() => undefined);
-  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -125,15 +78,7 @@ export default function MusicGate() {
       window.dispatchEvent(new Event("si-games-founding"));
     }
 
-    // This click is the user gesture: restart the film from its first frame,
-    // play the intro sting over it, then open the shelf when the sting ends.
-    const element = film.current;
-    if (element) {
-      element.muted = true;
-      element.currentTime = 0;
-      void element.play().catch(() => undefined);
-    }
-    playIntroSting();
+    // This click is the user gesture: the theme song is the only audio.
     setThemeSongEnabled(true);
     stopLocalMusic(0);
     startThemeSong();
@@ -150,7 +95,7 @@ export default function MusicGate() {
     enterTimer.current = window.setTimeout(() => {
       setOpen(false);
       navigate(needsSetup ? "/setup" : "/");
-    }, 2_600);
+    }, 1_400);
   };
 
   return (
@@ -166,22 +111,6 @@ export default function MusicGate() {
           exit={{ opacity: 0 }}
           transition={{ duration: reduceMotion ? 0.1 : 0.4 }}
         >
-          <video
-            ref={film}
-            className="si-intro-film"
-            src="/videos/si-intro.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-hidden="true"
-            tabIndex={-1}
-            onCanPlay={(event) => {
-              event.currentTarget.muted = true;
-              void event.currentTarget.play().catch(() => undefined);
-            }}
-          />
           <span className="si-intro-scrim" aria-hidden="true" />
           <motion.div
             className="si-intro-inner"
@@ -197,7 +126,7 @@ export default function MusicGate() {
               {launching ? <Loader2 size={18} className="spin" /> : <Play size={18} fill="currentColor" />}
               {launching ? "ENTERING" : "START"}
             </button>
-            <small>{launching ? "Rolling the intro film" : "No account · No setup"}</small>
+            <small>{launching ? "Starting the theme" : "No account · Just play"}</small>
           </motion.div>
         </motion.div>
       )}

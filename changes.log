@@ -3,6 +3,22 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-23 — three lead themes, intro film removed, cleaner player
+--------------------------------------------------------------------
+
+CHG  Theme order is now Console (original green/blue, default), Cinematic
+     (electric blue/violet) and Liquid Glass (frosted ice with translucent
+     panels and backdrop blur), followed by the existing palettes.
+
+DEL  Retired the intro film and welcome sting. START now plays only the SI
+     theme song; the start screen is a CSS-lit cinematic frame. The Convex
+     storage objects for both retired files were deleted, along with the local
+     si-intro.mp4 and si-intro.mp3 assets.
+
+DEL  Removed the redundant Copy link button from the live player actions.
+     Copy-link remains only on hand-over titles that must be pasted into the
+     player's own tab, where it is the launch mechanism rather than a shortcut.
+
 2026-11-22 — cinematic launcher, first-run setup, OmniPad removal
 ------------------------------------------------------------------
 

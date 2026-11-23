@@ -9,6 +9,8 @@
 
 export type ThemeId =
   | "console"
+  | "cinematic"
+  | "liquidglass"
   | "nebula"
   | "plasma"
   | "crimson"
@@ -33,7 +35,9 @@ export type Theme = {
 };
 
 export const THEMES: Theme[] = [
-  { id: "console", label: "Console", note: "Xbox green · PS blue", chrome: "#05070a", accent: "#107c10", glow: "#2f8fff" },
+  { id: "console", label: "Console", note: "Original theme · green + blue", chrome: "#05070a", accent: "#107c10", glow: "#2f8fff" },
+  { id: "cinematic", label: "Cinematic", note: "Electric blue · violet", chrome: "#04070c", accent: "#8a7bff", glow: "#3b9dff" },
+  { id: "liquidglass", label: "Liquid Glass", note: "Frosted ice · spectral light", chrome: "#08111c", accent: "#c9a7ff", glow: "#7ce7ff" },
   { id: "nebula", label: "Nebula", note: "Neon blue · violet", chrome: "#050816", accent: "#5608f8", glow: "#3efeff" },
   { id: "plasma", label: "Plasma", note: "Violet · hot pink", chrome: "#16061f", accent: "#c31ff9", glow: "#ff70cf" },
   { id: "crimson", label: "Crimson", note: "Red · amber", chrome: "#200509", accent: "#f61e42", glow: "#ffb433" },
