@@ -122,7 +122,7 @@ export default function MusicGate() {
             <span className="si-intro-kicker">INSERT COIN</span>
             <h1 id="si-intro-title">SI GAMES</h1>
             <p>Pick a game and jump straight in.</p>
-            <button type="button" className="si-intro-start" onClick={start} autoFocus disabled={launching}>
+            <button type="button" className="si-intro-start" data-ui-sound="launch" onClick={start} autoFocus disabled={launching}>
               {launching ? <Loader2 size={18} className="spin" /> : <Play size={18} fill="currentColor" />}
               {launching ? "ENTERING" : "START"}
             </button>

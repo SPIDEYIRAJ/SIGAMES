@@ -3,6 +3,33 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-23 — AAA interaction pass: cards, depth, sounds, smart library
+-----------------------------------------------------------------------
+
+ADD  Cinematic cards now tilt in 3D under a mouse, carry a cursor-following
+     light, reveal tags and a short description on hover, and expose Play,
+     Details and Favourite actions. Artwork fades in over a loading shimmer,
+     errors fall back to a muted frame, and touch layouts keep the static
+     presentation.
+
+ADD  Library tools: instant search, category and genre filters, popularity /
+     A-Z sorting (remembered locally), real launch counts under
+     si-games-plays, plus Popular now and Recommended for you rails.
+
+ADD  Optional interface sound system, synthesised in the browser with Web
+     Audio (no audio files or new dependencies). Hover, click, navigation,
+     back and launch cues are unlocked only by a user gesture. Toggles and
+     volume sliders live in both the launcher Settings screen and /settings.
+     Nothing autoplays.
+
+ADD  Cursor-reactive ambience: a soft pointer light, parallax colour fields
+     and three floating 3D wireframe forms on the shared backdrop. Reduced
+     motion and coarse pointers disable the layer.
+
+ADD  Custom cursor now uses a glow halo and trailing particle, and switches
+     to a larger spectral ring over game cards. Disabled for touch and
+     reduced-motion visitors.
+
 2026-11-23 — three lead themes, intro film removed, cleaner player
 --------------------------------------------------------------------
 

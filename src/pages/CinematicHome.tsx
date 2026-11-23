@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowUpDown,
+  AudioLines,
   ChevronLeft,
   ChevronRight,
   Clock3,
@@ -28,6 +30,13 @@ import { THEMES, applyTheme, readStoredTheme, type ThemeId } from "@/lib/themes"
 import { isThemeSongEnabled, setThemeSongEnabled } from "@/lib/theme-song";
 import { readMotionPreference, setMotionPreference, type MotionPreference } from "@/lib/motion";
 import { stopLocalMusic } from "@/lib/local-music";
+import {
+  isUiSoundEnabled,
+  readUiSoundVolume,
+  setUiSoundEnabled,
+  setUiSoundVolume,
+  UI_SOUND_CHANGE_EVENT,
+} from "@/lib/ui-sound";
 
 type Screen = "home" | "discover" | "library" | "recent" | "favorites" | "settings";
 
@@ -52,6 +61,30 @@ const FEATURED_IDS = [
 ];
 
 const GRID_STEP = 24;
+const SORT_KEY = "si-games-sort";
+const PLAYS_KEY = "si-games-plays";
+
+type SortMode = "popular" | "az";
+
+function readSort(): SortMode {
+  try {
+    return localStorage.getItem(SORT_KEY) === "az" ? "az" : "popular";
+  } catch {
+    return "popular";
+  }
+}
+
+function readPlays(): Record<string, number> {
+  try {
+    const value = JSON.parse(localStorage.getItem(PLAYS_KEY) ?? "{}");
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    return Object.fromEntries(
+      Object.entries(value).filter((entry): entry is [string, number] => typeof entry[1] === "number"),
+    );
+  } catch {
+    return {};
+  }
+}
 
 function readList(key: string): string[] {
   try {
@@ -66,27 +99,70 @@ function useStoredList(key: string): string[] {
   return useMemo(() => readList(key), [key]);
 }
 
-function GameCard({ game, active, onSelect, onPlay, favorite, onFavorite }: {
+function GameCard({ game, active, onSelect, onDetails, onPlay, favorite, onFavorite }: {
   game: Game;
   active: boolean;
   onSelect: () => void;
+  onDetails: () => void;
   onPlay: () => void;
   favorite: boolean;
   onFavorite: () => void;
 }) {
+  const cardRef = useRef<HTMLElement>(null);
+
+  const tilt = (event: PointerEvent<HTMLElement>) => {
+    if (event.pointerType !== "mouse" && event.pointerType !== "pen") return;
+    const node = cardRef.current;
+    if (!node) return;
+    const bounds = node.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+    node.style.setProperty("--card-rx", `${(-y * 5.5).toFixed(2)}deg`);
+    node.style.setProperty("--card-ry", `${(x * 7).toFixed(2)}deg`);
+    node.style.setProperty("--spot-x", `${((x + 0.5) * 100).toFixed(1)}%`);
+    node.style.setProperty("--spot-y", `${((y + 0.5) * 100).toFixed(1)}%`);
+  };
+
+  const resetTilt = () => {
+    const node = cardRef.current;
+    if (!node) return;
+    node.style.setProperty("--card-rx", "0deg");
+    node.style.setProperty("--card-ry", "0deg");
+  };
+
   return (
-    <article className={`cine-card${active ? " is-active" : ""}`}>
+    <article
+      ref={cardRef}
+      className={`cine-card${active ? " is-active" : ""}`}
+      onPointerMove={tilt}
+      onPointerLeave={resetTilt}
+    >
       <button type="button" className="cine-card-art" onClick={onSelect} aria-label={`Select ${game.title}`}>
-        <img src={game.thumbnail} alt="" loading="lazy" />
+        <img
+          src={game.thumbnail}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          onLoad={(event) => event.currentTarget.classList.add("is-loaded")}
+          onError={(event) => event.currentTarget.classList.add("is-error")}
+        />
         <span className="cine-card-gradient" />
+        <span className="cine-card-light" aria-hidden="true" />
+        <span className="cine-card-hover" aria-hidden="true">
+          <span className="cine-card-hover-kicker">{game.tags.slice(0, 2).join(" · ") || game.category}</span>
+          <span className="cine-card-hover-desc">{game.description}</span>
+        </span>
         <span className="cine-card-meta">
           <strong>{game.title}</strong>
           <small>{game.category}</small>
         </span>
       </button>
       <div className="cine-card-foot">
-        <button type="button" className="cine-card-play" onClick={onPlay} aria-label={`Play ${game.title}`}>
+        <button type="button" className="cine-card-play" data-ui-sound="launch" onClick={onPlay} aria-label={`Play ${game.title}`}>
           <Play size={15} fill="currentColor" /> Play
+        </button>
+        <button type="button" className="cine-card-icon" onClick={onDetails} aria-label={`Details for ${game.title}`}>
+          <Info size={15} />
         </button>
         <button
           type="button"
@@ -110,10 +186,15 @@ export default function CinematicHome() {
   const [launching, setLaunching] = useState<Game | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("All Games");
+  const [genre, setGenre] = useState("All genres");
   const [limit, setLimit] = useState(GRID_STEP);
   const [favorites, setFavorites] = useState<string[]>(() => readList("si-games-favorites"));
+  const [sort, setSort] = useState<SortMode>(readSort);
+  const [plays, setPlays] = useState<Record<string, number>>(readPlays);
   const [theme, setTheme] = useState<ThemeId>(readStoredTheme);
   const [song, setSong] = useState(isThemeSongEnabled);
+  const [uiSounds, setUiSounds] = useState(isUiSoundEnabled);
+  const [uiVolume, setUiVolume] = useState(readUiSoundVolume);
   const [motion, setMotion] = useState<MotionPreference>(readMotionPreference);
   const stageRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
@@ -145,17 +226,47 @@ export default function CinematicHome() {
     return curated;
   }, []);
 
-  const trending = useMemo(() => games.filter((game) => !game.id.startsWith("bp-")).slice(2, 18), []);
+  const sorted = useCallback((list: Game[]) => {
+    if (sort === "az") return [...list].sort((a, b) => a.title.localeCompare(b.title));
+    return [...list].sort((a, b) => {
+      const score = (game: Game) => (plays[game.id] ?? 0) * 100 + (playtime[game.id] ?? 0) / 60;
+      return score(b) - score(a);
+    });
+  }, [playtime, plays, sort]);
+
+  const trending = useMemo(() => sorted(games.filter((game) => !game.id.startsWith("bp-"))).slice(0, 16), [sorted]);
   const fresh = useMemo(() => newGames.filter((game) => !game.id.startsWith("bp-")).slice(0, 16), []);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
-    return games.filter((game) => {
+    const list = games.filter((game) => {
       if (category !== "All Games" && game.category !== category) return false;
+      if (genre !== "All genres" && !game.tags.includes(genre)) return false;
       if (!needle) return true;
       return `${game.title} ${game.category} ${game.tags.join(" ")}`.toLowerCase().includes(needle);
     });
-  }, [category, query]);
+    return sorted(list);
+  }, [category, genre, query, sorted]);
+
+  const genres = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const game of games) {
+      if (game.id.startsWith("bp-")) continue;
+      for (const tag of game.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+      .slice(0, 14)
+      .map(([tag]) => tag);
+  }, []);
+
+  const recommended = useMemo(() => {
+    const preferred = new Set(favoriteGames.flatMap((game) => [game.category, ...game.tags]));
+    const pool = games.filter((game) => !game.id.startsWith("bp-"));
+    if (!preferred.size) return pool.slice(8, 24);
+    const matches = pool.filter((game) => preferred.has(game.category) || game.tags.some((tag) => preferred.has(tag)));
+    return (matches.length >= 6 ? matches : [...matches, ...pool]).slice(0, 16);
+  }, [favoriteGames]);
 
   useEffect(() => {
     if (!launching) return;
@@ -172,7 +283,16 @@ export default function CinematicHome() {
 
   useEffect(() => {
     setLimit(GRID_STEP);
-  }, [category, query, screen]);
+  }, [category, genre, query, screen, sort]);
+
+  useEffect(() => {
+    const sync = () => {
+      setUiSounds(isUiSoundEnabled());
+      setUiVolume(readUiSoundVolume());
+    };
+    window.addEventListener(UI_SOUND_CHANGE_EVENT, sync);
+    return () => window.removeEventListener(UI_SOUND_CHANGE_EVENT, sync);
+  }, []);
 
   useEffect(() => {
     if (!details) return;
@@ -227,11 +347,15 @@ export default function CinematicHome() {
   const play = useCallback((game: Game) => {
     if (launching || launchTimer.current !== null) return;
     const nextRecent = [game.id, ...readList("si-games-recent").filter((id) => id !== game.id)].slice(0, 12);
+    const currentPlays = readPlays();
+    const nextPlays = { ...currentPlays, [game.id]: (currentPlays[game.id] ?? 0) + 1 };
     try {
       localStorage.setItem("si-games-recent", JSON.stringify(nextRecent));
+      localStorage.setItem(PLAYS_KEY, JSON.stringify(nextPlays));
     } catch {
-      // Recent history is optional.
+      // Recent history and popularity are optional.
     }
+    setPlays(nextPlays);
     captureLaunchSource(game.id, game.thumbnail, null);
     setDetails(null);
     setLaunching(game);
@@ -300,6 +424,25 @@ export default function CinematicHome() {
     setMotion(next);
   };
 
+  const updateUiSounds = (next: boolean) => {
+    setUiSoundEnabled(next);
+    setUiSounds(next);
+  };
+
+  const changeUiVolume = (next: number) => {
+    setUiSoundVolume(next);
+    setUiVolume(next);
+  };
+
+  const updateSort = (next: SortMode) => {
+    setSort(next);
+    try {
+      localStorage.setItem(SORT_KEY, next);
+    } catch {
+      // Sorting preference is optional.
+    }
+  };
+
   const gridFor = (list: Game[]) => (
     <div className="cine-grid">
       {list.slice(0, limit).map((game) => (
@@ -307,7 +450,8 @@ export default function CinematicHome() {
           key={game.id}
           game={game}
           active={game.id === featured.id}
-          onSelect={() => { setFeatured(game); setDetails(game); }}
+          onSelect={() => setFeatured(game)}
+          onDetails={() => { setFeatured(game); setDetails(game); }}
           onPlay={() => play(game)}
           favorite={favorites.includes(game.id)}
           onFavorite={() => toggleFavorite(game)}
@@ -332,6 +476,7 @@ export default function CinematicHome() {
             game={game}
             active={game.id === featured.id}
             onSelect={() => setFeatured(game)}
+            onDetails={() => { setFeatured(game); setDetails(game); }}
             onPlay={() => play(game)}
             favorite={favorites.includes(game.id)}
             onFavorite={() => toggleFavorite(game)}
@@ -353,6 +498,7 @@ export default function CinematicHome() {
               key={item.id}
               type="button"
               className={`cine-nav-link${screen === item.id ? " is-active" : ""}`}
+              data-ui-sound="nav"
               onClick={() => selectScreen(item.id)}
               aria-current={screen === item.id ? "page" : undefined}
             >
@@ -391,7 +537,7 @@ export default function CinematicHome() {
                 </div>
                 <p key={`${featured.id}-desc`}>{featured.description}</p>
                 <div className="cine-stage-actions">
-                  <button type="button" className="cine-play" onClick={() => play(featured)}>
+                  <button type="button" className="cine-play" data-ui-sound="launch" onClick={() => play(featured)}>
                     <Play size={19} fill="currentColor" /> PLAY NOW
                   </button>
                   <button type="button" className="cine-secondary" onClick={() => setDetails(featured)}>
@@ -432,8 +578,9 @@ export default function CinematicHome() {
             </section>
 
             {recentGames.length > 0 && railFor("Continue playing", recentGames, "PICK UP WHERE YOU LEFT OFF")}
-            {railFor("Trending now", trending, "WHAT PLAYERS ARE LAUNCHING")}
+            {railFor("Popular now", trending, "WHAT PLAYERS ARE LAUNCHING")}
             {railFor("New releases", fresh, "FRESH ON THE SHELF")}
+            {railFor("Recommended for you", recommended, favoriteGames.length ? "BASED ON YOUR FAVOURITES" : "HAND-PICKED FOR THIS SHELF")}
 
             <section className="cine-section cine-discover-band">
               <div>
@@ -449,7 +596,7 @@ export default function CinematicHome() {
         )}
 
         {screen !== "home" && screen !== "settings" && (
-          <section className="cine-browse">
+          <section className="cine-browse" key={screen}>
             <header className="cine-browse-head">
               <span className="cine-kicker">
                 {screen === "discover" ? "DISCOVER" : screen === "library" ? "MY GAMES" : screen === "recent" ? "RECENTLY PLAYED" : "FAVOURITES"}
@@ -475,6 +622,17 @@ export default function CinematicHome() {
                   />
                   {query && <button type="button" onClick={() => setQuery("")} aria-label="Clear search"><X size={16} /></button>}
                 </div>
+                <div className="cine-listbar">
+                  <span>{filtered.length} titles</span>
+                  <label className="cine-sort">
+                    <ArrowUpDown size={14} />
+                    <span>Sort</span>
+                    <select value={sort} onChange={(event) => updateSort(event.target.value as SortMode)} aria-label="Sort games">
+                      <option value="popular">Popular</option>
+                      <option value="az">A–Z</option>
+                    </select>
+                  </label>
+                </div>
                 <div className="cine-chips" role="group" aria-label="Filter by category">
                   {categories.map((item) => (
                     <button
@@ -482,6 +640,18 @@ export default function CinematicHome() {
                       type="button"
                       className={`cine-chip${category === item ? " is-active" : ""}`}
                       onClick={() => setCategory(item)}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+                <div className="cine-chips cine-chips--genres" role="group" aria-label="Filter by genre">
+                  {["All genres", ...genres].map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={`cine-chip cine-chip--genre${genre === item ? " is-active" : ""}`}
+                      onClick={() => setGenre(item)}
                     >
                       {item}
                     </button>
@@ -508,7 +678,7 @@ export default function CinematicHome() {
         )}
 
         {screen === "settings" && (
-          <section className="cine-browse cine-settings-screen">
+          <section className="cine-browse cine-settings-screen" key="settings">
             <header className="cine-browse-head">
               <span className="cine-kicker">SYSTEM</span>
               <h1>Make the platform yours.</h1>
@@ -540,6 +710,26 @@ export default function CinematicHome() {
                   <span><strong>Theme song</strong><small>{song ? "Playing softly under the launcher" : "Muted on this device"}</small></span>
                   <i className={`cine-toggle${song ? " is-on" : ""}`} />
                 </button>
+                <button type="button" className="cine-setting" onClick={() => updateUiSounds(!uiSounds)}>
+                  <AudioLines size={18} />
+                  <span><strong>Interface sounds</strong><small>{uiSounds ? "Soft hover, click and launch cues" : "Muted on this device"}</small></span>
+                  <i className={`cine-toggle${uiSounds ? " is-on" : ""}`} />
+                </button>
+                {uiSounds && (
+                  <label className="cine-volume">
+                    <span>Interface volume</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.01"
+                      value={uiVolume}
+                      onChange={(event) => changeUiVolume(Number(event.target.value))}
+                      aria-label="Interface sound volume"
+                    />
+                    <b>{Math.round(uiVolume * 100)}%</b>
+                  </label>
+                )}
                 <button type="button" className="cine-setting" onClick={() => updateMotion(motion === "full" ? "reduced" : "full")}>
                   <Sparkles size={18} />
                   <span><strong>Cinematic motion</strong><small>{motion === "full" ? "Full depth, reflections and transitions" : "Reduced ambient motion"}</small></span>
@@ -565,7 +755,7 @@ export default function CinematicHome() {
 
       {details && (
         <div className="cine-detail" role="dialog" aria-modal="true" aria-labelledby="cine-detail-title" style={{ "--cine-detail-art": `url("${details.thumbnail}")` } as CSSProperties}>
-          <button type="button" className="cine-detail-back" onClick={() => setDetails(null)}><ArrowLeft size={17} /> BACK</button>
+          <button type="button" className="cine-detail-back" data-ui-sound="back" onClick={() => setDetails(null)}><ArrowLeft size={17} /> BACK</button>
           <div className="cine-detail-art"><img src={details.thumbnail} alt={`${details.title} key art`} /></div>
           <div className="cine-detail-copy">
             <span className="cine-kicker">GAME DETAILS</span>
@@ -576,7 +766,7 @@ export default function CinematicHome() {
             </div>
             <p>{details.description}</p>
             <div className="cine-stage-actions">
-              <button type="button" className="cine-play" onClick={() => play(details)}><Play size={18} fill="currentColor" /> PLAY NOW</button>
+                                <button type="button" className="cine-play" data-ui-sound="launch" onClick={() => play(details)}><Play size={18} fill="currentColor" /> PLAY NOW</button>
               <button type="button" className={`cine-secondary${favorites.includes(details.id) ? " is-on" : ""}`} onClick={() => toggleFavorite(details)}>
                 <Heart size={17} fill={favorites.includes(details.id) ? "currentColor" : "none"} /> {favorites.includes(details.id) ? "FAVOURITED" : "ADD TO FAVOURITES"}
               </button>
@@ -586,7 +776,7 @@ export default function CinematicHome() {
               <ShareButton title={details.title} text={`Play ${details.title} on SI GAMES`} url={details.standalone ? `/${details.id}` : `/play/${details.id}`} label="Share game" />
             </div>
           </div>
-          <button type="button" className="cine-detail-close" onClick={() => setDetails(null)} aria-label="Close details"><X size={20} /></button>
+          <button type="button" className="cine-detail-close" data-ui-sound="back" onClick={() => setDetails(null)} aria-label="Close details"><X size={20} /></button>
         </div>
       )}
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } fr
 import { Link } from "react-router";
 import {
   ArrowLeft,
+  AudioLines,
   Check,
   Gauge,
   HardDrive,
@@ -28,6 +29,13 @@ import {
   readStorageUsage,
 } from "@/lib/browser-data";
 import ShareButton from "@/components/ShareButton";
+import {
+  isUiSoundEnabled,
+  readUiSoundVolume,
+  setUiSoundEnabled,
+  setUiSoundVolume,
+  UI_SOUND_CHANGE_EVENT,
+} from "@/lib/ui-sound";
 
 function Toggle({
   on,
@@ -56,6 +64,8 @@ function Toggle({
 export default function Settings() {
   const [theme, setTheme] = useState<ThemeId>(readStoredTheme);
   const [song, setSong] = useState(isThemeSongEnabled);
+  const [uiSounds, setUiSounds] = useState(isUiSoundEnabled);
+  const [uiVolume, setUiVolume] = useState(readUiSoundVolume);
   const [motion, setMotion] = useState<MotionPreference>(readMotionPreference);
   const [usage, setUsage] = useState<{ used: string; quota: string } | null>(null);
   const [busy, setBusy] = useState<"prefs" | "all" | null>(null);
@@ -68,11 +78,17 @@ export default function Settings() {
     void readStorageUsage().then(setUsage);
     const syncSong = () => setSong(isThemeSongEnabled());
     const syncMotion = () => setMotion(readMotionPreference());
+    const syncUiSound = () => {
+      setUiSounds(isUiSoundEnabled());
+      setUiVolume(readUiSoundVolume());
+    };
     window.addEventListener("si-games-theme-song-change", syncSong);
     window.addEventListener(MOTION_CHANGE_EVENT, syncMotion);
+    window.addEventListener(UI_SOUND_CHANGE_EVENT, syncUiSound);
     return () => {
       window.removeEventListener("si-games-theme-song-change", syncSong);
       window.removeEventListener(MOTION_CHANGE_EVENT, syncMotion);
+      window.removeEventListener(UI_SOUND_CHANGE_EVENT, syncUiSound);
       if (armTimer.current) window.clearTimeout(armTimer.current);
     };
   }, []);
@@ -91,6 +107,16 @@ export default function Settings() {
   const toggleSong = (next: boolean) => {
     setThemeSongEnabled(next);
     setSong(next);
+  };
+
+  const toggleUiSound = (next: boolean) => {
+    setUiSoundEnabled(next);
+    setUiSounds(next);
+  };
+
+  const changeUiVolume = (next: number) => {
+    setUiSoundVolume(next);
+    setUiVolume(next);
   };
 
   const pickMotion = (next: MotionPreference) => {
@@ -154,7 +180,7 @@ export default function Settings() {
             <span className="section-kicker"><Palette size={14} /> PERSONALISE THE SHELL</span>
             <h1>Make it<br /><span>yours.</span></h1>
             <p>
-              Palette, soundtrack, controller layer and motion depth in one place. Everything is
+              Palette, soundtrack, interface cues and motion depth in one place. Everything is
               stored on this device only.
             </p>
             <div className="settings-hero-chips">
@@ -220,7 +246,7 @@ export default function Settings() {
             <span className="settings-index">02</span>
             <div>
               <h2 id="settings-audio-title">Sound &amp; controls</h2>
-              <p>The site soundtrack and the on-screen controller layer.</p>
+              <p>The site soundtrack and optional interface feedback.</p>
             </div>
           </div>
           <div className="settings-rows">
@@ -232,6 +258,30 @@ export default function Settings() {
               </div>
               <Toggle on={song} label="Theme song" onChange={toggleSong} />
             </div>
+            <div className="settings-row">
+              <span className="settings-row-icon"><AudioLines size={17} /></span>
+              <div className="settings-row-copy">
+                <strong>Interface sounds</strong>
+                <small>Soft hover, click and launch cues. Synthesised in the browser, never autoplayed.</small>
+              </div>
+              <Toggle on={uiSounds} label="Interface sounds" onChange={toggleUiSound} />
+            </div>
+            {uiSounds && (
+              <div className="settings-volume-row">
+                <label htmlFor="ui-volume">Interface volume</label>
+                <input
+                  id="ui-volume"
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                  value={uiVolume}
+                  onChange={(event) => changeUiVolume(Number(event.target.value))}
+                  aria-label="Interface sound volume"
+                />
+                <b>{Math.round(uiVolume * 100)}%</b>
+              </div>
+            )}
           </div>
         </section>
 

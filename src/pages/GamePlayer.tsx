@@ -968,7 +968,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
             </div>
           ) : (
             <div className="launch-actions">
-              <button type="button" className="launch-play" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
+              <button type="button" className="launch-play" data-ui-sound="launch" onClick={launch}><Play size={18} fill="currentColor" /> Play now</button>
               <span className="launch-note">{game.type === "external" ? "Opens the game's own page in this tab." : servers.length > 1 ? "Runs inside SI GAMES on the server picked above." : "Runs inside SI GAMES."} <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
             </div>
           )}

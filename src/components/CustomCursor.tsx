@@ -15,13 +15,18 @@ const INTERACTIVE =
 export default function CustomCursor() {
   const dotRef = useRef<HTMLSpanElement>(null);
   const ringRef = useRef<HTMLSpanElement>(null);
+  const trailRef = useRef<HTMLSpanElement>(null);
+  const haloRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     if (!window.matchMedia("(pointer: fine)").matches) return;
     if (window.matchMedia("(hover: none)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const dot = dotRef.current;
     const ring = ringRef.current;
-    if (!dot || !ring) return;
+    const trail = trailRef.current;
+    const halo = haloRef.current;
+    if (!dot || !ring || !trail || !halo) return;
 
     const root = document.documentElement;
     root.classList.add("si-custom-cursor");
@@ -29,6 +34,10 @@ export default function CustomCursor() {
     const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     let ringX = target.x;
     let ringY = target.y;
+    let trailX = target.x;
+    let trailY = target.y;
+    let haloX = target.x;
+    let haloY = target.y;
     let scale = 1;
     let targetScale = 1;
     let visible = false;
@@ -37,19 +46,29 @@ export default function CustomCursor() {
     const paint = () => {
       dot.style.transform = `translate3d(${target.x}px, ${target.y}px, 0) translate(-50%, -50%)`;
       ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+      trail.style.transform = `translate3d(${trailX}px, ${trailY}px, 0) translate(-50%, -50%) scale(${(scale * 0.65).toFixed(3)})`;
+      halo.style.transform = `translate3d(${haloX}px, ${haloY}px, 0) translate(-50%, -50%) scale(${(scale * 1.8).toFixed(3)})`;
       dot.style.opacity = visible ? "1" : "0";
       ring.style.opacity = visible ? "1" : "0";
+      trail.style.opacity = visible ? "0.55" : "0";
+      halo.style.opacity = visible ? "0.22" : "0";
     };
 
     const tick = () => {
       frame = 0;
       ringX += (target.x - ringX) * 0.24;
       ringY += (target.y - ringY) * 0.24;
+      trailX += (target.x - trailX) * 0.13;
+      trailY += (target.y - trailY) * 0.13;
+      haloX += (target.x - haloX) * 0.07;
+      haloY += (target.y - haloY) * 0.07;
       scale += (targetScale - scale) * 0.22;
       paint();
       const settled =
         Math.abs(target.x - ringX) < 0.15 &&
         Math.abs(target.y - ringY) < 0.15 &&
+        Math.abs(target.x - haloX) < 0.2 &&
+        Math.abs(target.y - haloY) < 0.2 &&
         Math.abs(targetScale - scale) < 0.002;
       if (!settled) frame = window.requestAnimationFrame(tick);
     };
@@ -64,8 +83,10 @@ export default function CustomCursor() {
       target.y = event.clientY;
       visible = true;
       const hit = event.target instanceof Element ? event.target.closest(INTERACTIVE) : null;
+      const card = event.target instanceof Element ? event.target.closest(".cine-card, .game-card, .bp-card") : null;
       targetScale = hit ? 1.55 : 1;
       root.classList.toggle("si-cursor-hot", Boolean(hit));
+      root.classList.toggle("si-cursor-card", Boolean(card));
       wake();
     };
 
@@ -98,7 +119,7 @@ export default function CustomCursor() {
 
     return () => {
       window.cancelAnimationFrame(frame);
-      root.classList.remove("si-custom-cursor");
+      root.classList.remove("si-custom-cursor", "si-cursor-hot", "si-cursor-card");
       document.removeEventListener("pointermove", handleMove);
       document.removeEventListener("pointerdown", handleDown);
       document.removeEventListener("pointerup", handleUp);
@@ -110,6 +131,8 @@ export default function CustomCursor() {
 
   return (
     <>
+      <span ref={haloRef} className="si-cursor-halo" aria-hidden="true" />
+      <span ref={trailRef} className="si-cursor-trail" aria-hidden="true" />
       <span ref={ringRef} className="si-cursor-ring" aria-hidden="true"><i /></span>
       <span ref={dotRef} className="si-cursor-dot" aria-hidden="true" />
     </>
