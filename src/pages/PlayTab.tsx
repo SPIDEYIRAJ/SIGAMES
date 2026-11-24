@@ -60,8 +60,8 @@ export default function PlayTab() {
           <span className="section-kicker">PLAYTAB INDEX · NAME / SLUG / PLAY</span>
           <h1>Every PlayTab mirror,<br /><span>one list.</span></h1>
           <p>
-            Canonical PlayTab links use the <code>?bp=1</code> play URL. Titles that expose a
-            CORS-open build still run inside SI GAMES; the rest open on PlayTab in a new tab.
+            Every canonical PlayTab link uses its <code>?bp=1</code> play URL. PlayTab refuses
+            to be framed, so each link opens on PlayTab in a new tab.
           </p>
 
           <div className="playtab-gta">

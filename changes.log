@@ -3,6 +3,20 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-24 — PlayTab links open where they actually can
+-------------------------------------------------------
+
+FIX  PlayTab rejects every in-page frame: the live play pages answer with
+     `X-Frame-Options: SAMEORIGIN` and `frame-ancestors 'self'`, and the game
+     hosts behind them only allow playtab.fun as an ancestor. All catalogue
+     titles (and the PS2-hosted GTA IV card) are now handed over instead of
+     loading an empty frame, so their canonical play links work on click.
+
+ADD  The player's hand-over panel has a real "Play now — new tab" link beside
+     the copy button, so a title opens in one click instead of a copy/paste.
+
+CHG  Player and /playtab copy now say PlayTab pages open in a new tab.
+
 2026-11-23 — direct game embeds, Big Picture removed, crafted launcher pass
 ---------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 import { createElement, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from "react";
-import { ArrowLeft, Check, Copy, Expand, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Star, X, Save } from "lucide-react";
+import { ArrowLeft, Check, Copy, Expand, ExternalLink, Flag, Heart, Loader2, Maximize2, Minimize2, MonitorUp, Play, RotateCcw, Send, Star, X, Save } from "lucide-react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { games, type Game, type GameMedia, type GameMode, type GameServer } from "@/data/games";
 import GameFeedback from "@/components/GameFeedback";
@@ -897,19 +897,28 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
               <div className="copy-link">
                 <span className="copy-link-label"><Save size={13} /> Launch link</span>
                 <span className="copy-open-hint" role="status">
-                  Copy the link, then open a new tab yourself and paste it there.
+                  This title runs on its own site, so Play opens it in a new tab.
                 </span>
+                <a
+                  className="launch-play launch-play--external copy-open-btn"
+                  href={launchLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-ui-sound="launch"
+                >
+                  <ExternalLink size={17} /> Play now — new tab
+                </a>
                 <div className="copy-link-row">
                   <button
                     type="button"
                     className="launch-play copy-link-btn"
                     onClick={() => copyLink(launchLink)}
                   >
-                    {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied — paste in a new tab" : "Copy link"}
+                    {linkCopied ? <Check size={18} /> : <Copy size={18} fill="currentColor" />} {linkCopied ? "Copied" : "Copy link instead"}
                   </button>
                 </div>
                 <textarea ref={linkInputRef} className="copy-link-hidden" readOnly value={launchLink} aria-hidden="true" tabIndex={-1} />
-                <span className="launch-note">Copies the{activeMode ? ` ${activeMode.label}` : ""} link straight to your clipboard — the address is never shown here. Paste it into a new tab yourself; no tab opens automatically. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
+                <span className="launch-note">The{activeMode ? ` ${activeMode.label}` : ""} link copies straight to your clipboard. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></span>
               </div>
             </div>
           ) : (
@@ -926,7 +935,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
           <div className="player-info launch-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div>
           <GameFeedback gameId={game.id} gameTitle={game.title} />
           {game.media && <GameMediaPanel media={game.media} title={game.title} />}
-          {game.type === "external" && !handsLink ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : handsLink ? <p className="player-disclaimer player-disclaimer--light">This title plays in your own browser tab: the button copies its hosted link — open a new tab and paste it there to play. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
+          {game.type === "external" && !handsLink ? <p className={`player-disclaimer ${game.heavy ? "player-disclaimer--heavy" : "player-disclaimer--light"}`}>This title is hosted on its own site: Play now opens it in this tab. {game.heavy ? "It runs on a heavy external build, so movements and sounds may lag on slower devices. " : ""}SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : game.heavy ? <p className="player-disclaimer player-disclaimer--heavy">This title runs on a heavy external build, so movements and sounds may lag on slower devices. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : handsLink ? <p className="player-disclaimer player-disclaimer--light">This title plays on its own site: Play now opens it in a new tab. SI GAMES does not control its content or availability. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p> : <p className="player-disclaimer player-disclaimer--light">Runs entirely inside SI GAMES. No extra downloads, no ads, no new tab. <span className="disclaimer-sign">////SPIDEY_IRAJ////</span></p>}
         </main>
         {showReport && <ReportDialog gameId={game.id} gameTitle={game.title} onClose={() => setShowReport(false)} />}
       </div>

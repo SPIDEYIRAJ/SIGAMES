@@ -1400,6 +1400,8 @@ const featuredNewGames: Game[] = [
     type: "iframe",
     heavy: true,
     isNew: true,
+    // The PlayTab PS2 host refuses framing: hand the link over instead.
+    openInNewTab: true,
   },
   {
     id: "smashline",
@@ -1463,9 +1465,10 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
-/** The bulk arcade catalog. Each title loads its canonical PlayTab play link
- *  directly, exactly as supplied by the catalogue — no HTML copy is fetched or
- *  rewritten, so the build keeps its own origin, storage and asset paths. */
+/** The bulk arcade catalog. Each title carries its canonical PlayTab play link,
+ *  exactly as supplied by the catalogue. PlayTab answers those pages with
+ *  `X-Frame-Options: SAMEORIGIN` and `frame-ancestors 'self'`, so they are
+ *  handed over as links instead of being framed. */
 const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId], index): Game => ({
   id: `bp-${slug}`,
   title,
@@ -1478,6 +1481,8 @@ const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId], i
   sourceUrl: `https://bigpicture.playtab.fun/play/${slug}?bp=1`,
   type: "iframe",
   heavy: true,
+  // PlayTab refuses framing, so the player opens this link in a new tab.
+  openInNewTab: true,
 }));
 
 /** The newest drop, newest first — what the New games shelf lists. */
