@@ -48,8 +48,6 @@ export type Game = {
   controls: string;
   thumbnail: string;
   sourceUrl: string;
-  /** A CORS-open HTML build to fetch and render as srcDoc instead of framing the play page. */
-  htmlUrl?: string;
   type: "iframe" | "external";
   /** True for the locally hosted HTML browser games added from the source packet. */
   htmlGame?: boolean;
@@ -1465,9 +1463,10 @@ const importedGameEntries: Game[] = importedGames.map(([id, title, category, tag
   ...(external ? { openInNewTab: true } : {}),
 }));
 
-/** The bulk arcade catalog: the game page is the share link, while the
- *  CORS-open HTML build is what actually renders inside the frame. */
-const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, htmlPath], index): Game => ({
+/** The bulk arcade catalog. Each title loads its canonical PlayTab play link
+ *  directly, exactly as supplied by the catalogue — no HTML copy is fetched or
+ *  rewritten, so the build keeps its own origin, storage and asset paths. */
+const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId], index): Game => ({
   id: `bp-${slug}`,
   title,
   category: "Arcade",
@@ -1477,7 +1476,6 @@ const bigPictureEntries: Game[] = bigPictureGames.map(([slug, title, coverId, ht
   thumbnail: coverId ? `https://cdn.jsdelivr.net/gh/freebuisness/covers@main/${coverId}.png` : cover(900 + index),
   // Canonical PlayTab link supplied by the catalog: name → slug → play URL.
   sourceUrl: `https://bigpicture.playtab.fun/play/${slug}?bp=1`,
-  htmlUrl: htmlPath ? `https://cdn.jsdelivr.net/gh/freebuisness/html@main/${htmlPath}` : undefined,
   type: "iframe",
   heavy: true,
 }));

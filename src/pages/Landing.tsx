@@ -14,7 +14,6 @@ import {
   Sparkles,
   Star,
   Trophy,
-  Tv,
   X,
   Zap,
 } from "lucide-react";
@@ -332,10 +331,6 @@ export default function Landing() {
           </nav>
           <div className="header-status"><span className="status-dot" /> {games.length} games ready to play</div>
           {founding && <span className="founding-chip">FOUNDING PLAYER</span>}
-          <Link className="bp-entry" to="/bigpicture" aria-label="Open Big Picture mode">
-            <Tv size={15} />
-            <span>Big Picture</span>
-          </Link>
           <ThemePicker />
           <button
             type="button"
@@ -360,7 +355,6 @@ export default function Landing() {
               <Link to="/developers" onClick={() => setMobileMenuOpen(false)}>Developers</Link>
               <Link to="/benchmark" onClick={() => setMobileMenuOpen(false)}>Benchmark</Link>
               <Link to="/settings" onClick={() => setMobileMenuOpen(false)}>Settings</Link>
-              <Link to="/bigpicture" onClick={() => setMobileMenuOpen(false)}>Big Picture</Link>
             </nav>
             <span className="mobile-nav-status"><span className="status-dot" /> {games.length} games ready to play</span>
           </div>

@@ -24,7 +24,6 @@ const EXIT_MENU_MS = 8000;
 
 interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "target"> {
   src: string;
-  htmlUrl?: string;
   title: string;
   allow?: string;
   allowFullScreen?: boolean;
@@ -32,9 +31,6 @@ interface GameFrameProps extends Omit<React.HTMLAttributes<HTMLIFrameElement>, "
   onLoad: () => void;
   onError: () => void;
 }
-
-/** Injects a base so a fetched build can still resolve its sibling assets. */
-const GAME_VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">';
 
 /** Every title gets the same broad feature policy: console pads, pointer
  *  capture, fullscreen, clipboard, motion sensors and screen wake lock. */
@@ -48,69 +44,19 @@ const GAME_ALLOW = [
   "xr-spatial-tracking",
 ].join("; ");
 
-/** Permissive enough for full game builds (storage, popups, pointer lock,
- *  downloads) while still isolating the frame from top-level navigation. */
-const GAME_SANDBOX = [
-  "allow-scripts", "allow-same-origin", "allow-forms", "allow-modals",
-  "allow-popups", "allow-popups-to-escape-sandbox", "allow-downloads",
-  "allow-pointer-lock", "allow-presentation", "allow-orientation-lock",
-  "allow-top-navigation-by-user-activation",
-].join(" ");
-
-/** Fetched game builds often ship without a viewport tag. On a phone the frame
- *  then lays them out at desktop width and shrinks the whole page, which makes
- *  the game look soft and tiny. Add a device-width viewport only when the build
- *  did not provide one, and keep its own viewport when it did. */
-function prepareGameHtml(html: string, base: string): string {
-  const tags = [
-    /<base\s/i.test(html) ? "" : `<base href="${base.replace(/"/g, "&quot;")}">`,
-    /<meta[^>]+name\s*=\s*["']viewport["']/i.test(html) ? "" : GAME_VIEWPORT,
-  ].join("");
-  if (!tags) return html;
-  return /<head[^>]*>/i.test(html)
-    ? html.replace(/<head[^>]*>/i, (match) => `${match}${tags}`)
-    : `${tags}${html}`;
-}
-
-function GameFrame({ src, htmlUrl, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
-  const [doc, setDoc] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
-
-  // PlayTab pages send X-Frame-Options; their CORS-open HTML build is fetched
-  // once and rendered in place, which keeps the title embedded in SI GAMES.
-  useEffect(() => {
-    if (!htmlUrl) return;
-    let live = true;
-    fetch(htmlUrl)
-      .then((response) => (response.ok ? response.text() : Promise.reject(new Error("build unavailable"))))
-      .then((html) => {
-        if (live) setDoc(prepareGameHtml(html, new URL(htmlUrl).href));
-      })
-      .catch(() => {
-        if (live) setFailed(true);
-      });
-    return () => {
-      live = false;
-    };
-  }, [htmlUrl]);
-
-  // Hold the TV on its warming-up screen until the build arrives, so the
-  // empty about:blank load never dismisses the loader.
-  if (htmlUrl && !doc && !failed) return null;
-
+/** The game frame is a plain iframe on the catalogue's own play URL. No
+ *  sandbox, credentialless or referrer override: those stripped storage,
+ *  cookies and cross-origin requests from the hosted builds. */
+function GameFrame({ src, title, allow, allowFullScreen, loading, onLoad, onError }: GameFrameProps) {
   return createElement(
     "iframe",
     {
-      src: htmlUrl && !failed && !doc ? undefined : src,
-      srcDoc: doc ?? undefined,
+      src,
       title,
       allow: allow ?? GAME_ALLOW,
       allowFullScreen,
       target: "_self",
       loading: loading ? "lazy" : undefined,
-      referrerPolicy: "origin",
-      sandbox: GAME_SANDBOX,
-      credentialless: "",
       onLoad,
       onError,
     } as unknown as GameFrameProps
@@ -1064,7 +1010,7 @@ function GamePlayerView({ resolvedId }: { resolvedId: string }) {
                 <span className="fs-hold-track"><span className="fs-hold-fill" style={{ "--fs-hold-ms": `${keyHold.ms}ms` } as CSSProperties} /></span>
               </div>
             )}
-            <GameFrame key={frameKey} src={playUrl ?? launchLink} htmlUrl={game.htmlUrl} title={game.title} allow={GAME_ALLOW} allowFullScreen loading={loading} onLoad={handleFrameLoad} onError={() => setLoading(false)} />
+            <GameFrame key={frameKey} src={playUrl ?? launchLink} title={game.title} allow={GAME_ALLOW} allowFullScreen loading={loading} onLoad={handleFrameLoad} onError={() => setLoading(false)} />
             <div className="frame-corner corner-tl" /><div className="frame-corner corner-br" />
           </section>
         <div className="player-bottom"><div className="player-info"><span className="info-label">HOW TO PLAY</span><p>{game.controls}</p></div><div className="player-bottom-actions">{game.standalone ? <button className="open-external" type="button" onClick={() => setLaunched(false)}><ArrowLeft size={15} /> Game info</button> : game.htmlGame ? <a className="open-external" href={game.sourceUrl} target="_self" rel="noreferrer">Open in this tab <Expand size={15} /></a> : <button className="open-external" type="button" onClick={toggleFullscreen}><Maximize2 size={15} /> Open in full screen</button>}<button type="button" className="open-external report-button" onClick={() => setShowReport(true)}><Flag size={15} /> Report a problem</button></div></div>

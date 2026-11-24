@@ -2,14 +2,14 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Gamepad2, Loader2, Power, Signal } from "lucide-react";
 import type { LaunchSource } from "@/lib/launch";
 
-/** The card needs a beat on screen before it is swallowed by the TV. */
-const FLIGHT_MS = 780;
+/** The cartridge flight. The live reveal never starts before this. */
+const FLIGHT_MS = 820;
 /** How long the loaded game stays visible in the TV before the zoom. */
-const TV_LIVE_MS = 500;
+const TV_LIVE_MS = 520;
 /** Chrome fade before the FLIP takes over. */
-const LEAVE_MS = 280;
+const LEAVE_MS = 240;
 /** Never hold the player hostage on a host that will not answer. */
-const GIVE_UP_MS = 15000;
+const GIVE_UP_MS = 9000;
 
 export interface BootBox {
   left: number;
@@ -68,11 +68,12 @@ export default function BootConsole({
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  /** Wait for the iframe *and* the card-flight beat before showing the game. */
+  /** Reveal once the frame has loaded *and* the cartridge has landed. The
+   *  timer is anchored to mount, so a fast iframe cannot cut the flight short. */
   useEffect(() => {
     if (!ready || phase !== "loading") return;
     const elapsed = performance.now() - startedAt.current;
-    const wait = Math.max(0, FLIGHT_MS + 700 - elapsed);
+    const wait = Math.max(0, FLIGHT_MS - elapsed);
     const timer = window.setTimeout(() => setPhase("live"), wait);
     return () => window.clearTimeout(timer);
   }, [ready, phase]);
@@ -101,6 +102,15 @@ export default function BootConsole({
     }, GIVE_UP_MS);
     return () => window.clearTimeout(timer);
   }, [onFinish]);
+
+  /** A failed/unresponsive frame should still hand over, not sit on the tube. */
+  useEffect(() => {
+    if (ready || phase !== "loading") return;
+    const timer = window.setTimeout(() => {
+      if (!finished.current) setPhase("leaving");
+    }, GIVE_UP_MS - 600);
+    return () => window.clearTimeout(timer);
+  }, [phase, ready]);
 
   // Clamp the launch point so a card clicked far down the shelf still starts
   // inside the viewport instead of flying in from off-screen.
@@ -140,6 +150,12 @@ export default function BootConsole({
         <span className="boot-tv-led" />
         <span className="boot-tv-brand">SI · CRT 01</span>
       </div>
+
+      <span
+        className="boot-crt"
+        aria-hidden="true"
+        style={{ left: box.left, top: box.top, width: box.width, height: box.height }}
+      />
 
       <div className="boot-deck" aria-hidden="true" style={{ left: box.left - 26, top: box.top + box.height + 18, width: box.width + 52 }}>
         <span className="boot-deck-slot" />

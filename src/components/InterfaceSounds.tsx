@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { playUiSound, unlockUiSound, type UiSoundKind } from "@/lib/ui-sound";
 
 const HOVER_TARGET =
-  '[data-ui-hover], .cine-play, .cine-secondary, .cine-nav-link, .cine-card, .cine-strip-card, .cine-card-play, .cine-card-heart, .cine-chip, .soundtrack-fab, .si-intro-start, .player-icon-button, .player-back, .launch-play';
+  '[data-ui-hover], .cine-play, .cine-secondary, .cine-nav-link, .cine-card, .cine-strip-card, .cine-card-play, .cine-card-heart, .cine-chip, .cine-theme, .cine-setting, .cine-more, .cine-footer-dev, .soundtrack-fab, .si-intro-start, .player-icon-button, .player-back, .launch-play';
 
 const CLICK_TARGET = 'button, a[href], [role="button"], summary, label, input[type="range"]';
 

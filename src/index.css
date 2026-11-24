@@ -1857,6 +1857,48 @@ html[data-theme="liquidglass"] :is(
 
 .boot-console.is-live .boot-card {
   opacity: 0;
+  transition: opacity .2s ease;
+}
+
+/* CRT power-on: a bright scan line snaps open, settles, then fades. */
+.boot-crt {
+  position: fixed;
+  z-index: 65;
+  pointer-events: none;
+  border-radius: 4px;
+  background: radial-gradient(120% 140% at 50% 50%, #eaffff, #bff4ff 55%, #59cfff 100%);
+  opacity: 0;
+  transform: scaleY(.004);
+  mix-blend-mode: screen;
+}
+
+.boot-console.is-live .boot-crt {
+  animation: boot-power-on .62s cubic-bezier(.2, .8, .2, 1) both;
+}
+
+@keyframes boot-power-on {
+  0% { opacity: .95; transform: scaleY(.004); }
+  22% { opacity: .8; transform: scaleY(1); }
+  46% { opacity: .18; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1); }
+}
+
+.boot-console.is-live .boot-tv-chrome {
+  box-shadow:
+    0 0 0 1px #ffffff26,
+    inset 0 0 0 2px #ffffff14,
+    0 28px 90px #000000cc,
+    0 0 90px #3efeff4d;
+}
+
+.boot-console.is-live .boot-tv-led {
+  animation: none;
+  opacity: 1;
+  box-shadow: 0 0 16px var(--si-glow), 0 0 4px var(--si-glow);
+}
+
+.boot-console.is-live .boot-deck {
+  border-bottom-color: var(--si-glow-25);
 }
 
 .boot-console.is-leaving {
@@ -9553,7 +9595,7 @@ html.si-cursor-hot .si-cursor-ring i { opacity: 1; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  animation: cine-launch-zoom 1.65s cubic-bezier(.22, 1, .36, 1) both;
+  animation: cine-launch-zoom 1.1s cubic-bezier(.22, 1, .36, 1) both;
   filter: saturate(1.08);
 }
 
@@ -9951,3 +9993,160 @@ html[data-motion="reduced"] .settings-hero h1 span { animation: none; }
   .server-card-blocked { font-size: 8px; }
   .server-mobile-note { font-size: 11px; }
 }
+
+/* ═════════════════════════════════════════════════════════════════════
+   LAUNCHER CRAFT PASS — warm paper type, enamel hardware, quieter glow.
+   The shell stops reading like a stock neon dashboard: headings are warm
+   off-white, the nav is a cut metal bar rather than a floating pill, the
+   primary action is one solid signal colour, and a fine film grain sits
+   over the launcher for texture.
+   ═════════════════════════════════════════════════════════════════════ */
+
+.cine-home {
+  --cine-paper: #f2ece1;
+  --cine-ink-soft: #a6b2c3;
+}
+
+.cine-home::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  opacity: .05;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+}
+
+.cine-stage h1,
+.cine-browse-head h1,
+.cine-section-head h2,
+.cine-detail-copy h2,
+.cine-discover-band h2 {
+  color: var(--cine-paper);
+}
+
+/* Nav: a milled bar with a hairline indicator, not a glass pill. */
+.cine-nav {
+  gap: 4px;
+  padding: 7px 8px;
+  background: #05080ed9;
+  border-radius: 10px;
+  box-shadow: 0 18px 44px -34px #000, inset 0 1px 0 #ffffff0f;
+}
+
+.cine-nav-brand {
+  border-radius: 6px;
+  background: var(--cine-blue-deep);
+  box-shadow: inset 0 1px 0 #ffffff26, 0 6px 16px -10px #000;
+}
+
+.cine-nav-link {
+  position: relative;
+  border-radius: 6px;
+  letter-spacing: .05em;
+}
+
+.cine-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 5px;
+  height: 1px;
+  background: var(--cine-paper);
+  opacity: .55;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+.cine-nav-link:hover::after,
+.cine-nav-link.is-active::after {
+  transform: scaleX(1);
+}
+
+.cine-nav-link.is-active {
+  background: #ffffff0f;
+}
+
+.cine-nav-play {
+  border: 1px solid var(--cine-line);
+  border-radius: 6px;
+}
+
+/* Geometry: cut sheets instead of soft bubbles. */
+.cine-stage { border-radius: 12px; }
+.cine-card { border-radius: 6px; }
+.cine-search { border-radius: 8px; background: #060a11; }
+.cine-search button { border-radius: 6px; }
+.cine-chip { border-radius: 4px; }
+.cine-theme { border-radius: 4px; }
+.cine-setting { border-radius: 4px; }
+.cine-panel { border-radius: 8px; }
+.cine-theme i { border-radius: 3px; }
+.cine-more { border-radius: 6px; }
+
+/* One solid signal colour for the primary action. */
+.cine-play {
+  background: var(--cine-blue-deep);
+  border-color: #ffffff2e;
+  box-shadow: inset 0 1px 0 #ffffff26, 0 14px 30px -24px #000;
+  letter-spacing: .1em;
+}
+
+.cine-play:hover {
+  background: color-mix(in srgb, var(--cine-blue-deep) 82%, #ffffff);
+  filter: none;
+}
+
+/* Quieter hover bloom; the art and the light do the work. */
+.cine-card:hover {
+  border-color: #ffffff33;
+  box-shadow: 0 22px 44px -32px #000, 0 0 0 1px #ffffff12;
+}
+
+.cine-card.is-active {
+  border-color: color-mix(in srgb, var(--cine-blue) 60%, transparent);
+}
+
+.cine-card-meta strong { font-size: 13px; }
+
+/* Sequential tile entrance — opacity and translate only, so the 3D tilt
+   transform on each card keeps working afterwards. */
+.cine-grid > .cine-card {
+  animation: cine-tile-in .42s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.cine-grid > .cine-card:nth-child(2) { animation-delay: .03s; }
+.cine-grid > .cine-card:nth-child(3) { animation-delay: .06s; }
+.cine-grid > .cine-card:nth-child(4) { animation-delay: .09s; }
+.cine-grid > .cine-card:nth-child(5) { animation-delay: .12s; }
+.cine-grid > .cine-card:nth-child(6) { animation-delay: .15s; }
+.cine-grid > .cine-card:nth-child(7) { animation-delay: .18s; }
+.cine-grid > .cine-card:nth-child(8) { animation-delay: .21s; }
+
+@keyframes cine-tile-in {
+  from { opacity: 0; translate: 0 12px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+.cine-footer-dev {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--cine-ink-soft);
+  text-decoration: none;
+  transition: color .18s ease;
+}
+
+.cine-footer-dev:hover { color: var(--cine-paper); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-grid > .cine-card { animation: none; }
+  .cine-nav-link::after { transition: none; }
+}
+
+html[data-motion=reduced] .cine-home::after { display: none; }
+html[data-motion=reduced] .cine-grid > .cine-card { animation: none; }

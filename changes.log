@@ -3,6 +3,38 @@ SI GAMES — changes.log
 Newest entry first. Markers: FIX = something broken, ADD = new thing,
 CHG = behaviour changed, DEL = removed.
 
+2026-11-23 — direct game embeds, Big Picture removed, crafted launcher pass
+---------------------------------------------------------------------------
+
+FIX  Game frames are plain iframes again. Dropped the forced sandbox,
+     referrerPolicy and credentialless attributes that were stripping
+     storage, cookies and cross-origin requests from every hosted build.
+
+CHG  PlayTab titles now load their canonical play URL
+     (bigpicture.playtab.fun/play/<slug>?bp=1) directly, exactly as the
+     catalogue JSON lists them. The jsDelivr HTML fetch + srcDoc rewrite is
+     gone, so builds keep their own origin, https assets and save data.
+
+DEL  Big Picture is no longer a tab: removed from the launcher nav, the
+     settings panel, the legacy landing page and the router.
+
+ADD  About the developer now sits in the launcher nav, the settings panel and
+     the footer, and opens /developers.
+
+FIX  TV console boot animation: the cartridge flight always completes before
+     the tube goes live, a CRT power-on scan line snaps the screen open, the
+     LED and bezel light settle instead of flickering, and a frame that never
+     answers hands over at 9s instead of 15s. The launcher launch card now
+     hands over in 1.1s so the TV boots once, not twice.
+
+CHG  Launcher craft pass: warm paper headings, a milled nav bar with a
+     hairline indicator, cut-sheet card geometry, one solid signal colour for
+     the primary action, quieter hover bloom, staggered tile entrance and a
+     fine film grain over the launcher.
+
+ADD  Interface hover cues now cover theme chips, settings rows, load-more and
+     the developer footer link, alongside every click and launch.
+
 2026-11-23 — original purple theme restored as the default
 -----------------------------------------------------------
 

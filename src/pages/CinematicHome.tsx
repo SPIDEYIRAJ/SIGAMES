@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock3,
+  Code2,
   Compass,
   Heart,
   Home,
@@ -17,7 +18,6 @@ import {
   Search,
   Settings as SettingsIcon,
   Sparkles,
-  Star,
   Volume2,
   VolumeX,
   X,
@@ -362,7 +362,7 @@ export default function CinematicHome() {
     launchTimer.current = window.setTimeout(() => {
       launchTimer.current = null;
       navigate(game.standalone ? `/${game.id}` : `/play/${game.id}`);
-    }, 1_650);
+    }, 1_100);
   }, [launching, navigate]);
 
   /** D-pad left/right cycles the hero; A opens details and X launches. */
@@ -507,8 +507,8 @@ export default function CinematicHome() {
             </button>
           ))}
         </div>
-        <Link className="cine-nav-play" to="/bigpicture" aria-label="Open Big Picture">
-          <Sparkles size={16} />
+        <Link className="cine-nav-play" to="/developers" aria-label="About the developer" title="About the developer">
+          <Code2 size={16} />
         </Link>
       </nav>
 
@@ -741,7 +741,7 @@ export default function CinematicHome() {
                 <span className="cine-panel-label">PLATFORM</span>
                 <Link className="cine-setting" to="/setup"><SettingsIcon size={18} /><span><strong>New-user setup</strong><small>Colour, sound and motion in one pass</small></span><ArrowRight size={16} /></Link>
                 <Link className="cine-setting" to="/settings"><SettingsIcon size={18} /><span><strong>All settings</strong><small>Storage, benchmark and system tools</small></span><ArrowRight size={16} /></Link>
-                <Link className="cine-setting" to="/bigpicture"><Star size={18} /><span><strong>Big Picture</strong><small>Controller-first PlayStation-style launcher</small></span><ArrowRight size={16} /></Link>
+                <Link className="cine-setting" to="/developers"><Code2 size={18} /><span><strong>About the developer</strong><small>Who builds SI GAMES and what powers it</small></span><ArrowRight size={16} /></Link>
               </section>
             </div>
           </section>
@@ -750,6 +750,7 @@ export default function CinematicHome() {
 
       <footer className="cine-footer">
         <span>SI GAMES · SPIDEY_IRAJ</span>
+        <Link className="cine-footer-dev" to="/developers">ABOUT THE DEVELOPER <ArrowRight size={12} /></Link>
         <span>{games.length} TITLES · PLAY. DISCOVER. ENJOY.</span>
       </footer>
 
