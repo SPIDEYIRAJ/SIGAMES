@@ -25,6 +25,7 @@ import "./index.css";
 // Lazy load route components for better code splitting
 const CinematicHome = lazy(() => import("./pages/CinematicHome.tsx"));
 const GamePlayer = lazy(() => import("./pages/GamePlayer.tsx"));
+const GtaVi = lazy(() => import("./pages/GtaVi.tsx"));
 const Developers = lazy(() => import("./pages/Developers.tsx"));
 const NewGames = lazy(() => import("./pages/NewGames.tsx"));
 const Changelog = lazy(() => import("./pages/Changelog.tsx"));
@@ -459,6 +460,7 @@ function AnimatedRoutes() {
             <Route path="/sheet" element={<DataSheet />} />
             <Route path="/gta-v" element={<GamePlayer />} />
             <Route path="/gta-vicecity" element={<GamePlayer />} />
+            <Route path="/gta-vi" element={<GtaVi />} />
             <Route path="/play/:id" element={<GamePlayer />} />
             {/* Friendly share links: sigames/<game-id> opens the same player. */}
             <Route path="/:id" element={<GamePlayer />} />
